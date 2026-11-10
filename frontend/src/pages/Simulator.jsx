@@ -281,18 +281,36 @@ export default function Simulator() {
     return () => stopCamera();
   }, []);
 
+  // Konfigurasi Region of Interest (ROI) untuk pembatasan frame deteksi
+  // Membatasi deteksi tepat di area tengah bergaris tepi, mengabaikan background dan memfokuskan 1 target
+  const ROI_CONFIG = {
+    norm_x: 0.16,
+    norm_y: 0.12,
+    norm_w: 0.68,
+    norm_h: 0.76
+  };
+
   const captureFrameBlob = () => {
     if (!videoRef.current || !canvasRef.current) return null;
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    const vw = video.videoWidth || 640;
+    const vh = video.videoHeight || 480;
+
+    // Pembatasan frame deteksi: potong (crop) hanya area ROI di tengah
+    const sx = Math.round(vw * ROI_CONFIG.norm_x);
+    const sy = Math.round(vh * ROI_CONFIG.norm_y);
+    const sw = Math.round(vw * ROI_CONFIG.norm_w);
+    const sh = Math.round(vh * ROI_CONFIG.norm_h);
+
+    canvas.width = Math.max(32, sw);
+    canvas.height = Math.max(32, sh);
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/jpeg', 0.92));
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/jpeg', 0.90));
   };
 
-  // Inference Loop Real-Time ke /api/predict/live_frame
+  // Inference Loop Real-Time ke /api/predict/live_frame (Fokus 1 Target ROI)
   const runLiveInference = async () => {
     if (!videoRef.current || !canvasRef.current || isInferringRef.current) return;
     if (videoRef.current.readyState < 2) return;
@@ -306,29 +324,39 @@ export default function Simulator() {
       }
 
       const fd = new FormData();
-      fd.append('frame', blob, 'live_frame.jpg');
+      fd.append('frame', blob, 'live_roi_frame.jpg');
       fd.append('task', activeTab);
+      fd.append('is_roi', 'true');
 
       const res = await fetch('/api/predict/live_frame', { method: 'POST', body: fd });
       const d = await res.json();
 
       if (d.success) {
-        if (d.found && d.boxes && d.boxes.length > 0) {
-          targetBoxesRef.current = d.boxes;
-          setLiveBoxes(d.boxes);
-          setLiveBox(d.box || d.boxes[0]);
-          setIsObjectDetected(true);
+        if (d.found && (d.box || (d.boxes && d.boxes.length > 0))) {
+          const rawTopBox = d.box || d.boxes[0];
 
-          const topBox = d.box || d.boxes[0];
-          setLiveConfidence(topBox.confidence || 0);
+          // Map koordinat dari crop ROI kembali ke viewport kamera penuh
+          const mappedBox = {
+            ...rawTopBox,
+            norm_x: ROI_CONFIG.norm_x + rawTopBox.norm_x * ROI_CONFIG.norm_w,
+            norm_y: ROI_CONFIG.norm_y + rawTopBox.norm_y * ROI_CONFIG.norm_h,
+            norm_w: rawTopBox.norm_w * ROI_CONFIG.norm_w,
+            norm_h: rawTopBox.norm_h * ROI_CONFIG.norm_h
+          };
+
+          targetBoxesRef.current = [mappedBox]; // HANYA 1 TARGET
+          setLiveBoxes([mappedBox]);
+          setLiveBox(mappedBox);
+          setIsObjectDetected(true);
+          setLiveConfidence(rawTopBox.confidence || 0);
 
           setLastDetectedClass(prev => {
-            if (prev === topBox.stage) {
+            if (prev === rawTopBox.stage) {
               setStabilityCounter(c => Math.min(c + 1, 8));
             } else {
               setStabilityCounter(1);
             }
-            return topBox.stage;
+            return rawTopBox.stage;
           });
 
           if (d.prediction) {
@@ -344,7 +372,7 @@ export default function Simulator() {
             setRokaeStatus(d.rokae_telemetry);
           }
         } else {
-          // Tidak ada objek terdeteksi oleh YOLO di frame saat ini
+          // Tidak ada objek terdeteksi di dalam area ROI
           targetBoxesRef.current = [];
           setLiveBoxes([]);
           setLiveBox(null);
@@ -359,7 +387,7 @@ export default function Simulator() {
     }
   };
 
-  // Rendering Loop Canvas HUD 30-60 FPS untuk Bounding Box Dinamis & Pelacakan Real-Time
+  // Rendering Loop Canvas HUD 30-60 FPS untuk Bounding Box Garis Tepi & ROI Viewfinder
   useEffect(() => {
     if (!isCameraActive) {
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
@@ -396,96 +424,145 @@ export default function Simulator() {
       const h = canvas.height;
 
       if (w > 0 && h > 0) {
+        const isRoiActive = !isUploadedImage;
+        const roiX = isRoiActive ? ROI_CONFIG.norm_x * w : 12;
+        const roiY = isRoiActive ? ROI_CONFIG.norm_y * h : 12;
+        const roiW = isRoiActive ? ROI_CONFIG.norm_w * w : w - 24;
+        const roiH = isRoiActive ? ROI_CONFIG.norm_h * h : h - 24;
+
         const targetBoxes = targetBoxesRef.current || [];
+        const hasTarget = targetBoxes.length > 0;
+        const roiColor = hasTarget ? '#22c55e' : 'rgba(56, 189, 248, 0.75)';
 
-        if (targetBoxes.length > 0) {
-          // --- KONDISI 1: ADA OBJEK TERDETEKSI (DINAMIS MELACAK OBJEK) ---
-          if (renderedBoxesRef.current.length !== targetBoxes.length) {
-            renderedBoxesRef.current = targetBoxes.map(tb => ({ ...tb }));
-          } else {
-            targetBoxes.forEach((tb, idx) => {
-              const cur = renderedBoxesRef.current[idx];
-              if (cur) {
-                const lerp = 0.40;
-                cur.norm_x += (tb.norm_x - cur.norm_x) * lerp;
-                cur.norm_y += (tb.norm_y - cur.norm_y) * lerp;
-                cur.norm_w += (tb.norm_w - cur.norm_w) * lerp;
-                cur.norm_h += (tb.norm_h - cur.norm_h) * lerp;
-                cur.label = tb.label;
-                cur.confidence = tb.confidence;
-                cur.color = tb.color;
-              }
-            });
-          }
+        if (isRoiActive) {
+          // 1. Shaded vignette mask di luar ROI agar hanya garis tepi ROI yang jadi fokus
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.42)';
+          ctx.fillRect(0, 0, w, roiY); // Atas
+          ctx.fillRect(0, roiY + roiH, w, h - (roiY + roiH)); // Bawah
+          ctx.fillRect(0, roiY, roiX, roiH); // Kiri
+          ctx.fillRect(roiX + roiW, roiY, w - (roiX + roiW), roiH); // Kanan
 
-          renderedBoxesRef.current.forEach(box => {
-            const isMirrored = facingModeRef.current === 'user' && !isUploadedImage;
-            const normX = isMirrored ? Math.max(0, 1 - box.norm_x - box.norm_w) : box.norm_x;
-            const bx = normX * w;
-            const by = box.norm_y * h;
-            const bw = Math.max(20, box.norm_w * w);
-            const bh = Math.max(20, box.norm_h * h);
-            const color = box.color || '#16a34a';
+          // 2. Garis tepi batas frame ROI
+          ctx.strokeStyle = hasTarget ? 'rgba(34, 197, 94, 0.35)' : 'rgba(56, 189, 248, 0.28)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(roiX, roiY, roiW, roiH);
 
-            // Semi-transparan tint
-            ctx.fillStyle = color === '#16a34a' 
-              ? 'rgba(34, 197, 94, 0.12)' 
-              : (color === '#ca8a04' ? 'rgba(234, 179, 8, 0.12)' : 'rgba(239, 68, 68, 0.12)');
-            ctx.fillRect(bx, by, bw, bh);
-
-            // Garis bounding box dinamis
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2.5;
-            ctx.strokeRect(bx, by, bw, bh);
-
-            // Sudut Aksen Presisi (Corner Accents)
-            const cornerLen = Math.min(18, Math.min(bw, bh) * 0.25);
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(bx, by + cornerLen); ctx.lineTo(bx, by); ctx.lineTo(bx + cornerLen, by);
-            ctx.moveTo(bx + bw - cornerLen, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + cornerLen);
-            ctx.moveTo(bx, by + bh - cornerLen); ctx.lineTo(bx, by + bh); ctx.lineTo(bx + cornerLen, by + bh);
-            ctx.moveTo(bx + bw - cornerLen, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - cornerLen);
-            ctx.stroke();
-
-            // Floating Label Tag Chip
-            const labelText = `${box.label} (${box.confidence}%)`;
-            ctx.font = 'bold 11px sans-serif';
-            const textWidth = ctx.measureText(labelText).width;
-            const tagHeight = 22;
-            const tagY = Math.max(10, by - tagHeight - 4);
-
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
-            ctx.fillRect(bx, tagY, textWidth + 14, tagHeight);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(bx, tagY, textWidth + 14, tagHeight);
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(labelText, bx + 7, tagY + 15);
-          });
-        } else {
-          // --- KONDISI 2: TIDAK ADA OBJEK (SCANNING VIEWFINDER MODE) ---
-          renderedBoxesRef.current = [];
-
-          // Viewfinder Corners di tepi viewport
-          const pad = 24;
-          const cornerLen = 22;
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
-          ctx.lineWidth = 2;
+          // Corner reticles di 4 sudut garis tepi ROI
+          const rCorner = Math.min(26, Math.min(roiW, roiH) * 0.22);
+          ctx.strokeStyle = roiColor;
+          ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.moveTo(pad, pad + cornerLen); ctx.lineTo(pad, pad); ctx.lineTo(pad + cornerLen, pad);
-          ctx.moveTo(w - pad - cornerLen, pad); ctx.lineTo(w - pad, pad); ctx.lineTo(w - pad, pad + cornerLen);
-          ctx.moveTo(pad, h - pad - cornerLen); ctx.lineTo(pad, h - pad); ctx.lineTo(pad + cornerLen, h - pad);
-          ctx.moveTo(w - pad - cornerLen, h - pad); ctx.lineTo(w - pad, h - pad); ctx.lineTo(w - pad, h - pad - cornerLen);
+          // Kiri Atas
+          ctx.moveTo(roiX, roiY + rCorner); ctx.lineTo(roiX, roiY); ctx.lineTo(roiX + rCorner, roiY);
+          // Kanan Atas
+          ctx.moveTo(roiX + roiW - rCorner, roiY); ctx.lineTo(roiX + roiW, roiY); ctx.lineTo(roiX + roiW, roiY + rCorner);
+          // Kiri Bawah
+          ctx.moveTo(roiX, roiY + roiH - rCorner); ctx.lineTo(roiX, roiY + roiH); ctx.lineTo(roiX + rCorner, roiY + roiH);
+          // Kanan Bawah
+          ctx.moveTo(roiX + roiW - rCorner, roiY + roiH); ctx.lineTo(roiX + roiW, roiY + roiH); ctx.lineTo(roiX + roiW, roiY + roiH - rCorner);
           ctx.stroke();
 
-          // Laser Scanning Bar Bolak-Balik Halus
-          const scanCycle = (now % 2800) / 2800;
-          const scanNorm = (Math.sin(scanCycle * Math.PI * 2 - Math.PI / 2) + 1) / 2;
-          const scanY = pad + scanNorm * (h - pad * 2);
+          // Crosshairs titik tengah panduan 1 target
+          ctx.strokeStyle = hasTarget ? 'rgba(34, 197, 94, 0.30)' : 'rgba(56, 189, 248, 0.22)';
+          ctx.lineWidth = 1;
+          const midX = roiX + roiW / 2;
+          const midY = roiY + roiH / 2;
+          const crossSize = 10;
+          ctx.beginPath();
+          ctx.moveTo(midX - crossSize, midY); ctx.lineTo(midX + crossSize, midY);
+          ctx.moveTo(midX, midY - crossSize); ctx.lineTo(midX, midY + crossSize);
+          ctx.stroke();
 
-          const grad = ctx.createLinearGradient(0, scanY - 12, 0, scanY + 12);
+          // Header Badge Indikator ROI di Atas Frame
+          const roiBadge = hasTarget
+            ? (activeTab === 'melon' ? '🎯 1 BUAH MELON TERKUNCI' : '🎯 1 HELAI DAUN TERKUNCI')
+            : (activeTab === 'melon' ? 'FOKUS ROI: 1 BUAH MELON' : 'FOKUS ROI: 1 HELAI DAUN');
+          ctx.font = 'bold 10px sans-serif';
+          const badgeW = ctx.measureText(roiBadge).width + 16;
+          const badgeX = roiX + (roiW - badgeW) / 2;
+          const badgeY = Math.max(8, roiY - 24);
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
+          ctx.fillRect(badgeX, badgeY, badgeW, 20);
+          ctx.strokeStyle = roiColor;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(badgeX, badgeY, badgeW, 20);
+          ctx.fillStyle = hasTarget ? '#4ade80' : '#38bdf8';
+          ctx.fillText(roiBadge, badgeX + 8, badgeY + 14);
+        }
+
+        if (hasTarget) {
+          // --- KONDISI 1: ADA 1 OBJEK TERDETEKSI (FOKUS TUNGGAL PADA GARIS TEPI OBJEK) ---
+          const tb = targetBoxes[0];
+          if (!renderedBoxesRef.current[0]) {
+            renderedBoxesRef.current = [{ ...tb }];
+          } else {
+            const cur = renderedBoxesRef.current[0];
+            const lerp = 0.40;
+            cur.norm_x += (tb.norm_x - cur.norm_x) * lerp;
+            cur.norm_y += (tb.norm_y - cur.norm_y) * lerp;
+            cur.norm_w += (tb.norm_w - cur.norm_w) * lerp;
+            cur.norm_h += (tb.norm_h - cur.norm_h) * lerp;
+            cur.label = tb.label;
+            cur.confidence = tb.confidence;
+            cur.color = tb.color;
+          }
+
+          const box = renderedBoxesRef.current[0];
+          const isMirrored = facingModeRef.current === 'user' && !isUploadedImage;
+          const normX = isMirrored ? Math.max(0, 1 - box.norm_x - box.norm_w) : box.norm_x;
+          const bx = normX * w;
+          const by = box.norm_y * h;
+          const bw = Math.max(20, box.norm_w * w);
+          const bh = Math.max(20, box.norm_h * h);
+          const color = box.color || '#16a34a';
+
+          // Semi-transparan tint pada objek yang terdeteksi
+          ctx.fillStyle = color === '#16a34a' 
+            ? 'rgba(34, 197, 94, 0.12)' 
+            : (color === '#ca8a04' ? 'rgba(234, 179, 8, 0.12)' : 'rgba(239, 68, 68, 0.12)');
+          ctx.fillRect(bx, by, bw, bh);
+
+          // Garis tepi bounding box presisi objek tunggal
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.5;
+          ctx.strokeRect(bx, by, bw, bh);
+
+          // Sudut aksen presisi garis tepi objek
+          const cornerLen = Math.min(18, Math.min(bw, bh) * 0.25);
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(bx, by + cornerLen); ctx.lineTo(bx, by); ctx.lineTo(bx + cornerLen, by);
+          ctx.moveTo(bx + bw - cornerLen, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + cornerLen);
+          ctx.moveTo(bx, by + bh - cornerLen); ctx.lineTo(bx, by + bh); ctx.lineTo(bx + cornerLen, by + bh);
+          ctx.moveTo(bx + bw - cornerLen, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - cornerLen);
+          ctx.stroke();
+
+          // Floating Label Tag Chip di garis tepi objek
+          const labelText = `${box.label} (${box.confidence}%)`;
+          ctx.font = 'bold 11px sans-serif';
+          const textWidth = ctx.measureText(labelText).width;
+          const tagHeight = 22;
+          const tagY = Math.max(10, by - tagHeight - 4);
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+          ctx.fillRect(bx, tagY, textWidth + 14, tagHeight);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(bx, tagY, textWidth + 14, tagHeight);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(labelText, bx + 7, tagY + 15);
+        } else {
+          // --- KONDISI 2: TIDAK ADA OBJEK (SCANNING HANYA DI DALAM KOTAK ROI) ---
+          renderedBoxesRef.current = [];
+
+          // Laser Scanning Bar Bolak-Balik Terbatas Hanya di Dalam Kotak ROI
+          const scanCycle = (now % 2600) / 2600;
+          const scanNorm = (Math.sin(scanCycle * Math.PI * 2 - Math.PI / 2) + 1) / 2;
+          const scanY = roiY + scanNorm * roiH;
+
+          const grad = ctx.createLinearGradient(0, scanY - 10, 0, scanY + 10);
           grad.addColorStop(0, 'rgba(56, 189, 248, 0)');
           grad.addColorStop(0.5, 'rgba(56, 189, 248, 0.85)');
           grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
@@ -493,27 +570,27 @@ export default function Simulator() {
           ctx.strokeStyle = grad;
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.moveTo(w * 0.15, scanY);
-          ctx.lineTo(w * 0.85, scanY);
+          ctx.moveTo(roiX + 8, scanY);
+          ctx.lineTo(roiX + roiW - 8, scanY);
           ctx.stroke();
 
           // Efek ekor laser
-          const trailGrad = ctx.createLinearGradient(0, scanY - 24, 0, scanY);
+          const trailGrad = ctx.createLinearGradient(0, scanY - 20, 0, scanY);
           trailGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
-          trailGrad.addColorStop(1, 'rgba(56, 189, 248, 0.10)');
+          trailGrad.addColorStop(1, 'rgba(56, 189, 248, 0.08)');
           ctx.fillStyle = trailGrad;
-          ctx.fillRect(w * 0.15, scanY - 24, w * 0.70, 24);
+          ctx.fillRect(roiX + 8, scanY - 20, roiW - 16, 20);
 
-          // Status Badge Scanner di Bawah Viewport
+          // Status Badge Scanner di Bawah Garis Tepi ROI
           const scanMsg = activeTab === 'melon'
-            ? 'Mencari buah melon...'
-            : 'Mencari daun melon...';
+            ? 'Arahkan 1 buah melon ke dalam kotak ROI...'
+            : 'Arahkan 1 helai daun ke dalam kotak ROI...';
           ctx.font = '11px sans-serif';
           const msgWidth = ctx.measureText(scanMsg).width;
           const msgX = (w - msgWidth - 24) / 2;
-          const msgY = h - 38;
+          const msgY = Math.min(h - 36, roiY + roiH + 12);
 
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
           ctx.fillRect(msgX, msgY, msgWidth + 24, 24);
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
           ctx.lineWidth = 1;
@@ -524,7 +601,7 @@ export default function Simulator() {
         }
 
         // 3. Telemetry HUD Bar di Kiri Atas
-        const hudWidth = Math.min(280, w - 20);
+        const hudWidth = Math.min(300, w - 20);
         ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
         ctx.fillRect(10, 10, hudWidth, 44);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
@@ -534,7 +611,7 @@ export default function Simulator() {
         const pulse = (Math.sin(now / 200) + 1) / 2;
         ctx.fillStyle = !isAutoDetection 
           ? '#94a3b8' 
-          : (targetBoxes.length > 0 ? `rgba(34, 197, 94, ${0.4 + pulse * 0.6})` : `rgba(56, 189, 248, ${0.4 + pulse * 0.6})`);
+          : (hasTarget ? `rgba(34, 197, 94, ${0.4 + pulse * 0.6})` : `rgba(56, 189, 248, ${0.4 + pulse * 0.6})`);
         ctx.beginPath();
         ctx.arc(22, 24, 4.5, 0, Math.PI * 2);
         ctx.fill();
@@ -544,23 +621,24 @@ export default function Simulator() {
         ctx.fillText(
           !isAutoDetection 
             ? 'Deteksi dijeda' 
-            : (targetBoxes.length > 0 ? `Terdeteksi (${targetBoxes.length})` : 'Mencari objek...'),
+            : (hasTarget ? '1 Objek Terkunci (ROI)' : 'Mencari objek di ROI...'),
           32, 
           28
         );
 
         ctx.font = '10px sans-serif';
-        ctx.fillStyle = targetBoxes.length > 0 ? '#4ade80' : '#38bdf8';
+        ctx.fillStyle = hasTarget ? '#4ade80' : '#38bdf8';
         ctx.fillText(
-          targetBoxes.length > 0 
-            ? `Pelacakan aktif · ${liveFps} FPS` 
-            : `Kamera aktif · ${liveFps} FPS`, 
+          hasTarget 
+            ? `Target tunggal aktif · ${liveFps} FPS` 
+            : `Fokus ROI aktif · ${liveFps} FPS`, 
           20, 
           44
         );
       }
 
-      if (isAutoDetection && (now - lastDetectTimeRef.current >= 300)) {
+      // Pembatasan frame deteksi: interval 550ms untuk stabilitas & presisi optimal
+      if (isAutoDetection && (now - lastDetectTimeRef.current >= 550)) {
         lastDetectTimeRef.current = now;
         runLiveInference();
       }
@@ -1268,32 +1346,27 @@ export default function Simulator() {
             }}>
               {liveBox ? (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                    <span style={{ color: '#64748B' }}>Objek terdeteksi:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                    <span style={{ color: '#64748B' }}>1 Target Terkunci:</span>
                     <strong style={{ color: liveBox.color }}>{liveBox.label} ({liveBox.confidence}%)</strong>
-                    {liveBoxes.length > 1 && (
-                      <span className="badge badge-info" style={{ fontSize: '0.68rem' }}>
-                        +{liveBoxes.length - 1} Titik Lain
-                      </span>
-                    )}
-                    <span className="badge badge-success" style={{ fontSize: '0.68rem' }}>
-                      Terlacak
+                    <span className="badge badge-success" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                      Fokus 1 Objek (ROI)
                     </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ color: '#64748B' }}>Status:</span>
-                    <strong style={{ color: '#166534' }}>Pelacakan aktif</strong>
+                    <span style={{ color: '#64748B' }}>Batas:</span>
+                    <strong style={{ color: '#166534' }}>Garis Tepi ROI Presisi</strong>
                   </div>
                 </>
               ) : (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0284c7', display: 'inline-block' }} />
-                    <span style={{ color: '#64748B' }}>Status kamera:</span>
-                    <strong style={{ color: '#1B2A22' }}>Mencari objek di kamera...</strong>
+                    <span style={{ color: '#64748B' }}>Fokus ROI:</span>
+                    <strong style={{ color: '#1B2A22' }}>Posisikan 1 {activeTab === 'melon' ? 'buah melon' : 'helai daun'} ke dalam garis tepi kotak</strong>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ color: '#64748B' }}>Arahkan ke buah atau daun melon</span>
+                    <span style={{ color: '#64748B', fontSize: '0.72rem' }}>Pembatasan frame aktif (Akurasi Presisi)</span>
                   </div>
                 </>
               )}

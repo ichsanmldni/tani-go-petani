@@ -199,7 +199,9 @@ def api_predict_live_frame():
         boxes = melon_model.detect_frame(frame, conf_threshold=0.20)
         del frame, file_bytes
         if boxes:
+            # Batasi deteksi tepat 1 objek target (buah melon utama) untuk memaksimalkan presisi & akurasi
             primary_box = boxes[0]
+            single_boxes = [primary_box]
             stage = primary_box['stage']
             rokae_robot_stage = stage
             _send_live_result_async('melon', rokae_robot_stage)
@@ -208,7 +210,7 @@ def api_predict_live_frame():
             return jsonify({
                 'success': True,
                 'found': True,
-                'boxes': boxes,
+                'boxes': single_boxes,
                 'box': primary_box,
                 'prediction': prediction,
                 'rokae_telemetry': rokae_robot.get_telemetry()
@@ -226,7 +228,9 @@ def api_predict_live_frame():
         boxes = disease_model.detect_frame(frame, conf_threshold=0.20)
         del frame, file_bytes
         if boxes:
+            # Batasi deteksi tepat 1 objek target (helai daun utama) untuk memaksimalkan presisi & akurasi
             primary_box = boxes[0]
+            single_boxes = [primary_box]
             d_cls = primary_box['stage']
             _send_live_result_async('disease', d_cls)
             prediction = disease_model.predict(images=None, force_disease=d_cls)
@@ -234,7 +238,7 @@ def api_predict_live_frame():
             return jsonify({
                 'success': True,
                 'found': True,
-                'boxes': boxes,
+                'boxes': single_boxes,
                 'box': primary_box,
                 'prediction': prediction,
                 'rokae_telemetry': rokae_robot.get_telemetry()

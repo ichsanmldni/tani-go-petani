@@ -801,23 +801,6 @@ export default function Simulator() {
                     <ArrowsClockwise size={13} weight="bold" />
                     {isAutoDetection ? 'Jeda deteksi' : 'Lanjutkan deteksi'}
                   </button>
-
-                  <button
-                    onClick={activeTab === 'melon' ? handleMelonInfer : handleDiseaseInfer}
-                    disabled={melonLoading || diseaseLoading}
-                    style={{
-                      padding: '0.35rem 0.75rem',
-                      backgroundColor: '#166534',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '0.35rem',
-                      fontSize: '0.74rem',
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Ambil foto
-                  </button>
                 </>
               )}
 

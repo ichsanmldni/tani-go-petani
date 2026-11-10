@@ -97,18 +97,21 @@ export default function App() {
         }}>
           {/* Logo / Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <div style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '8px',
-              backgroundColor: '#166534',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff'
-            }}>
-              <Plant size={20} weight="bold" />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Logo Tanigo"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                objectFit: 'contain',
+                display: 'block'
+              }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/static/img/logo.png';
+              }}
+            />
             <div>
               <strong style={{ fontSize: '1.05rem', color: '#1B2A22', display: 'block', lineHeight: 1.2, fontFamily: 'var(--font-heading)' }}>
                 Tanigo

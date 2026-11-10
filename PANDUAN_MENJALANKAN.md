@@ -32,7 +32,7 @@ Dokumen ini memandu langkah demi langkah bagi pengembang, agronom, atau penguji 
 
 ## 2. Langkah Cepat (Siap Pakai - 2 Menit)
 
-Karena hasil kompilasi frontend (`static/dist/`) dan bobot model AI (`models/*.pt`) sudah tersedia di dalam repositori, Anda **hanya membutuhkan Python** untuk langsung menjalankannya:
+Karena hasil kompilasi frontend (`static/dist/`), bobot model AI (`models/*.pt`), dan foto sampel kebun (`static/img/real_samples/`) sudah tersedia lengkap di dalam repositori, Anda **hanya membutuhkan Python** untuk langsung menjalankannya:
 
 ### Langkah 1: Clone Repositori
 ```bash

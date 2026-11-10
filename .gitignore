@@ -61,12 +61,8 @@ runs/
 wandb/
 *.pt.tmp
 
-# Dataset & Sampel Foto (dikecualikan dari Git agar repo ringan)
+# Dataset Mentah Pelatihan (dikecualikan dari Git agar repo ringan)
 Dataset/
-static/img/real_samples/
-static/dist/static/
-*real_samples*
-real_samples/
 
 # ----------------- IDE & Editor -----------------
 .vscode/

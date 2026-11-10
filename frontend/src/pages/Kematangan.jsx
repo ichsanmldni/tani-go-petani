@@ -5,9 +5,7 @@ import {
   CheckCircle,
   Clock,
   Eye,
-  MapPin,
   ArrowUpRight,
-  VideoCamera,
   QrCode,
   Table as TableIcon,
   SquaresFour,
@@ -255,54 +253,26 @@ export default function Kematangan({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-      {/* 1. Header Bar: Title + Subtitle + Action Pills */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div style={{ minWidth: 0 }}>
-          <h1 style={{
-            fontSize: '1.55rem',
-            fontWeight: 800,
-            color: 'var(--text-main, #0F172A)',
-            margin: '0 0 0.25rem 0',
-            letterSpacing: '-0.025em',
-            fontFamily: 'var(--font-heading)'
-          }}>
-            Dashboard Kematangan Buah
-          </h1>
-          <p style={{
-            fontSize: '0.82rem',
-            color: 'var(--text-dim, #64748B)',
-            margin: 0,
-            lineHeight: 1.4
-          }}>
-            Pantau kematangan buah melon di pohon pada seluruh greenhouse hidroponik.
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => onNavigateTab && onNavigateTab('simulator')}
-            className="bento-pill-primary"
-            title="Buka kamera untuk memeriksa kondisi buah"
-          >
-            <VideoCamera size={16} weight="bold" />
-            <span>+ Uji Kamera</span>
-          </button>
-          <button
-            onClick={() => handleOpenPositions('matang')}
-            className="bento-pill-secondary"
-            title="Lihat peta sebaran posisi pohon"
-          >
-            <MapPin size={16} weight="bold" />
-            <span>Peta Posisi Pohon</span>
-          </button>
-        </div>
+      {/* 1. Header Bar: Title + Subtitle */}
+      <div>
+        <h1 style={{
+          fontSize: '1.55rem',
+          fontWeight: 800,
+          color: 'var(--text-main, #0F172A)',
+          margin: '0 0 0.25rem 0',
+          letterSpacing: '-0.025em',
+          fontFamily: 'var(--font-heading)'
+        }}>
+          Dashboard Kematangan Buah
+        </h1>
+        <p style={{
+          fontSize: '0.82rem',
+          color: 'var(--text-dim, #64748B)',
+          margin: 0,
+          lineHeight: 1.4
+        }}>
+          Pantau kematangan buah melon di pohon pada seluruh greenhouse hidroponik.
+        </p>
       </div>
 
       {/* 2. Top Row: 4 Bento Stat Cards (Hero Highlight Card in Dark Forest Green) */}

@@ -10,9 +10,7 @@ import {
   Bug,
   Table as TableIcon,
   SquaresFour,
-  QrCode,
-  VideoCamera,
-  MapPin
+  QrCode
 } from '@phosphor-icons/react';
 
 import QrThumbnail from '../components/QrThumbnail.jsx';
@@ -135,63 +133,26 @@ export default function Penyakit({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-      {/* 1. Header Bar: Title + Subtitle + Action Pills */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div style={{ minWidth: 0 }}>
-          <h1 style={{
-            fontSize: '1.55rem',
-            fontWeight: 800,
-            color: 'var(--text-main, #0F172A)',
-            margin: '0 0 0.25rem 0',
-            letterSpacing: '-0.025em',
-            fontFamily: 'var(--font-heading)'
-          }}>
-            Dashboard Kesehatan Daun
-          </h1>
-          <p style={{
-            fontSize: '0.82rem',
-            color: 'var(--text-dim, #64748B)',
-            margin: 0,
-            lineHeight: 1.4
-          }}>
-            Pantau kondisi daun tanaman melon dan deteksi indikasi hama secara berkala.
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => onNavigateTab && onNavigateTab('simulator')}
-            className="bento-pill-primary"
-            title="Buka kamera untuk memeriksa kondisi daun"
-          >
-            <VideoCamera size={16} weight="bold" />
-            <span>+ Uji Kamera</span>
-          </button>
-          <button
-            onClick={() => {
-              if (onOpenPositionsModal) {
-                onOpenPositionsModal({
-                  title: 'Sebaran Seluruh Titik Pohon Melon',
-                  color: 'green',
-                  count: totalTrees,
-                  type: 'all'
-                });
-              }
-            }}
-            className="bento-pill-secondary"
-            title="Lihat peta sebaran posisi pohon"
-          >
-            <MapPin size={16} weight="bold" />
-            <span>Peta Titik Pohon</span>
-          </button>
-        </div>
+      {/* 1. Header Bar: Title + Subtitle */}
+      <div>
+        <h1 style={{
+          fontSize: '1.55rem',
+          fontWeight: 800,
+          color: 'var(--text-main, #0F172A)',
+          margin: '0 0 0.25rem 0',
+          letterSpacing: '-0.025em',
+          fontFamily: 'var(--font-heading)'
+        }}>
+          Dashboard Kesehatan Daun
+        </h1>
+        <p style={{
+          fontSize: '0.82rem',
+          color: 'var(--text-dim, #64748B)',
+          margin: 0,
+          lineHeight: 1.4
+        }}>
+          Pantau kondisi daun tanaman melon dan deteksi indikasi hama secara berkala.
+        </p>
       </div>
 
       {/* 2. Top Row: 3 Bento Stat Cards */}

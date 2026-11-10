@@ -108,7 +108,7 @@ export default function Kematangan({
   const mengkalCount = stats?.ripeness?.mengkal || 36;
   const mentahCount = stats?.ripeness?.mentah || 32;
   const totalFruits = stats?.total_fruits || 96;
-  const healthyPct = stats?.disease?.sehat_pct || 77;
+  const healthyPct = Math.round(stats?.disease?.sehat_pct || 77);
   const harvestReadyCount = matangCount + mengkalCount;
   const harvestReadyPct = totalFruits > 0 ? Math.round((harvestReadyCount / totalFruits) * 100) : 0;
 

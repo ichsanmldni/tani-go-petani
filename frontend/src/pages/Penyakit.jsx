@@ -82,7 +82,8 @@ export default function Penyakit({
   const sehatCount = stats?.disease?.sehat || 74;
   const sakitCount = stats?.disease?.sakit || 22;
   const totalTrees = stats?.total_trees || 96;
-  const healthyPct = stats?.disease?.sehat_pct || 77;
+  const healthyPct = Math.round(stats?.disease?.sehat_pct ?? (totalTrees > 0 ? (sehatCount / totalTrees) * 100 : 77));
+  const sickPct = Math.max(0, 100 - healthyPct);
 
   // Filtered trees
   const displayedTrees = useMemo(() => {
@@ -398,7 +399,7 @@ export default function Penyakit({
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#B91C1C' }} />
                 <span style={{ fontSize: '10px', color: '#B91C1C', fontWeight: 700 }}>
-                  Perlu Dicek ({Math.max(0, 100 - healthyPct)}%)
+                  Perlu Dicek ({sickPct}%)
                 </span>
               </div>
               <strong style={{ fontSize: '12px', color: '#B91C1C', fontWeight: 800 }}>

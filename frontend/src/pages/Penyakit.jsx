@@ -140,11 +140,13 @@ export default function Penyakit({ greenhouses, stats, onSelectTree, onOpenPosit
             </h2>
           </div>
 
-          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center', width: '100%', maxWidth: '650px' }}>
             <select
               value={ghFilter}
               onChange={e => setGhFilter(e.target.value)}
               style={{
+                flex: '1 1 140px',
+                height: '36px',
                 padding: '0.4rem 0.65rem',
                 fontSize: '0.78rem',
                 borderRadius: '0.4rem',
@@ -163,6 +165,8 @@ export default function Penyakit({ greenhouses, stats, onSelectTree, onOpenPosit
               value={kondisiFilter}
               onChange={e => setKondisiFilter(e.target.value)}
               style={{
+                flex: '1 1 120px',
+                height: '36px',
                 padding: '0.4rem 0.65rem',
                 fontSize: '0.78rem',
                 borderRadius: '0.4rem',
@@ -176,21 +180,23 @@ export default function Penyakit({ greenhouses, stats, onSelectTree, onOpenPosit
               <option value="Sakit">Perlu dicek</option>
             </select>
 
-            <div style={{ position: 'relative' }}>
-              <MagnifyingGlass size={15} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+            <div style={{ position: 'relative', flex: '1 1 180px' }}>
+              <MagnifyingGlass size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
               <input
                 type="text"
-                placeholder="Cari ID pohon atau jalur..."
+                placeholder="Cari ID pohon / jalur..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 style={{
-                  padding: '0.4rem 0.65rem 0.4rem 1.8rem',
+                  width: '100%',
+                  height: '36px',
+                  boxSizing: 'border-box',
+                  padding: '0.4rem 0.65rem 0.4rem 2rem',
                   fontSize: '0.78rem',
                   borderRadius: '0.4rem',
                   border: '1px solid #DDE5DC',
                   outline: 'none',
-                  color: '#1B2A22',
-                  width: '180px'
+                  color: '#1B2A22'
                 }}
               />
             </div>
@@ -198,14 +204,16 @@ export default function Penyakit({ greenhouses, stats, onSelectTree, onOpenPosit
             <button
               type="submit"
               style={{
-                padding: '0.4rem 0.75rem',
+                height: '36px',
+                padding: '0 1rem',
                 backgroundColor: '#166534',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '0.4rem',
                 fontSize: '0.78rem',
                 fontWeight: 600,
-                cursor: 'pointer'
+                cursor: 'pointer',
+                flexShrink: 0
               }}
             >
               Cari
@@ -213,8 +221,8 @@ export default function Penyakit({ greenhouses, stats, onSelectTree, onOpenPosit
           </form>
         </div>
 
-        {/* Tabel Data */}
-        <div style={{ overflowX: 'auto' }}>
+        {/* Desktop Table View */}
+        <div className="desktop-only" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
             <thead>
               <tr style={{ backgroundColor: '#F6F8F4', borderBottom: '1px solid #DDE5DC', color: '#1B2A22', textAlign: 'left' }}>
@@ -316,6 +324,76 @@ export default function Penyakit({ greenhouses, stats, onSelectTree, onOpenPosit
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile-First Card View (Screens <= 768px) */}
+        <div className="mobile-only" style={{ display: 'none' }}>
+          {loading ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#64748B' }}>
+              Memuat data monitoring pohon...
+            </div>
+          ) : (Array.isArray(trees) ? trees : []).length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#64748B' }}>
+              Tidak ada pohon yang cocok.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {(Array.isArray(trees) ? trees : []).map((t) => {
+                const isSick = t.kondisi === 'Sakit';
+
+                return (
+                  <div key={t.tree_id} className="mobile-data-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <QrThumbnail text={t.qr_code || `QR-TREE-${t.tree_id}`} size={38} />
+                        <div>
+                          <strong className="font-mono" style={{ color: '#1B2A22', fontSize: '0.84rem', display: 'block', lineHeight: 1.2 }}>
+                            {t.tree_id}
+                          </strong>
+                          <small className="font-mono" style={{ color: '#64748B', fontSize: '0.72rem' }}>
+                            {t.qr_code}
+                          </small>
+                        </div>
+                      </div>
+                      <span className={`badge ${isSick ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.74rem', fontWeight: 700, flexShrink: 0 }}>
+                        {isSick ? 'Perlu dicek' : 'Sehat'}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.45rem', fontSize: '0.74rem' }}>
+                      <span style={{ color: '#1B2A22', fontWeight: 600 }}>{t.greenhouse_name}</span>
+                      <span style={{ color: '#64748B' }}>{t.row} • #{t.tree_index}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#64748B' }}>
+                        <Clock size={12} />
+                        <span>{t.last_scan_time}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => onSelectTree(t.tree_id)}
+                      style={{
+                        width: '100%',
+                        height: '36px',
+                        backgroundColor: isSick ? '#B91C1C' : '#047857',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '0.45rem',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem'
+                      }}
+                    >
+                      <Eye size={16} weight="bold" /> Lihat Detail Penyakit
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 

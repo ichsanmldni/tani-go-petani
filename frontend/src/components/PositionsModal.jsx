@@ -38,6 +38,7 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
   return (
     <div
       onClick={onClose}
+      className="modal-sheet-container"
       style={{
         position: 'fixed',
         inset: 0,
@@ -54,6 +55,7 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="modal-sheet-box"
         style={{
           backgroundColor: '#ffffff',
           borderRadius: '1rem',

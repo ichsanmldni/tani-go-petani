@@ -44,6 +44,7 @@ export default function FruitModal({ fruit, onClose }) {
   return (
     <div
       onClick={onClose}
+      className="modal-sheet-container"
       style={{
         position: 'fixed',
         inset: 0,
@@ -60,6 +61,7 @@ export default function FruitModal({ fruit, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="modal-sheet-box"
         style={{
           backgroundColor: '#ffffff',
           borderRadius: '1rem',

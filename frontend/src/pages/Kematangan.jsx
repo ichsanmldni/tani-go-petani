@@ -367,11 +367,13 @@ export default function Kematangan({ greenhouses, stats, onSelectFruit, onOpenPo
             </h2>
           </div>
 
-          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center', width: '100%', maxWidth: '650px' }}>
             <select
               value={ghFilter}
               onChange={e => setGhFilter(e.target.value)}
               style={{
+                flex: '1 1 140px',
+                height: '36px',
                 padding: '0.4rem 0.65rem',
                 fontSize: '0.78rem',
                 borderRadius: '0.4rem',
@@ -390,6 +392,8 @@ export default function Kematangan({ greenhouses, stats, onSelectFruit, onOpenPo
               value={ripenessFilter}
               onChange={e => setRipenessFilter(e.target.value)}
               style={{
+                flex: '1 1 120px',
+                height: '36px',
                 padding: '0.4rem 0.65rem',
                 fontSize: '0.78rem',
                 borderRadius: '0.4rem',
@@ -404,20 +408,22 @@ export default function Kematangan({ greenhouses, stats, onSelectFruit, onOpenPo
               <option value="mentah">Mentah</option>
             </select>
 
-            <div style={{ position: 'relative' }}>
-              <MagnifyingGlass size={15} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+            <div style={{ position: 'relative', flex: '1 1 180px' }}>
+              <MagnifyingGlass size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
               <input
                 type="text"
-                placeholder="Cari ID pohon atau buah..."
+                placeholder="Cari ID pohon / buah..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 style={{
-                  padding: '0.4rem 0.65rem 0.4rem 1.7rem',
+                  width: '100%',
+                  height: '36px',
+                  boxSizing: 'border-box',
+                  padding: '0.4rem 0.65rem 0.4rem 2rem',
                   fontSize: '0.78rem',
                   borderRadius: '0.4rem',
                   border: '1px solid #DDE5DC',
-                  color: '#1B2A22',
-                  width: '170px'
+                  color: '#1B2A22'
                 }}
               />
             </div>
@@ -425,14 +431,16 @@ export default function Kematangan({ greenhouses, stats, onSelectFruit, onOpenPo
             <button
               type="submit"
               style={{
-                padding: '0.4rem 0.75rem',
+                height: '36px',
+                padding: '0 1rem',
                 backgroundColor: '#166534',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '0.4rem',
                 fontSize: '0.78rem',
                 fontWeight: 600,
-                cursor: 'pointer'
+                cursor: 'pointer',
+                flexShrink: 0
               }}
             >
               Cari
@@ -440,8 +448,8 @@ export default function Kematangan({ greenhouses, stats, onSelectFruit, onOpenPo
           </form>
         </div>
 
-        {/* Tabel */}
-        <div style={{ overflowX: 'auto' }}>
+        {/* Desktop Table View */}
+        <div className="desktop-only" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
               <tr style={{ backgroundColor: '#F6F8F4', borderBottom: '1px solid #DDE5DC', color: '#1B2A22', textAlign: 'left' }}>
@@ -552,6 +560,85 @@ export default function Kematangan({ greenhouses, stats, onSelectFruit, onOpenPo
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile-First Card View (Screens <= 768px) */}
+        <div className="mobile-only" style={{ display: 'none' }}>
+          {loading ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#64748B' }}>
+              Memuat data buah...
+            </div>
+          ) : fruits.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#64748B' }}>
+              Tidak ada buah yang cocok.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {fruits.map((f) => {
+                const isMatang = f.tingkat_kematangan === 'matang';
+                const isMengkal = f.tingkat_kematangan === 'mengkal';
+                const labelKematangan = isMatang ? 'Matang' : isMengkal ? 'Mengkal' : 'Mentah';
+
+                return (
+                  <div key={f.fruit_id} className="mobile-data-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <QrThumbnail text={f.qr_code || `QR-FRUIT-${f.fruit_id}`} size={38} />
+                        <div>
+                          <strong className="font-mono" style={{ color: '#1B2A22', fontSize: '0.84rem', display: 'block', lineHeight: 1.2 }}>
+                            {f.fruit_id}
+                          </strong>
+                          <small className="font-mono" style={{ color: '#64748B', fontSize: '0.72rem' }}>
+                            {f.tree_id}
+                          </small>
+                        </div>
+                      </div>
+                      <span className={`badge ${isMatang ? 'badge-success' : isMengkal ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.72rem', flexShrink: 0 }}>
+                        {labelKematangan}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.45rem', fontSize: '0.74rem' }}>
+                      <span style={{ color: '#1B2A22', fontWeight: 600 }}>{f.greenhouse_name}</span>
+                      <span style={{ color: '#64748B' }}>{f.row} • #{f.tree_index}</span>
+                      <span style={{ fontWeight: 600, color: isMatang ? '#047857' : '#64748B' }}>
+                        {isMatang ? 'Siap dijual' : 'Tunggu panen'}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.6rem', marginTop: '0.15rem' }}>
+                      <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                        <img src={f.angles?.angle1} title="Pangkal tangkai" alt="1" style={{ width: '34px', height: '34px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #DDE5DC' }} />
+                        <img src={f.angles?.angle2} title="Jaring kulit" alt="2" style={{ width: '34px', height: '34px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #DDE5DC' }} />
+                        <img src={f.angles?.angle3} title="Ujung buah" alt="3" style={{ width: '34px', height: '34px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #DDE5DC' }} />
+                      </div>
+
+                      <button
+                        onClick={() => onSelectFruit(f.fruit_id)}
+                        style={{
+                          flex: 1,
+                          height: '36px',
+                          backgroundColor: '#166534',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '0.45rem',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.4rem'
+                        }}
+                      >
+                        <Eye size={16} weight="bold" /> Lihat Detail
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

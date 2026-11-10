@@ -1028,7 +1028,7 @@ export default function Simulator() {
                       gap: '0.4rem'
                     }}
                   >
-                    <UploadSimple size={15} weight="bold" /> Unggah Foto dari Komputer
+                    <UploadSimple size={15} weight="bold" /> Unggah Foto / Galeri HP
                   </button>
                 </div>
               </div>

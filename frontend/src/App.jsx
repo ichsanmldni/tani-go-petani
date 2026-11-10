@@ -119,9 +119,14 @@ export default function App() {
             </div>
           </div>
 
-          {/* Simple Tab Navigation */}
-          <nav style={{
-            display: 'flex',
+          {/* Mobile Status Indicator */}
+          <div className="mobile-only" style={{ display: 'none', alignItems: 'center', gap: '0.4rem', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.25rem 0.65rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 700, color: '#047857' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#047857', display: 'inline-block' }} />
+            <span>3 Greenhouse</span>
+          </div>
+
+          {/* Desktop Tab Navigation */}
+          <nav className="desktop-nav" style={{
             alignItems: 'center',
             backgroundColor: '#EDF2EC',
             padding: '0.25rem',
@@ -198,7 +203,7 @@ export default function App() {
       </header>
 
       {/* Main Container */}
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.25rem 1rem 3rem 1rem' }}>
+      <main className="main-content-area" style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.25rem 1rem 3rem 1rem' }}>
         {activeTab === 'kematangan' && (
           <Kematangan
             greenhouses={greenhouses}
@@ -221,6 +226,36 @@ export default function App() {
           <Simulator />
         )}
       </main>
+
+      {/* Mobile Bottom Navigation Bar (Fixed for PWA & Mobile Touch) */}
+      <nav className="mobile-bottom-nav" aria-label="Navigasi Bawah Mobile">
+        <button
+          onClick={() => setActiveTab('kematangan')}
+          className={`mobile-nav-item ${activeTab === 'kematangan' ? 'active' : ''}`}
+        >
+          <CircleDashed size={20} weight={activeTab === 'kematangan' ? 'bold' : 'regular'} />
+          <span>Kematangan</span>
+          <div className="nav-indicator" />
+        </button>
+
+        <button
+          onClick={() => setActiveTab('penyakit')}
+          className={`mobile-nav-item ${activeTab === 'penyakit' ? 'active-penyakit' : ''}`}
+        >
+          <Plant size={20} weight={activeTab === 'penyakit' ? 'bold' : 'regular'} />
+          <span>Penyakit Daun</span>
+          <div className="nav-indicator" />
+        </button>
+
+        <button
+          onClick={() => setActiveTab('simulator')}
+          className={`mobile-nav-item ${activeTab === 'simulator' ? 'active' : ''}`}
+        >
+          <Flask size={20} weight={activeTab === 'simulator' ? 'bold' : 'regular'} />
+          <span>Uji Kamera</span>
+          <div className="nav-indicator" />
+        </button>
+      </nav>
 
       {/* Modals */}
       {selectedFruit && (

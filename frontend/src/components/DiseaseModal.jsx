@@ -41,6 +41,7 @@ export default function DiseaseModal({ tree, onClose, onViewFruit, onOpenFruit }
   return (
     <div
       onClick={onClose}
+      className="modal-sheet-container"
       style={{
         position: 'fixed',
         inset: 0,
@@ -57,6 +58,7 @@ export default function DiseaseModal({ tree, onClose, onViewFruit, onOpenFruit }
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="modal-sheet-box"
         style={{
           backgroundColor: '#ffffff',
           borderRadius: '1rem',

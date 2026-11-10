@@ -672,11 +672,11 @@ export default function Simulator() {
   const renderMelonResultCard = () => (
     <div className="bento-card" style={{ padding: '1.5rem', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', fontFamily: 'var(--font-heading)' }}>
+        <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', fontFamily: 'var(--font-heading)' }}>
           Hasil Pemeriksaan Buah
         </h3>
         <span style={{ fontSize: '0.7rem', fontWeight: 700, backgroundColor: '#DCFCE7', color: '#166534', padding: '3px 8px', borderRadius: '999px' }}>
-          Vision AI Active
+          Pemeriksaan Aktif
         </span>
       </div>
 
@@ -732,11 +732,11 @@ export default function Simulator() {
   const renderDiseaseResultCard = () => (
     <div className="bento-card" style={{ padding: '1.5rem', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', fontFamily: 'var(--font-heading)' }}>
+        <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', fontFamily: 'var(--font-heading)' }}>
           Hasil Pemeriksaan Daun
         </h3>
         <span style={{ fontSize: '0.7rem', fontWeight: 700, backgroundColor: '#FEE2E2', color: '#B91C1C', padding: '3px 8px', borderRadius: '999px' }}>
-          Pathology AI
+          Pemeriksaan Daun
         </span>
       </div>
 
@@ -803,20 +803,20 @@ export default function Simulator() {
           <h1 style={{
             fontSize: '1.55rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             margin: '0 0 0.25rem 0',
             letterSpacing: '-0.025em',
             fontFamily: 'var(--font-heading)'
           }}>
-            Uji Kamera AI Vision
+            Uji Kamera
           </h1>
           <p style={{
             fontSize: '0.82rem',
-            color: '#64748B',
+            color: 'var(--text-dim, #64748B)',
             margin: 0,
             lineHeight: 1.4
           }}>
-            Cek kondisi kematangan buah melon dan kesehatan daun lewat kamera live atau foto sampel kebun.
+            Periksa kondisi kematangan buah melon dan kesehatan daun lewat kamera langsung atau foto sampel kebun.
           </p>
         </div>
 

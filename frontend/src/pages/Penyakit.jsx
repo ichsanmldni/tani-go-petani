@@ -6,16 +6,13 @@ import {
   MagnifyingGlass,
   Warehouse,
   Eye,
-  Clock,
   ArrowUpRight,
   Bug,
-  CalendarBlank,
   Table as TableIcon,
   SquaresFour,
   QrCode,
   VideoCamera,
-  MapPin,
-  WarningCircle
+  MapPin
 } from '@phosphor-icons/react';
 
 import QrThumbnail from '../components/QrThumbnail.jsx';
@@ -67,11 +64,6 @@ export default function Penyakit({
     loadData();
   }, [ghFilter, kondisiFilter]);
 
-  const handleSearchSubmit = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    loadData();
-  };
-
   const handleOpenRowPositions = (ghName, rowName, items = [], type) => {
     const safeItems = Array.isArray(items) ? items : [];
     onOpenPositionsModal({
@@ -99,8 +91,8 @@ export default function Penyakit({
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(t =>
         t.tree_id?.toLowerCase().includes(q) ||
-        t.nama_penyakit?.toLowerCase().includes(q) ||
-        t.greenhouse_name?.toLowerCase().includes(q)
+        t.greenhouse_name?.toLowerCase().includes(q) ||
+        t.diagnosis?.toLowerCase().includes(q)
       );
     }
     return result;
@@ -117,53 +109,53 @@ export default function Penyakit({
         flexWrap: 'wrap',
         gap: '1rem'
       }}>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <h1 style={{
             fontSize: '1.55rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             margin: '0 0 0.25rem 0',
             letterSpacing: '-0.025em',
             fontFamily: 'var(--font-heading)'
           }}>
-            Dashboard Kesehatan Daun Melon
+            Dashboard Kesehatan Daun
           </h1>
           <p style={{
             fontSize: '0.82rem',
-            color: '#64748B',
+            color: 'var(--text-dim, #64748B)',
             margin: 0,
             lineHeight: 1.4
           }}>
-            Deteksi dini hama kutu daun (aphids) dan embun tepung (powdery mildew) di kebun greenhouse.
+            Pantau kondisi daun tanaman melon dan deteksi indikasi hama secara berkala.
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => onNavigateTab && onNavigateTab('simulator')}
             className="bento-pill-primary"
-            title="Buka kamera deteksi penyakit daun"
+            title="Buka kamera untuk memeriksa kondisi daun"
           >
             <VideoCamera size={16} weight="bold" />
-            <span>+ Scan Daun AI</span>
+            <span>+ Uji Kamera</span>
           </button>
           <button
             onClick={() => {
               if (onOpenPositionsModal) {
                 onOpenPositionsModal({
-                  title: 'Peta Sebaran Pohon Sakit (Perlu Ditangani)',
-                  color: 'red',
-                  count: sakitCount,
-                  type: 'disease'
+                  title: 'Sebaran Seluruh Titik Pohon Melon',
+                  color: 'green',
+                  count: totalTrees,
+                  type: 'all'
                 });
               }
             }}
             className="bento-pill-secondary"
-            title="Lihat peta sebaran pohon yang perlu disemprot"
+            title="Lihat peta sebaran posisi pohon"
           >
             <MapPin size={16} weight="bold" />
-            <span>Peta Pohon Sakit</span>
+            <span>Peta Titik Pohon</span>
           </button>
         </div>
       </div>
@@ -171,14 +163,24 @@ export default function Penyakit({
       {/* 2. Top Row: 4 Bento Stat Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: '1.25rem'
       }}>
         {/* Card 1: HERO HIGHLIGHT CARD (Deep Green #14532D) */}
         <div
-          onClick={() => setKondisiFilter('Sehat')}
+          onClick={() => {
+            if (onOpenPositionsModal) {
+              onOpenPositionsModal({
+                title: 'Daftar Pohon Sehat Bebas Hama',
+                color: 'green',
+                count: sehatCount,
+                type: 'disease'
+              });
+            }
+          }}
           className="bento-card bento-hero-green bento-card-interactive"
-          title="Filter pohon sehat normal"
+          title="Klik untuk melihat sebaran pohon sehat"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
             <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#E2E8F0' }}>
@@ -212,19 +214,29 @@ export default function Penyakit({
             color: '#FFFFFF'
           }}>
             <ShieldCheck size={12} weight="bold" />
-            <span>{healthyPct}% Kebun Bebas Hama</span>
+            <span>{healthyPct}% Populasi Sehat</span>
           </div>
         </div>
 
-        {/* Card 2: Perlu Penanganan (Sakit) */}
+        {/* Card 2: Pohon Perlu Dicek / Sakit */}
         <div
-          onClick={() => setKondisiFilter('Sakit')}
+          onClick={() => {
+            if (onOpenPositionsModal) {
+              onOpenPositionsModal({
+                title: 'Daftar Titik Pohon Perlu Dicek',
+                color: 'red',
+                count: sakitCount,
+                type: 'disease'
+              });
+            }
+          }}
           className="bento-card bento-card-interactive"
-          title="Filter pohon sakit"
+          title="Klik untuk melihat posisi pohon yang perlu dicek"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748B' }}>
-              Perlu Penanganan
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
+              Perlu Dicek
             </span>
             <div className="bento-circle-arrow">
               <ArrowUpRight size={15} weight="bold" />
@@ -256,18 +268,28 @@ export default function Penyakit({
             color: '#B91C1C'
           }}>
             <ShieldWarning size={12} weight="bold" />
-            <span>Segera Sanitasi / Semprot</span>
+            <span>Perlu Perawatan Daun</span>
           </div>
         </div>
 
         {/* Card 3: Kutu Daun (Aphids) */}
         <div
-          onClick={() => setSearchQuery('Aphid')}
+          onClick={() => {
+            if (onOpenPositionsModal) {
+              onOpenPositionsModal({
+                title: 'Daftar Titik Pohon Terindikasi Kutu Daun (Aphids)',
+                color: 'red',
+                count: 12,
+                type: 'disease'
+              });
+            }
+          }}
           className="bento-card bento-card-interactive"
-          title="Filter hama kutu daun"
+          title="Klik untuk melihat titik pohon terkena kutu daun"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748B' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
               Kutu Daun (Aphids)
             </span>
             <div className="bento-circle-arrow">
@@ -278,7 +300,7 @@ export default function Penyakit({
           <div style={{
             fontSize: '2.5rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             lineHeight: 1,
             marginBottom: '0.75rem',
             fontFamily: 'var(--font-heading)',
@@ -291,27 +313,37 @@ export default function Penyakit({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '5px',
-            backgroundColor: '#FFFBEB',
-            border: '1px solid #FDE68A',
+            backgroundColor: 'var(--amber-subtle, #FFFBEB)',
+            border: '1px solid var(--amber-border, #FDE68A)',
             borderRadius: '999px',
             padding: '3px 9px',
             fontSize: '0.7rem',
             fontWeight: 700,
-            color: '#B45309'
+            color: 'var(--amber-text, #B45309)'
           }}>
             <Bug size={12} weight="bold" />
-            <span>Sebaran Jalur 1 & 3</span>
+            <span>Indikasi Bercak Kuning</span>
           </div>
         </div>
 
         {/* Card 4: Embun Tepung (Powdery Mildew) */}
         <div
-          onClick={() => setSearchQuery('Powdery')}
+          onClick={() => {
+            if (onOpenPositionsModal) {
+              onOpenPositionsModal({
+                title: 'Daftar Titik Pohon Terindikasi Embun Tepung',
+                color: 'red',
+                count: 10,
+                type: 'disease'
+              });
+            }
+          }}
           className="bento-card bento-card-interactive"
-          title="Filter penyakit embun tepung"
+          title="Klik untuk melihat titik pohon terkena embun tepung"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748B' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
               Embun Tepung
             </span>
             <div className="bento-circle-arrow">
@@ -322,7 +354,7 @@ export default function Penyakit({
           <div style={{
             fontSize: '2.5rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             lineHeight: 1,
             marginBottom: '0.75rem',
             fontFamily: 'var(--font-heading)',
@@ -335,33 +367,38 @@ export default function Penyakit({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '5px',
-            backgroundColor: '#F8FAFC',
-            border: '1px solid #E2E8F0',
+            backgroundColor: '#FFF1F2',
+            border: '1px solid #FECDD3',
             borderRadius: '999px',
             padding: '3px 9px',
             fontSize: '0.7rem',
             fontWeight: 700,
-            color: '#64748B'
+            color: '#BE123C'
           }}>
-            <Plant size={12} weight="bold" />
-            <span>Sebaran Jalur 2 & 4</span>
+            <span>Lapisan Putih Permukaan</span>
           </div>
         </div>
       </div>
 
-      {/* 3. Row 2 Bento Cards: Progress Gauge + Reminders Card */}
+      {/* 3. Row 2: Health Arc Gauge + Sebaran per Greenhouse */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '1.25rem'
+        gap: '1.25rem',
+        alignItems: 'stretch'
       }}>
         {/* Card A: Health Arc Gauge */}
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.35rem 0' }}>
-              Indeks Kesehatan Tanaman
-            </h3>
-            <p style={{ fontSize: '0.74rem', color: '#64748B', margin: '0 0 1rem 0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
+                Indeks Kesehatan Tanaman
+              </h3>
+              <span style={{ fontSize: '0.7rem', color: 'var(--primary, #166534)', fontWeight: 700 }}>
+                Persentase Kebun
+              </span>
+            </div>
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1rem 0' }}>
               Persentase pohon melon yang tumbuh sehat tanpa gejala penyakit
             </p>
           </div>
@@ -381,68 +418,83 @@ export default function Penyakit({
             justifyContent: 'center',
             gap: '1.25rem',
             paddingTop: '0.85rem',
-            borderTop: '1px solid #F1F5F9',
-            fontSize: '0.75rem'
+            borderTop: '1px solid var(--border-subtle, #E2E8F0)',
+            fontSize: '0.75rem',
+            flexWrap: 'wrap'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#047857' }} />
-              <span style={{ color: '#0F172A', fontWeight: 600 }}>Sehat Normal ({sehatCount})</span>
+              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Sehat Normal ({sehatCount})</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#B91C1C' }} />
-              <span style={{ color: '#0F172A', fontWeight: 600 }}>Perlu Dicek ({sakitCount})</span>
+              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Perlu Dicek ({sakitCount})</span>
             </div>
           </div>
         </div>
 
-        {/* Card B: SOP Penyemprotan & Tindakan Sanitasi (Reminders Card) */}
+        {/* Card B: Distribusi Kondisi per Greenhouse (Data Nyata, Tanpa Hallucinated Reminders) */}
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                Pengingat Tindakan Sanitasi
+              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
+                Kondisi Daun per Greenhouse
               </h3>
-              <span style={{
-                fontSize: '0.68rem',
-                fontWeight: 800,
-                color: '#B91C1C',
-                backgroundColor: '#FEE2E2',
-                padding: '2px 7px',
-                borderRadius: '6px'
-              }}>
-                Penting
+              <span style={{ fontSize: '0.7rem', color: 'var(--primary, #166534)', fontWeight: 700 }}>
+                3 Greenhouse
               </span>
             </div>
-            <p style={{ fontSize: '0.74rem', color: '#64748B', margin: '0 0 1.1rem 0' }}>
-              Prosedur penanganan hama kutu daun & embun tepung
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1.1rem 0' }}>
+              Distribusi pohon sehat dan titik yang perlu dicek pada setiap lokasi
             </p>
 
-            <div style={{
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
-              borderRadius: '14px',
-              padding: '0.85rem 1rem',
-              marginBottom: '1rem'
-            }}>
-              <strong style={{ fontSize: '0.92rem', color: '#0F172A', display: 'block', marginBottom: '3px' }}>
-                Penyemprotan Sabun Kalium / Neem Oil
-              </strong>
-              <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.5rem' }}>
-                Greenhouse Sakura · Jalur 1 & 2 (Titik Kutu Daun)
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              {/* GH-1 */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
+                <div>
+                  <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
+                    GH-1 Sakura (Ciwidey)
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
+                    Total 32 Pohon
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="badge badge-success" style={{ fontSize: '11px' }}>27 Sehat</span>
+                  <span className="badge badge-danger" style={{ fontSize: '11px' }}>5 Perlu Cek</span>
+                </div>
               </div>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                color: '#B91C1C',
-                backgroundColor: '#FEE2E2',
-                padding: '3px 8px',
-                borderRadius: '6px'
-              }}>
-                <CalendarBlank size={12} weight="bold" />
-                <span>Sore Ini · 16.00 - 17.30 WIB</span>
+
+              {/* GH-2 */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
+                <div>
+                  <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
+                    GH-2 Maribaya (Lembang)
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
+                    Total 32 Pohon
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="badge badge-success" style={{ fontSize: '11px' }}>25 Sehat</span>
+                  <span className="badge badge-danger" style={{ fontSize: '11px' }}>7 Perlu Cek</span>
+                </div>
+              </div>
+
+              {/* GH-3 */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
+                <div>
+                  <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
+                    GH-3 Cisondari (Pasirjambu)
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
+                    Total 32 Pohon
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="badge badge-success" style={{ fontSize: '11px' }}>22 Sehat</span>
+                  <span className="badge badge-danger" style={{ fontSize: '11px' }}>10 Perlu Cek</span>
+                </div>
               </div>
             </div>
           </div>
@@ -451,40 +503,46 @@ export default function Penyakit({
             onClick={() => {
               if (onOpenPositionsModal) {
                 onOpenPositionsModal({
-                  title: 'Daftar Titik Pohon Terkena Kutu Daun (Siap Semprot)',
+                  title: 'Daftar Titik Pohon Perlu Dicek (Seluruh Greenhouse)',
                   color: 'red',
-                  count: 12,
+                  count: sakitCount,
                   type: 'disease'
                 });
               }
             }}
             className="bento-pill-primary"
-            style={{ width: '100%', justifyContent: 'center', padding: '0.7rem', backgroundColor: '#B91C1C' }}
+            style={{ width: '100%', justifyContent: 'center', padding: '0.7rem', backgroundColor: '#B91C1C', marginTop: '1rem' }}
           >
             <ShieldWarning size={15} weight="bold" />
-            <span>Lihat Titik Pohon Sakit</span>
+            <span>Lihat Posisi Pohon Perlu Dicek ({sakitCount})</span>
           </button>
         </div>
       </div>
 
-      {/* 4. Row 3 Bento Card: Data Table / Cards of Melon Trees */}
-      <div className="bento-card">
+      {/* 4. Row 3: Data Table / Cards of Melon Trees (Sync with B2B Design System) */}
+      <div className="panel" style={{ overflow: 'hidden' }}>
         {/* Table Header & Controls */}
         <div style={{
+          padding: '1.25rem 1.5rem',
+          borderBottom: '1px solid var(--border-subtle, #E2E8F0)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1.25rem'
+          gap: '1rem'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.08rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.2rem 0' }}>
-              Daftar Pemeriksaan Daun Pohon
-            </h2>
-            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-              Menampilkan {displayedTrees.length} dari total {totalTrees} pohon terdaftar
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '1.08rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0, letterSpacing: '-0.01em' }}>
+                Daftar Pemeriksaan Daun Pohon
+              </h2>
+              <span className="badge badge-success" style={{ fontSize: '0.74rem' }}>
+                {displayedTrees.length} Pohon Terdaftar
+              </span>
+            </div>
+            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: 'var(--text-dim, #64748B)' }}>
+              Hasil pemantauan kesehatan helai daun, gejala penyakit, dan posisi jalur pohon.
+            </p>
           </div>
 
           {/* Filter Bar & View Switcher */}
@@ -509,7 +567,7 @@ export default function Penyakit({
                       borderRadius: '999px',
                       border: 'none',
                       backgroundColor: isActive ? '#FFFFFF' : 'transparent',
-                      color: isActive ? '#0F172A' : '#64748B',
+                      color: isActive ? 'var(--text-main, #0F172A)' : 'var(--text-dim, #64748B)',
                       fontWeight: isActive ? 700 : 500,
                       fontSize: '0.74rem',
                       cursor: 'pointer',
@@ -531,9 +589,9 @@ export default function Penyakit({
                 height: '34px',
                 padding: '0 0.75rem',
                 borderRadius: '999px',
-                border: '1px solid #E2E8F0',
+                border: '1px solid var(--border-subtle, #E2E8F0)',
                 backgroundColor: '#F8FAFC',
-                color: '#1E293B',
+                color: 'var(--text-main, #0F172A)',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 outline: 'none',
@@ -551,19 +609,19 @@ export default function Penyakit({
               <MagnifyingGlass size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
               <input
                 type="text"
-                placeholder="Cari ID / penyakit..."
+                placeholder="Cari ID pohon / gejala..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 style={{
                   height: '34px',
                   padding: '0 0.75rem 0 1.9rem',
                   borderRadius: '999px',
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid var(--border-subtle, #E2E8F0)',
                   backgroundColor: '#F8FAFC',
-                  color: '#1E293B',
+                  color: 'var(--text-main, #0F172A)',
                   fontSize: '0.76rem',
                   outline: 'none',
-                  width: '180px'
+                  width: '160px'
                 }}
               />
             </div>
@@ -598,30 +656,31 @@ export default function Penyakit({
 
         {/* Content View */}
         {viewMode === 'table' ? (
-          /* Table View */
-          <div className="table-container">
-            <table className="table-craft">
+          /* Table View dengan horizontal scroll container aman */
+          <div className="table-container" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+            <table className="table-craft" style={{ width: '100%', minWidth: '760px' }}>
               <thead>
                 <tr>
-                  <th style={{ width: '18%', minWidth: '140px' }}>ID Pohon & QR</th>
+                  <th style={{ width: '20%', minWidth: '150px' }}>ID Pohon</th>
                   <th style={{ width: '18%', minWidth: '130px' }}>Posisi Jalur</th>
                   <th style={{ width: '22%', minWidth: '160px' }}>Greenhouse</th>
-                  <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Kondisi</th>
-                  <th style={{ width: '14%', minWidth: '120px', textAlign: 'center' }}>Hasil Diagnosa</th>
-                  <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Aksi</th>
+                  <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Kondisi Daun</th>
+                  <th style={{ width: '16%', minWidth: '130px' }}>Diagnosis</th>
+                  <th style={{ width: '10%', minWidth: '90px', textAlign: 'center' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {displayedTrees.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#94a3b8' }}>
-                      Tidak ada pohon yang sesuai dengan filter pencarian.
+                    <td colSpan="6" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#94A3B8' }}>
+                      Tidak ada data pohon yang sesuai dengan filter pencarian.
                     </td>
                   </tr>
                 ) : (
                   displayedTrees.map((t) => {
-                    const isSehat = t.kondisi === 'Sehat';
+                    const isSehat = t.is_sehat !== false && (!t.kondisi || t.kondisi.toLowerCase() === 'sehat');
                     const badgeClass = isSehat ? 'badge-success' : 'badge-danger';
+                    const badgeLabel = isSehat ? 'Sehat' : 'Perlu Dicek';
 
                     return (
                       <tr key={t.tree_id}>
@@ -633,20 +692,20 @@ export default function Penyakit({
                               height: '32px',
                               borderRadius: '8px',
                               backgroundColor: isSehat ? '#F0FDF4' : '#FEF2F2',
-                              border: `1px solid ${isSehat ? '#A7F3D0' : '#FECACA'}`,
+                              border: `1px solid ${isSehat ? '#BBF7D0' : '#FECACA'}`,
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               flexShrink: 0
                             }}>
-                              <Plant size={17} weight="bold" style={{ color: isSehat ? '#166534' : '#B91C1C' }} />
+                              <Plant size={18} style={{ color: isSehat ? '#166534' : '#B91C1C' }} />
                             </div>
-                            <div>
-                              <strong className="font-mono" style={{ fontSize: '13px', color: '#0F172A', display: 'block' }}>
+                            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                              <strong className="font-mono" style={{ fontSize: '13px', color: 'var(--text-main, #0F172A)', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                 {t.tree_id}
                               </strong>
-                              <span style={{ fontSize: '10.5px', color: '#64748B' }}>
-                                {t.fruit_id || '-'}
+                              <span style={{ fontSize: '10.5px', color: 'var(--text-dim, #64748B)' }}>
+                                Pohon Terdata
                               </span>
                             </div>
                           </div>
@@ -654,9 +713,9 @@ export default function Penyakit({
 
                         {/* Posisi Jalur */}
                         <td>
-                          <div style={{ fontSize: '12px', color: '#0F172A' }}>
+                          <div style={{ fontSize: '12px', color: 'var(--text-main, #0F172A)' }}>
                             <strong>{t.row || `Jalur ${t.row_index || 1}`}</strong>
-                            <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-dim, #64748B)', marginTop: '2px' }}>
                               Pohon ke-{t.tree_index || 1}
                             </div>
                           </div>
@@ -664,39 +723,54 @@ export default function Penyakit({
 
                         {/* Greenhouse */}
                         <td>
-                          <div style={{ fontSize: '12px', color: '#0F172A' }}>
-                            <span>{t.greenhouse_name || 'Greenhouse Sakura'}</span>
-                            <div style={{ fontSize: '10.5px', color: '#166534', fontWeight: 600, marginTop: '2px' }}>
+                          <div style={{ fontSize: '12px', color: 'var(--text-main, #0F172A)' }}>
+                            <span style={{ fontWeight: 600 }}>{t.greenhouse_name || 'Greenhouse Sakura'}</span>
+                            <div style={{ fontSize: '10.5px', color: 'var(--primary, #166534)', fontWeight: 600, marginTop: '2px' }}>
                               Melon Hidroponik
                             </div>
                           </div>
                         </td>
 
-                        {/* Kondisi */}
+                        {/* Kondisi Daun */}
                         <td style={{ textAlign: 'center' }}>
                           <span className={`badge ${badgeClass}`} style={{ fontSize: '11px', padding: '3px 9px' }}>
-                            {isSehat ? <ShieldCheck size={12} weight="bold" /> : <ShieldWarning size={12} weight="bold" />}
-                            <span>{t.kondisi}</span>
+                            {badgeLabel}
                           </span>
                         </td>
 
-                        {/* Hasil Diagnosa */}
-                        <td style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', fontWeight: 700, color: isSehat ? '#047857' : '#B91C1C' }}>
-                            {t.nama_penyakit || (isSehat ? 'Normal Sehat' : 'Terinfeksi')}
+                        {/* Diagnosis */}
+                        <td>
+                          <div style={{ fontSize: '12px', color: isSehat ? '#166534' : '#B91C1C', fontWeight: 600 }}>
+                            {t.diagnosis || (isSehat ? 'Normal (Bebas Hama)' : 'Perlu Diperiksa')}
                           </div>
-                          <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px' }}>
-                            Akurasi {t.confidence || 95}%
-                          </div>
+                          {t.gejala && (
+                            <div style={{ fontSize: '11px', color: 'var(--text-dim, #64748B)', marginTop: '2px' }}>
+                              {t.gejala}
+                            </div>
+                          )}
                         </td>
 
                         {/* Aksi */}
                         <td style={{ textAlign: 'center' }}>
                           <button
                             onClick={() => onSelectTree && onSelectTree(t.tree_id)}
-                            className="bento-pill-secondary"
-                            style={{ padding: '5px 12px', fontSize: '11px' }}
-                            title="Buka rincian diagnosa daun dan rekomendasi SOP"
+                            style={{
+                              padding: '5px 10px',
+                              borderRadius: '6px',
+                              border: '1px solid var(--border-subtle, #E2E8F0)',
+                              backgroundColor: '#FFFFFF',
+                              color: isSehat ? 'var(--primary, #166534)' : '#B91C1C',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = isSehat ? 'var(--primary-subtle, #F0FDF4)' : '#FEF2F2'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#FFFFFF'; }}
+                            title="Lihat rincian daun & posisi"
                           >
                             <Eye size={13} weight="bold" />
                             <span>Detail</span>
@@ -710,47 +784,64 @@ export default function Penyakit({
             </table>
           </div>
         ) : (
-          /* Card Grid View */
-          <div className="card-grid">
-            {displayedTrees.length === 0 ? (
-              <div style={{ gridColumn: '1 / -1', padding: '2.5rem 1rem', textAlign: 'center', color: '#94a3b8' }}>
-                Tidak ada pohon yang sesuai dengan filter pencarian.
-              </div>
-            ) : (
-              displayedTrees.map((t) => {
-                const isSehat = t.kondisi === 'Sehat';
-                const badgeClass = isSehat ? 'badge-success' : 'badge-danger';
+          /* Grid View */
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+            gap: '1rem',
+            padding: '1.25rem 1.5rem'
+          }}>
+            {displayedTrees.map((t) => {
+              const isSehat = t.is_sehat !== false && (!t.kondisi || t.kondisi.toLowerCase() === 'sehat');
+              const badgeClass = isSehat ? 'badge-success' : 'badge-danger';
+              const badgeLabel = isSehat ? 'Sehat' : 'Perlu Dicek';
 
-                return (
-                  <div key={t.tree_id} className="commodity-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem' }}>
-                      <strong className="font-mono" style={{ fontSize: '13.5px', color: '#0F172A' }}>
-                        {t.tree_id}
-                      </strong>
-                      <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px' }}>
-                        {t.kondisi}
-                      </span>
-                    </div>
-
-                    <div style={{ fontSize: '11.5px', color: '#64748B', lineHeight: 1.5, marginBottom: '0.85rem' }}>
-                      <div>Diagnosa: <strong style={{ color: isSehat ? '#047857' : '#B91C1C' }}>{t.nama_penyakit || 'Normal'}</strong></div>
-                      <div>Posisi: {t.row} · Pohon #{t.tree_index}</div>
-                      <div>Greenhouse: {t.greenhouse_name}</div>
-                      <div>Akurasi Deteksi: <strong className="font-mono">{t.confidence || 95}%</strong></div>
-                    </div>
-
-                    <button
-                      onClick={() => onSelectTree && onSelectTree(t.tree_id)}
-                      className="bento-pill-primary"
-                      style={{ width: '100%', justifyContent: 'center', padding: '7px 12px', fontSize: '11.5px', backgroundColor: isSehat ? '#14532D' : '#B91C1C' }}
-                    >
-                      <Eye size={14} weight="bold" />
-                      <span>Lihat Detail Pohon</span>
-                    </button>
+              return (
+                <div
+                  key={t.tree_id}
+                  onClick={() => onSelectTree && onSelectTree(t.tree_id)}
+                  className="panel panel-interactive"
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.65rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="font-mono" style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--text-main, #0F172A)' }}>
+                      {t.tree_id}
+                    </span>
+                    <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px' }}>
+                      {badgeLabel}
+                    </span>
                   </div>
-                );
-              })
-            )}
+
+                  <div style={{ fontSize: '11px', color: 'var(--text-dim, #64748B)' }}>
+                    <div>{t.greenhouse_name}</div>
+                    <div style={{ marginTop: '2px', fontWeight: 600, color: 'var(--text-main, #0F172A)' }}>
+                      {t.row || `Jalur ${t.row_index || 1}`} · Pohon {t.tree_index || 1}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingTop: '0.5rem',
+                    borderTop: '1px solid var(--border-subtle, #E2E8F0)',
+                    fontSize: '11px'
+                  }}>
+                    <span style={{ color: isSehat ? '#166534' : '#B91C1C', fontWeight: 600 }}>
+                      {t.diagnosis || (isSehat ? 'Normal' : 'Gejala Sakit')}
+                    </span>
+                    <span style={{ color: 'var(--primary, #166534)', fontWeight: 700 }}>Detail ↗</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -1,17 +1,9 @@
 import React from 'react';
-import {
-  MagnifyingGlass,
-  Bell,
-  ChatCircleText,
-  List,
-  Command,
-  ArrowsClockwise
-} from '@phosphor-icons/react';
+import { MagnifyingGlass, List } from '@phosphor-icons/react';
 
 export default function TopHeader({
   searchQuery = '',
   setSearchQuery,
-  onRefresh,
   sidebarOpen,
   setSidebarOpen,
   activeTab
@@ -21,7 +13,7 @@ export default function TopHeader({
       className="dashboard-top-header"
       style={{
         backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #EAEFEA',
+        borderBottom: '1px solid var(--border-subtle, #E2E8F0)',
         padding: '0.75rem 1.5rem',
         display: 'flex',
         alignItems: 'center',
@@ -29,23 +21,26 @@ export default function TopHeader({
         position: 'sticky',
         top: 0,
         zIndex: 40,
-        gap: '1rem'
+        gap: '1rem',
+        minHeight: '58px',
+        boxSizing: 'border-box'
       }}
     >
       {/* Left: Mobile Toggle & Search Pill Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '480px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '520px', minWidth: 0 }}>
         {/* Mobile Hamburger Button */}
         <button
           onClick={() => setSidebarOpen && setSidebarOpen(!sidebarOpen)}
           className="mobile-hamburger-btn"
           style={{
             display: 'none',
-            background: '#F6F8F4',
-            border: '1px solid #DDE5DC',
+            background: 'var(--bg-subtle, #F0F4EF)',
+            border: '1px solid var(--border-subtle, #E2E8F0)',
             borderRadius: '10px',
             padding: '7px',
-            color: '#1B2A22',
-            cursor: 'pointer'
+            color: 'var(--text-main, #0F172A)',
+            cursor: 'pointer',
+            flexShrink: 0
           }}
           aria-label="Toggle Menu"
         >
@@ -57,7 +52,8 @@ export default function TopHeader({
           position: 'relative',
           width: '100%',
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          minWidth: 0
         }}>
           <MagnifyingGlass
             size={16}
@@ -65,33 +61,35 @@ export default function TopHeader({
             style={{
               position: 'absolute',
               left: '14px',
-              color: '#94A3B8'
+              color: 'var(--text-dim, #64748B)',
+              pointerEvents: 'none'
             }}
           />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
-            placeholder="Cari ID buah (MLN-...), pohon, atau greenhouse..."
+            placeholder="Cari ID buah, pohon, atau greenhouse..."
             style={{
               width: '100%',
-              padding: '0.55rem 3.5rem 0.55rem 2.4rem',
+              padding: '0.55rem 3rem 0.55rem 2.4rem',
               backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
+              border: '1px solid var(--border-subtle, #E2E8F0)',
               borderRadius: '9999px',
               fontSize: '0.8rem',
-              color: '#1E293B',
+              color: 'var(--text-main, #0F172A)',
               outline: 'none',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.15s ease',
+              boxSizing: 'border-box'
             }}
             onFocus={(e) => {
               e.target.style.backgroundColor = '#FFFFFF';
-              e.target.style.borderColor = '#166534';
+              e.target.style.borderColor = 'var(--primary, #166534)';
               e.target.style.boxShadow = '0 0 0 3px rgba(22, 101, 52, 0.1)';
             }}
             onBlur={(e) => {
               e.target.style.backgroundColor = '#F8FAFC';
-              e.target.style.borderColor = '#E2E8F0';
+              e.target.style.borderColor = 'var(--border-subtle, #E2E8F0)';
               e.target.style.boxShadow = 'none';
             }}
           />
@@ -100,14 +98,13 @@ export default function TopHeader({
             right: '10px',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '2px',
             backgroundColor: '#EDF2EC',
             border: '1px solid #DDE5DC',
             borderRadius: '6px',
-            padding: '2px 5px',
-            fontSize: '9px',
+            padding: '2px 6px',
+            fontSize: '10px',
             fontWeight: 700,
-            color: '#64748B',
+            color: 'var(--text-dim, #64748B)',
             pointerEvents: 'none'
           }}>
             <span>/</span>
@@ -115,100 +112,22 @@ export default function TopHeader({
         </div>
       </div>
 
-      {/* Right: Actions, Notifications, & User Profile Chip */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        {/* Refresh Button */}
-        {onRefresh && (
-          <button
-            onClick={onRefresh}
-            title="Segarkan Data Real-Time"
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
-              color: '#64748B',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = '#166534'; e.currentTarget.style.backgroundColor = '#F0FDF4'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = '#64748B'; e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
-          >
-            <ArrowsClockwise size={16} weight="bold" />
-          </button>
-        )}
-
-        {/* Notifications Button */}
-        <div style={{ position: 'relative' }}>
-          <button
-            title="Pemberitahuan Kebun"
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
-              color: '#64748B',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <Bell size={16} />
-          </button>
-          {/* Active Red Dot */}
-          <span style={{
-            position: 'absolute',
-            top: '2px',
-            right: '2px',
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#EF4444',
-            border: '1.5px solid #FFFFFF'
-          }} />
-        </div>
-
-        {/* User Profile Chip (Donezo Style) */}
+      {/* Right: Clean Greenhouse Live Indicator (Tanpa akun, refresh, atau notifikasi) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
         <div style={{
-          display: 'flex',
+          display: 'inline-flex',
           alignItems: 'center',
-          gap: '0.65rem',
-          padding: '3px 10px 3px 4px',
+          gap: '6px',
+          padding: '4px 10px',
           borderRadius: '9999px',
-          backgroundColor: '#F8FAFC',
-          border: '1px solid #E2E8F0'
+          backgroundColor: '#F0FDF4',
+          border: '1px solid #BBF7D0',
+          fontSize: '0.74rem',
+          fontWeight: 700,
+          color: '#166534'
         }}>
-          {/* Avatar circle */}
-          <div style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            backgroundColor: '#166534',
-            color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '12px',
-            fontWeight: 800,
-            boxShadow: '0 2px 6px rgba(22, 101, 52, 0.2)'
-          }}>
-            AS
-          </div>
-          <div className="user-profile-text" style={{ lineHeight: 1.2 }}>
-            <strong style={{ fontSize: '12px', color: '#0F172A', display: 'block' }}>
-              Kang Asep
-            </strong>
-            <span style={{ fontSize: '10.5px', color: '#64748B' }}>
-              Kepala Kebun Ciwidey
-            </span>
-          </div>
+          <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A' }} />
+          <span>3 Greenhouse Terhubung</span>
         </div>
       </div>
     </header>

@@ -6,17 +6,11 @@ import {
   Clock,
   Eye,
   MapPin,
-  ChartBar,
   ArrowUpRight,
-  CalendarBlank,
-  Users,
   VideoCamera,
   QrCode,
   Table as TableIcon,
-  SquaresFour,
-  Check,
-  Robot,
-  Play
+  SquaresFour
 } from '@phosphor-icons/react';
 
 import QrThumbnail from '../components/QrThumbnail.jsx';
@@ -69,14 +63,8 @@ export default function Kematangan({
     loadData();
   }, [ghFilter, ripenessFilter]);
 
-  const handleSearchSubmit = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    loadData();
-  };
-
   const handleOpenPositions = (catKey) => {
     if (!summaryReport || !summaryReport[catKey]) {
-      // Fallback
       onOpenPositionsModal({
         title: `Posisi Pohon: Buah ${catKey === 'matang' ? 'Matang' : catKey === 'mengkal' ? 'Mengkal' : 'Mentah'}`,
         color: catKey === 'matang' ? 'green' : catKey === 'mengkal' ? 'yellow' : 'gray',
@@ -118,7 +106,7 @@ export default function Kematangan({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-      {/* 1. Header Bar: Title + Subtitle + Action Pills (Donezo Vibe) */}
+      {/* 1. Header Bar: Title + Subtitle + Action Pills */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -126,11 +114,11 @@ export default function Kematangan({
         flexWrap: 'wrap',
         gap: '1rem'
       }}>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <h1 style={{
             fontSize: '1.55rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             margin: '0 0 0.25rem 0',
             letterSpacing: '-0.025em',
             fontFamily: 'var(--font-heading)'
@@ -139,23 +127,23 @@ export default function Kematangan({
           </h1>
           <p style={{
             fontSize: '0.82rem',
-            color: '#64748B',
+            color: 'var(--text-dim, #64748B)',
             margin: 0,
             lineHeight: 1.4
           }}>
-            Pantau tingkat kematangan buah melon, rawat tanaman, dan panen tepat waktu.
+            Pantau kematangan buah melon di pohon pada seluruh greenhouse hidroponik.
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => onNavigateTab && onNavigateTab('simulator')}
             className="bento-pill-primary"
-            title="Buka kamera vision AI"
+            title="Buka kamera untuk memeriksa kondisi buah"
           >
             <VideoCamera size={16} weight="bold" />
-            <span>+ Uji Kamera AI</span>
+            <span>+ Uji Kamera</span>
           </button>
           <button
             onClick={() => handleOpenPositions('matang')}
@@ -171,7 +159,7 @@ export default function Kematangan({
       {/* 2. Top Row: 4 Bento Stat Cards (Hero Highlight Card in Dark Forest Green) */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: '1.25rem'
       }}>
         {/* Card 1: HERO HIGHLIGHT CARD (Deep Green #14532D) */}
@@ -179,6 +167,7 @@ export default function Kematangan({
           onClick={() => handleOpenPositions('matang')}
           className="bento-card bento-hero-green bento-card-interactive"
           title="Klik untuk melihat sebaran posisi pohon buah matang"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
             <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#E2E8F0' }}>
@@ -221,9 +210,10 @@ export default function Kematangan({
           onClick={() => handleOpenPositions('mengkal')}
           className="bento-card bento-card-interactive"
           title="Klik untuk melihat posisi pohon buah mengkal"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748B' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
               Fase Mengkal
             </span>
             <div className="bento-circle-arrow">
@@ -234,7 +224,7 @@ export default function Kematangan({
           <div style={{
             fontSize: '2.5rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             lineHeight: 1,
             marginBottom: '0.75rem',
             fontFamily: 'var(--font-heading)',
@@ -247,13 +237,13 @@ export default function Kematangan({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '5px',
-            backgroundColor: '#FFFBEB',
-            border: '1px solid #FDE68A',
+            backgroundColor: 'var(--amber-subtle, #FFFBEB)',
+            border: '1px solid var(--amber-border, #FDE68A)',
             borderRadius: '999px',
             padding: '3px 9px',
             fontSize: '0.7rem',
             fontWeight: 700,
-            color: '#B45309'
+            color: 'var(--amber-text, #B45309)'
           }}>
             <Clock size={12} weight="bold" />
             <span>Panen 2 - 4 Hari Lagi</span>
@@ -265,9 +255,10 @@ export default function Kematangan({
           onClick={() => handleOpenPositions('mentah')}
           className="bento-card bento-card-interactive"
           title="Klik untuk melihat posisi pohon buah mentah"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748B' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
               Fase Mentah
             </span>
             <div className="bento-circle-arrow">
@@ -278,7 +269,7 @@ export default function Kematangan({
           <div style={{
             fontSize: '2.5rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             lineHeight: 1,
             marginBottom: '0.75rem',
             fontFamily: 'var(--font-heading)',
@@ -292,12 +283,12 @@ export default function Kematangan({
             alignItems: 'center',
             gap: '5px',
             backgroundColor: '#F8FAFC',
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--border-subtle, #E2E8F0)',
             borderRadius: '999px',
             padding: '3px 9px',
             fontSize: '0.7rem',
             fontWeight: 700,
-            color: '#64748B'
+            color: 'var(--text-dim, #64748B)'
           }}>
             <span>Pembesaran (5-8 Hari)</span>
           </div>
@@ -308,9 +299,10 @@ export default function Kematangan({
           onClick={() => onNavigateTab && onNavigateTab('penyakit')}
           className="bento-card bento-card-interactive"
           title="Beralih ke halaman Kesehatan Daun"
+          style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748B' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
               Kesehatan Tanaman
             </span>
             <div className="bento-circle-arrow">
@@ -321,7 +313,7 @@ export default function Kematangan({
           <div style={{
             fontSize: '2.5rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-main, #0F172A)',
             lineHeight: 1,
             marginBottom: '0.75rem',
             fontFamily: 'var(--font-heading)',
@@ -348,7 +340,7 @@ export default function Kematangan({
         </div>
       </div>
 
-      {/* 3. Row 2 Bento Cards: Analytics (Capsule Bar) + Reminders Card + ROKAE Robot Vision */}
+      {/* 3. Row 2: Balanced Analytics & Readiness Cards (Tanpa jadwal & robot teknis) */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
@@ -359,15 +351,15 @@ export default function Kematangan({
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
                 Analitik Pemantauan Kematangan
               </h3>
-              <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700 }}>
-                Minggu Ini
+              <span style={{ fontSize: '0.7rem', color: 'var(--primary, #166534)', fontWeight: 700 }}>
+                Aktivitas Mingguan
               </span>
             </div>
-            <p style={{ fontSize: '0.74rem', color: '#64748B', margin: '0 0 1.25rem 0' }}>
-              Aktivitas pemindaian buah per hari di kebun hidroponik
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1.25rem 0' }}>
+              Jumlah pemantauan kondisi buah per hari di seluruh greenhouse
             </p>
           </div>
 
@@ -380,182 +372,31 @@ export default function Kematangan({
             justifyContent: 'space-between',
             paddingTop: '0.85rem',
             marginTop: '0.85rem',
-            borderTop: '1px solid #F1F5F9',
-            fontSize: '0.72rem',
-            color: '#64748B'
+            borderTop: '1px solid var(--border-subtle, #E2E8F0)',
+            fontSize: '0.74rem',
+            color: 'var(--text-muted, #475569)',
+            flexWrap: 'wrap',
+            gap: '0.5rem'
           }}>
-            <span>Sakura: <strong>11 Matang</strong></span>
-            <span>Maribaya: <strong>10 Matang</strong></span>
-            <span>Cisondari: <strong>7 Matang</strong></span>
+            <span>Sakura: <strong style={{ color: 'var(--text-main, #0F172A)' }}>11 Matang</strong></span>
+            <span>Maribaya: <strong style={{ color: 'var(--text-main, #0F172A)' }}>10 Matang</strong></span>
+            <span>Cisondari: <strong style={{ color: 'var(--text-main, #0F172A)' }}>7 Matang</strong></span>
           </div>
         </div>
 
-        {/* Card B: Reminders / Quick Action Card (Donezo Style) */}
+        {/* Card B: Kesiapan Panen Kebun (Semi-Circular Arc Gauge) */}
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                Jadwal & Tindakan Panen
+              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
+                Kesiapan Panen Kebun
               </h3>
-              <span style={{
-                fontSize: '0.68rem',
-                fontWeight: 800,
-                color: '#166534',
-                backgroundColor: '#DCFCE7',
-                padding: '2px 7px',
-                borderRadius: '6px'
-              }}>
-                Prioritas
+              <span style={{ fontSize: '0.7rem', color: 'var(--primary, #166534)', fontWeight: 700 }}>
+                Rasio Panen
               </span>
             </div>
-            <p style={{ fontSize: '0.74rem', color: '#64748B', margin: '0 0 1.1rem 0' }}>
-              Tugas terdekat yang memerlukan tindakan langsung
-            </p>
-
-            {/* Task Item Box */}
-            <div style={{
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
-              borderRadius: '14px',
-              padding: '0.85rem 1rem',
-              marginBottom: '1rem'
-            }}>
-              <strong style={{ fontSize: '0.92rem', color: '#0F172A', display: 'block', marginBottom: '3px' }}>
-                Panen Buah Matang Ciwidey
-              </strong>
-              <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.5rem' }}>
-                Greenhouse Sakura · Target 11 Buah Siap Petik
-              </div>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                color: '#166534',
-                backgroundColor: '#DCFCE7',
-                padding: '3px 8px',
-                borderRadius: '6px'
-              }}>
-                <CalendarBlank size={12} weight="bold" />
-                <span>Hari Ini · 08.00 - 11.00 WIB</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => handleOpenPositions('matang')}
-            className="bento-pill-primary"
-            style={{ width: '100%', justifyContent: 'center', padding: '0.7rem' }}
-          >
-            <Plant size={15} weight="bold" />
-            <span>Mulai Cek Pohon Matang</span>
-          </button>
-        </div>
-
-        {/* Card C: ROKAE Robot Vision (Time Tracker Style in Deep Forest Green) */}
-        <div style={{
-          borderRadius: '20px',
-          background: 'radial-gradient(circle at 80% 20%, #15803d 0%, #14532d 60%, #064e3b 100%)',
-          color: '#FFFFFF',
-          padding: '1.35rem',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          boxShadow: '0 8px 24px -2px rgba(20, 83, 45, 0.35)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          {/* Subtle Ambient Ring */}
-          <div style={{
-            position: 'absolute',
-            top: -40,
-            right: -40,
-            width: '140px',
-            height: '140px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(134, 239, 172, 0.25) 0%, transparent 70%)',
-            pointerEvents: 'none'
-          }} />
-
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#86EFAC', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                ROKAE Telemetry
-              </span>
-              <span style={{
-                fontSize: '0.65rem',
-                fontWeight: 800,
-                backgroundColor: '#22C55E',
-                color: '#064E3B',
-                padding: '2px 7px',
-                borderRadius: '999px'
-              }}>
-                ACTIVE
-              </span>
-            </div>
-
-            <div style={{ fontSize: '0.78rem', color: '#A7F3D0', marginBottom: '0.2rem' }}>
-              Modbus Vision (Flange Camera)
-            </div>
-
-            <div style={{
-              fontSize: '1.75rem',
-              fontWeight: 800,
-              fontFamily: 'var(--font-mono)',
-              letterSpacing: '-0.02em',
-              marginBottom: '0.5rem',
-              color: '#FFFFFF'
-            }}>
-              192.168.2.160
-            </div>
-
-            <p style={{ fontSize: '0.72rem', color: '#D1FAE5', margin: 0, lineHeight: 1.4 }}>
-              Register Datacam 67 · ROKAE XMS5-R800 siap untuk inspeksi otomatis.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem' }}>
-            <button
-              onClick={() => onNavigateTab && onNavigateTab('simulator')}
-              style={{
-                flex: 1,
-                padding: '0.6rem 0.85rem',
-                borderRadius: '999px',
-                backgroundColor: '#FFFFFF',
-                color: '#14532D',
-                border: 'none',
-                fontWeight: 800,
-                fontSize: '0.76rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '5px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-              }}
-            >
-              <VideoCamera size={14} weight="bold" />
-              <span>Buka Kamera AI</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Row 3 Bento Cards: Project Progress Arc Gauge + Team Collaboration */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '1.25rem'
-      }}>
-        {/* Card D: Progress Arc Gauge */}
-        <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.35rem 0' }}>
-              Kesiapan Panen Kebun
-            </h3>
-            <p style={{ fontSize: '0.74rem', color: '#64748B', margin: '0 0 1rem 0' }}>
-              Rasio buah matang & mengkal terhadap target panen
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1rem 0' }}>
+              Perbandingan buah matang dan mengkal terhadap kapasitas panen saat ini
             </p>
           </div>
 
@@ -563,7 +404,7 @@ export default function Kematangan({
             percentage={86}
             label="Kesiapan Panen"
             sublabel="Panen mingguan berjalan optimal"
-            color="#166534"
+            color="var(--primary, #166534)"
             trackColor="#E2E8F0"
           />
 
@@ -574,128 +415,50 @@ export default function Kematangan({
             justifyContent: 'center',
             gap: '1.25rem',
             paddingTop: '0.85rem',
-            borderTop: '1px solid #F1F5F9',
+            borderTop: '1px solid var(--border-subtle, #E2E8F0)',
             fontSize: '0.75rem',
             flexWrap: 'wrap'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#166534' }} />
-              <span style={{ color: '#0F172A', fontWeight: 600 }}>Matang ({matangCount})</span>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary, #166534)' }} />
+              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Matang ({matangCount})</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#B45309' }} />
-              <span style={{ color: '#0F172A', fontWeight: 600 }}>Mengkal ({mengkalCount})</span>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-melon, #F59E0B)' }} />
+              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Mengkal ({mengkalCount})</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#64748B' }} />
-              <span style={{ color: '#0F172A', fontWeight: 600 }}>Mentah ({mentahCount})</span>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--text-dim, #64748B)' }} />
+              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Mentah ({mentahCount})</span>
             </div>
-          </div>
-        </div>
-
-        {/* Card E: Tim Pengelola Greenhouse (Donezo Team Collaboration Vibe) */}
-        <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                Pengelola Greenhouse
-              </h3>
-              <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700 }}>
-                3 Lokasi Aktif
-              </span>
-            </div>
-            <p style={{ fontSize: '0.74rem', color: '#64748B', margin: '0 0 1rem 0' }}>
-              Agronomis penanggung jawab tiap unit greenhouse
-            </p>
-
-            {/* List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {/* Member 1 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #F1F5F9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <div style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem' }}>
-                    KA
-                  </div>
-                  <div>
-                    <strong style={{ fontSize: '0.82rem', color: '#0F172A', display: 'block' }}>
-                      Kang Asep Supriatna
-                    </strong>
-                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>
-                      GH Sakura (Ciwidey) · Kepala Kebun
-                    </span>
-                  </div>
-                </div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#166534', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '999px', border: '1px solid #A7F3D0' }}>
-                  Aktif
-                </span>
-              </div>
-
-              {/* Member 2 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #F1F5F9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <div style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#FEF3C7', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem' }}>
-                    BH
-                  </div>
-                  <div>
-                    <strong style={{ fontSize: '0.82rem', color: '#0F172A', display: 'block' }}>
-                      Pak Budi Hartono
-                    </strong>
-                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>
-                      GH Maribaya (Lembang) · Agronomis
-                    </span>
-                  </div>
-                </div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#166534', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '999px', border: '1px solid #A7F3D0' }}>
-                  Aktif
-                </span>
-              </div>
-
-              {/* Member 3 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #F1F5F9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <div style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#E0E7FF', color: '#4338CA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem' }}>
-                    RM
-                  </div>
-                  <div>
-                    <strong style={{ fontSize: '0.82rem', color: '#0F172A', display: 'block' }}>
-                      Ibu Rina Marlina
-                    </strong>
-                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>
-                      GH Cisondari (Pasirjambu) · Manajer Kebun
-                    </span>
-                  </div>
-                </div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#166534', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '999px', border: '1px solid #A7F3D0' }}>
-                  Aktif
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ fontSize: '0.7rem', color: '#94A3B8', textAlign: 'center', marginTop: '0.75rem' }}>
-            Kontak darurat & WhatsApp terhubung otomatis ke sistem
           </div>
         </div>
       </div>
 
-      {/* 5. Row 4 Bento Card: Data Table / Cards of Melon Fruits */}
-      <div className="bento-card">
+      {/* 4. Row 3: Data Table / Cards of Melon Fruits (Synchronized with B2B Design System) */}
+      <div className="panel" style={{ overflow: 'hidden' }}>
         {/* Table Header & Controls */}
         <div style={{
+          padding: '1.25rem 1.5rem',
+          borderBottom: '1px solid var(--border-subtle, #E2E8F0)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1.25rem'
+          gap: '1rem'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.08rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.2rem 0' }}>
-              Daftar Buah Melon di Pohon
-            </h2>
-            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-              Menampilkan {displayedFruits.length} dari total {totalFruits} buah terdata
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '1.08rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0, letterSpacing: '-0.01em' }}>
+                Daftar Buah Melon di Pohon
+              </h2>
+              <span className="badge badge-success" style={{ fontSize: '0.74rem' }}>
+                {displayedFruits.length} Buah Terdata
+              </span>
+            </div>
+            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: 'var(--text-dim, #64748B)' }}>
+              Hasil pemantauan posisi buah, tingkat kematangan, dan umur tanam.
+            </p>
           </div>
 
           {/* Filter Bar & View Switcher */}
@@ -720,7 +483,7 @@ export default function Kematangan({
                       borderRadius: '999px',
                       border: 'none',
                       backgroundColor: isActive ? '#FFFFFF' : 'transparent',
-                      color: isActive ? '#166534' : '#64748B',
+                      color: isActive ? 'var(--primary, #166534)' : 'var(--text-dim, #64748B)',
                       fontWeight: isActive ? 700 : 500,
                       fontSize: '0.74rem',
                       cursor: 'pointer',
@@ -742,9 +505,9 @@ export default function Kematangan({
                 height: '34px',
                 padding: '0 0.75rem',
                 borderRadius: '999px',
-                border: '1px solid #E2E8F0',
+                border: '1px solid var(--border-subtle, #E2E8F0)',
                 backgroundColor: '#F8FAFC',
-                color: '#1E293B',
+                color: 'var(--text-main, #0F172A)',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 outline: 'none',
@@ -769,12 +532,12 @@ export default function Kematangan({
                   height: '34px',
                   padding: '0 0.75rem 0 1.9rem',
                   borderRadius: '999px',
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid var(--border-subtle, #E2E8F0)',
                   backgroundColor: '#F8FAFC',
-                  color: '#1E293B',
+                  color: 'var(--text-main, #0F172A)',
                   fontSize: '0.76rem',
                   outline: 'none',
-                  width: '180px'
+                  width: '160px'
                 }}
               />
             </div>
@@ -809,24 +572,24 @@ export default function Kematangan({
 
         {/* Content View */}
         {viewMode === 'table' ? (
-          /* Table View */
-          <div className="table-container">
-            <table className="table-craft">
+          /* Table View dengan horizontal scroll container aman */
+          <div className="table-container" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+            <table className="table-craft" style={{ width: '100%', minWidth: '760px' }}>
               <thead>
                 <tr>
-                  <th style={{ width: '18%', minWidth: '140px' }}>ID Buah & QR</th>
-                  <th style={{ width: '18%', minWidth: '140px' }}>Pohon & Posisi</th>
-                  <th style={{ width: '22%', minWidth: '160px' }}>Greenhouse</th>
+                  <th style={{ width: '22%', minWidth: '150px' }}>ID Buah & QR</th>
+                  <th style={{ width: '20%', minWidth: '140px' }}>Pohon & Posisi</th>
+                  <th style={{ width: '24%', minWidth: '170px' }}>Greenhouse</th>
                   <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Kematangan</th>
-                  <th style={{ width: '14%', minWidth: '100px', textAlign: 'center' }}>Umur Buah</th>
-                  <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Aksi</th>
+                  <th style={{ width: '10%', minWidth: '90px', textAlign: 'center' }}>Umur</th>
+                  <th style={{ width: '10%', minWidth: '90px', textAlign: 'center' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {displayedFruits.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#94a3b8' }}>
-                      Tidak ada buah melon yang sesuai dengan filter pencarian.
+                    <td colSpan="6" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#94A3B8' }}>
+                      Tidak ada buah melon yang sesuai dengan kriteria pencarian.
                     </td>
                   </tr>
                 ) : (
@@ -846,19 +609,19 @@ export default function Kematangan({
                               height: '32px',
                               borderRadius: '8px',
                               backgroundColor: '#F8FAFC',
-                              border: '1px solid #E2E8F0',
+                              border: '1px solid var(--border-subtle, #E2E8F0)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               flexShrink: 0
                             }}>
-                              <QrCode size={18} style={{ color: '#166534' }} />
+                              <QrCode size={18} style={{ color: 'var(--primary, #166534)' }} />
                             </div>
-                            <div>
-                              <strong className="font-mono" style={{ fontSize: '13px', color: '#0F172A', display: 'block' }}>
+                            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                              <strong className="font-mono" style={{ fontSize: '13px', color: 'var(--text-main, #0F172A)', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                 {f.fruit_id}
                               </strong>
-                              <span style={{ fontSize: '10.5px', color: '#64748B' }}>
+                              <span style={{ fontSize: '10.5px', color: 'var(--text-dim, #64748B)' }}>
                                 QR Aktif
                               </span>
                             </div>
@@ -867,9 +630,9 @@ export default function Kematangan({
 
                         {/* Pohon & Posisi */}
                         <td>
-                          <div style={{ fontSize: '12px', color: '#0F172A' }}>
-                            <strong>{f.tree_id || '-'}</strong>
-                            <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                          <div style={{ fontSize: '12px', color: 'var(--text-main, #0F172A)' }}>
+                            <strong className="font-mono">{f.tree_id || '-'}</strong>
+                            <div style={{ fontSize: '11px', color: 'var(--text-dim, #64748B)', marginTop: '2px' }}>
                               {f.row || `Jalur ${f.row_index || 1}`} · Pohon {f.tree_index || 1}
                             </div>
                           </div>
@@ -877,9 +640,9 @@ export default function Kematangan({
 
                         {/* Greenhouse */}
                         <td>
-                          <div style={{ fontSize: '12px', color: '#0F172A' }}>
-                            <span>{f.greenhouse_name || 'Greenhouse Sakura'}</span>
-                            <div style={{ fontSize: '10.5px', color: '#166534', fontWeight: 600, marginTop: '2px' }}>
+                          <div style={{ fontSize: '12px', color: 'var(--text-main, #0F172A)' }}>
+                            <span style={{ fontWeight: 600 }}>{f.greenhouse_name || 'Greenhouse Sakura'}</span>
+                            <div style={{ fontSize: '10.5px', color: 'var(--primary, #166534)', fontWeight: 600, marginTop: '2px' }}>
                               Melon Hidroponik
                             </div>
                           </div>
@@ -888,29 +651,38 @@ export default function Kematangan({
                         {/* Kematangan */}
                         <td style={{ textAlign: 'center' }}>
                           <span className={`badge ${badgeClass}`} style={{ fontSize: '11px', padding: '3px 9px' }}>
-                            {isMatang && <CheckCircle size={12} weight="bold" />}
-                            {isMengkal && <Clock size={12} weight="bold" />}
-                            <span>{badgeLabel}</span>
+                            {badgeLabel}
                           </span>
                         </td>
 
                         {/* Umur Buah */}
                         <td style={{ textAlign: 'center' }}>
-                          <span className="font-mono" style={{ fontSize: '12.5px', fontWeight: 700, color: '#0F172A' }}>
-                            {f.age_days} hari
+                          <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-main, #0F172A)' }}>
+                            {f.age_days || 96} hari
                           </span>
-                          <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px' }}>
-                            {isMatang ? 'Siap Petik' : (isMengkal ? '2–4 Hari Lagi' : '5–8 Hari Lagi')}
-                          </div>
                         </td>
 
                         {/* Aksi */}
                         <td style={{ textAlign: 'center' }}>
                           <button
                             onClick={() => onSelectFruit && onSelectFruit(f.fruit_id)}
-                            className="bento-pill-secondary"
-                            style={{ padding: '5px 12px', fontSize: '11px' }}
-                            title="Buka rincian buah dan citra multi-sudut"
+                            style={{
+                              padding: '5px 10px',
+                              borderRadius: '6px',
+                              border: '1px solid var(--border-subtle, #E2E8F0)',
+                              backgroundColor: '#FFFFFF',
+                              color: 'var(--primary, #166534)',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--primary-subtle, #F0FDF4)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#FFFFFF'; }}
+                            title="Lihat rincian foto & posisi"
                           >
                             <Eye size={13} weight="bold" />
                             <span>Detail</span>
@@ -924,49 +696,63 @@ export default function Kematangan({
             </table>
           </div>
         ) : (
-          /* Card Grid View (Mobile First & Modern) */
-          <div className="card-grid">
-            {displayedFruits.length === 0 ? (
-              <div style={{ gridColumn: '1 / -1', padding: '2.5rem 1rem', textAlign: 'center', color: '#94a3b8' }}>
-                Tidak ada buah melon yang sesuai dengan filter pencarian.
-              </div>
-            ) : (
-              displayedFruits.map((f) => {
-                const isMatang = f.tingkat_kematangan === 'matang';
-                const isMengkal = f.tingkat_kematangan === 'mengkal';
-                const badgeClass = isMatang ? 'badge-success' : (isMengkal ? 'badge-warning' : 'badge-neutral');
-                const badgeLabel = isMatang ? 'Matang' : (isMengkal ? 'Mengkal' : 'Mentah');
+          /* Grid View */
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+            gap: '1rem',
+            padding: '1.25rem 1.5rem'
+          }}>
+            {displayedFruits.map((f) => {
+              const isMatang = f.tingkat_kematangan === 'matang';
+              const isMengkal = f.tingkat_kematangan === 'mengkal';
+              const badgeClass = isMatang ? 'badge-success' : (isMengkal ? 'badge-warning' : 'badge-neutral');
+              const badgeLabel = isMatang ? 'Matang' : (isMengkal ? 'Mengkal' : 'Mentah');
 
-                return (
-                  <div key={f.fruit_id} className="commodity-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem' }}>
-                      <strong className="font-mono" style={{ fontSize: '13.5px', color: '#0F172A' }}>
-                        {f.fruit_id}
-                      </strong>
-                      <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px' }}>
-                        {badgeLabel}
-                      </span>
-                    </div>
-
-                    <div style={{ fontSize: '11.5px', color: '#64748B', lineHeight: 1.5, marginBottom: '0.85rem' }}>
-                      <div>Pohon: <strong style={{ color: '#0F172A' }}>{f.tree_id}</strong></div>
-                      <div>Posisi: {f.row} · Pohon #{f.tree_index}</div>
-                      <div>Greenhouse: {f.greenhouse_name}</div>
-                      <div>Umur: <strong className="font-mono">{f.age_days} hari</strong> ({isMatang ? 'Siap Petik' : (isMengkal ? '2–4 Hari' : '5–8 Hari')})</div>
-                    </div>
-
-                    <button
-                      onClick={() => onSelectFruit && onSelectFruit(f.fruit_id)}
-                      className="bento-pill-primary"
-                      style={{ width: '100%', justifyContent: 'center', padding: '7px 12px', fontSize: '11.5px' }}
-                    >
-                      <Eye size={14} weight="bold" />
-                      <span>Lihat Detail Buah</span>
-                    </button>
+              return (
+                <div
+                  key={f.fruit_id}
+                  onClick={() => onSelectFruit && onSelectFruit(f.fruit_id)}
+                  className="panel panel-interactive"
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.65rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="font-mono" style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--text-main, #0F172A)' }}>
+                      {f.fruit_id}
+                    </span>
+                    <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px' }}>
+                      {badgeLabel}
+                    </span>
                   </div>
-                );
-              })
-            )}
+
+                  <div style={{ fontSize: '11px', color: 'var(--text-dim, #64748B)' }}>
+                    <div>{f.greenhouse_name}</div>
+                    <div style={{ marginTop: '2px', fontWeight: 600, color: 'var(--text-main, #0F172A)' }}>
+                      {f.tree_id} · {f.row || `Jalur ${f.row_index || 1}`}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingTop: '0.5rem',
+                    borderTop: '1px solid var(--border-subtle, #E2E8F0)',
+                    fontSize: '11px'
+                  }}>
+                    <span style={{ color: 'var(--text-dim, #64748B)' }}>Umur: <strong>{f.age_days || 96} hari</strong></span>
+                    <span style={{ color: 'var(--primary, #166534)', fontWeight: 700 }}>Detail ↗</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

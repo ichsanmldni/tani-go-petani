@@ -545,22 +545,56 @@ export default function Kematangan({
             {/* View Mode Switcher */}
             <div style={{
               display: 'inline-flex',
+              alignItems: 'center',
               backgroundColor: '#F1F5F9',
               padding: '3px',
               borderRadius: '8px',
-              gap: '2px'
+              gap: '2px',
+              border: '1px solid var(--border-subtle, #E2E8F0)'
             }}>
               <button
+                type="button"
                 onClick={() => setViewMode('table')}
                 className={`view-switch-btn ${viewMode === 'table' ? 'active' : 'inactive'}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: viewMode === 'table' ? '#FFFFFF' : 'transparent',
+                  color: viewMode === 'table' ? 'var(--text-main, #0F172A)' : 'var(--text-dim, #64748B)',
+                  boxShadow: viewMode === 'table' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  fontSize: '11.5px',
+                  fontWeight: viewMode === 'table' ? 700 : 500,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
                 title="Tampilan Tabel"
               >
                 <TableIcon size={14} weight="bold" />
                 <span>Tabel</span>
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode('grid')}
                 className={`view-switch-btn ${viewMode === 'grid' ? 'active' : 'inactive'}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: viewMode === 'grid' ? '#FFFFFF' : 'transparent',
+                  color: viewMode === 'grid' ? 'var(--text-main, #0F172A)' : 'var(--text-dim, #64748B)',
+                  boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  fontSize: '11.5px',
+                  fontWeight: viewMode === 'grid' ? 700 : 500,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
                 title="Tampilan Kartu"
               >
                 <SquaresFour size={14} weight="bold" />

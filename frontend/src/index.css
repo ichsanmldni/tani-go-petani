@@ -238,7 +238,38 @@ h1, h2, h3, h4, h5, h6 {
 
 .input-craft:focus {
   border-color: #047857;
-  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.15);
+}
+
+/* View Mode Switcher Pills (Table vs Card) */
+.view-switch-btn {
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.view-switch-btn.active {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  font-weight: 700;
+}
+
+.view-switch-btn.inactive {
+  background-color: transparent !important;
+  color: #64748b !important;
+}
+
+.view-switch-btn.inactive:hover {
+  color: #0f172a !important;
 }
 
 /* Common Badges */

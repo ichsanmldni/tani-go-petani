@@ -48,6 +48,13 @@ export default function Simulator() {
   const [uploadedImgSrc, setUploadedImgSrc] = useState(null);
   const fileUploadRef = useRef(null);
   const [cameraError, setCameraError] = useState(null);
+  const [facingMode, setFacingMode] = useState('environment'); // 'environment' (belakang) atau 'user' (depan)
+  const facingModeRef = useRef('environment');
+
+  useEffect(() => {
+    facingModeRef.current = facingMode;
+  }, [facingMode]);
+
   const [isAutoDetection, setIsAutoDetection] = useState(true);
   const [liveBox, setLiveBox] = useState(null);
   const [liveBoxes, setLiveBoxes] = useState([]);
@@ -72,7 +79,8 @@ export default function Simulator() {
     fetchRokaeStatus();
   }, []);
 
-  const startCamera = async () => {
+  const startCamera = async (targetFacingMode) => {
+    const mode = targetFacingMode || facingMode;
     setCameraError(null);
 
     // Hentikan stream sebelumnya jika ada
@@ -87,23 +95,37 @@ export default function Simulator() {
     let stream = null;
     let lastError = null;
 
-    // Tingkat 1: Coba kamera dengan resolusi ideal
+    // Tingkat 1: Coba kamera dengan facingMode ideal dan resolusi ideal (1280x720)
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: { ideal: mode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
         audio: false
       });
     } catch (err1) {
-      console.warn('Percobaan resolusi ideal gagal, mencoba fallback standar:', err1);
+      console.warn('Percobaan resolusi ideal + facingMode gagal, mencoba fallback facingMode:', err1);
       lastError = err1;
-      // Tingkat 2: Fallback ke kamera default perangkat apa pun
+      // Tingkat 2: Coba dengan facingMode ideal saja tanpa batasan resolusi
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: { facingMode: { ideal: mode } },
           audio: false
         });
       } catch (err2) {
+        console.warn('Percobaan facingMode gagal, mencoba fallback kamera default apa pun:', err2);
         lastError = err2;
+        // Tingkat 3: Fallback ke kamera default perangkat apa pun
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+        } catch (err3) {
+          lastError = err3;
+        }
       }
     }
 
@@ -126,6 +148,15 @@ export default function Simulator() {
       }
       setCameraError(userMsg);
       setIsCameraActive(false);
+    }
+  };
+
+  const switchCamera = async () => {
+    const nextMode = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(nextMode);
+    facingModeRef.current = nextMode;
+    if (isCameraActive && !isUploadedImage) {
+      await startCamera(nextMode);
     }
   };
 
@@ -388,7 +419,9 @@ export default function Simulator() {
           }
 
           renderedBoxesRef.current.forEach(box => {
-            const bx = box.norm_x * w;
+            const isMirrored = facingModeRef.current === 'user' && !isUploadedImage;
+            const normX = isMirrored ? Math.max(0, 1 - box.norm_x - box.norm_w) : box.norm_x;
+            const bx = normX * w;
             const by = box.norm_y * h;
             const bw = Math.max(20, box.norm_w * w);
             const bh = Math.max(20, box.norm_h * h);
@@ -985,7 +1018,7 @@ export default function Simulator() {
                   </button>
                 </div>
               ) : (
-                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   {isUploadedImage && (
                     <button
                       type="button"
@@ -1005,6 +1038,30 @@ export default function Simulator() {
                       }}
                     >
                       <UploadSimple size={14} weight="bold" /> Ganti foto
+                    </button>
+                  )}
+                  {!isUploadedImage && (
+                    <button
+                      type="button"
+                      onClick={switchCamera}
+                      title={`Beralih ke kamera ${facingMode === 'user' ? 'belakang' : 'depan'}`}
+                      style={{
+                        padding: '0.35rem 0.75rem',
+                        backgroundColor: '#F6F8F4',
+                        color: '#166534',
+                        border: '1px solid #bbf7d0',
+                        borderRadius: '0.35rem',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <ArrowsClockwise size={14} weight="bold" />
+                      <span>{facingMode === 'user' ? 'Kamera Belakang' : 'Kamera Depan'}</span>
                     </button>
                   )}
                   <button
@@ -1065,9 +1122,42 @@ export default function Simulator() {
                 width: '100%',
                 height: '100%',
                 objectFit: 'contain',
+                transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
+                transition: 'transform 0.25s ease',
                 display: (isCameraActive && !isUploadedImage) ? 'block' : 'none'
               }}
             />
+            {/* Tombol Cepat Switch Kamera di Layar (Mirip Sima) */}
+            {isCameraActive && !isUploadedImage && (
+              <button
+                type="button"
+                onClick={switchCamera}
+                title={`Beralih ke kamera ${facingMode === 'user' ? 'belakang' : 'depan'}`}
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  zIndex: 20,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.45rem 0.75rem',
+                  backgroundColor: 'rgba(15, 23, 42, 0.82)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  borderRadius: '9999px',
+                  backdropFilter: 'blur(8px)',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.35)',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <ArrowsClockwise size={15} weight="bold" />
+                <span>{facingMode === 'user' ? 'Kamera Belakang' : 'Kamera Depan'}</span>
+              </button>
+            )}
             {isUploadedImage && uploadedImgSrc && (
               <img
                 src={uploadedImgSrc}

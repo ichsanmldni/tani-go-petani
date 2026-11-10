@@ -15,6 +15,7 @@ import {
 
 import QrThumbnail from '../components/QrThumbnail.jsx';
 import GaugeArc from '../components/GaugeArc.jsx';
+import DiseaseAnalyticsCard from '../components/DiseaseAnalyticsCard.jsx';
 
 export default function Penyakit({
   greenhouses,
@@ -322,10 +323,13 @@ export default function Penyakit({
             color: 'var(--text-dim, #64748B)'
           }}>
             <Plant size={12} weight="bold" />
-            <span>3 Greenhouse Hidroponik</span>
+            <span>3 Kebun Hidroponik</span>
           </div>
         </div>
       </div>
+
+      {/* 2.5 Deskriptif Analitik AI Kesehatan Daun & Tanaman (OpenAI GPT Nano) */}
+      <DiseaseAnalyticsCard />
 
       {/* 3. Row 2: Health Arc Gauge + Sebaran per Greenhouse */}
       <div style={{
@@ -408,15 +412,15 @@ export default function Penyakit({
           </div>
         </div>
 
-        {/* Card B: Distribusi Kondisi per Greenhouse (Data Nyata, Tanpa Hallucinated Reminders) */}
+        {/* Card B: Distribusi Kondisi per Kebun (Data Nyata, Tanpa Hallucinated Reminders) */}
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
               <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
-                Kondisi Daun per Greenhouse
+                Kondisi Daun per Kebun
               </h3>
               <span style={{ fontSize: '0.7rem', color: 'var(--primary, #166534)', fontWeight: 700 }}>
-                3 Greenhouse
+                3 Kebun
               </span>
             </div>
             <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1.1rem 0' }}>
@@ -424,12 +428,12 @@ export default function Penyakit({
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              {/* Greenhouse Sakura */}
+              {/* Kebun Sakura */}
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                      Greenhouse Sakura (Ciwidey)
+                      Kebun Sakura (Ciwidey)
                     </strong>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
                       Total 32 Pohon
@@ -445,12 +449,12 @@ export default function Penyakit({
                 </div>
               </div>
 
-              {/* Greenhouse Maribaya */}
+              {/* Kebun Maribaya */}
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                      Greenhouse Maribaya (Lembang)
+                      Kebun Maribaya (Lembang)
                     </strong>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
                       Total 32 Pohon
@@ -466,12 +470,12 @@ export default function Penyakit({
                 </div>
               </div>
 
-              {/* Greenhouse Cisondari */}
+              {/* Kebun Cisondari */}
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                      Greenhouse Cisondari (Pasirjambu)
+                      Kebun Cisondari (Pasirjambu)
                     </strong>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
                       Total 32 Pohon
@@ -494,7 +498,7 @@ export default function Penyakit({
               if (onOpenPositionsModal) {
                 const sakitTrees = trees.filter(t => t.is_sehat === false || (t.kondisi && t.kondisi.toLowerCase() === 'sakit'));
                 onOpenPositionsModal({
-                  title: 'Daftar Titik Pohon Sakit (Seluruh Greenhouse)',
+                  title: 'Daftar Titik Pohon Sakit (Seluruh Kebun)',
                   color: 'red',
                   count: sakitCount,
                   items: sakitTrees,
@@ -590,7 +594,7 @@ export default function Penyakit({
                 cursor: 'pointer'
               }}
             >
-              <option value="all">Semua Greenhouse</option>
+              <option value="all">Semua Kebun</option>
               {greenhouses.map(g => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
@@ -689,7 +693,7 @@ export default function Penyakit({
                 <tr>
                   <th style={{ width: '22%', minWidth: '155px' }}>ID Pohon & QR</th>
                   <th style={{ width: '18%', minWidth: '130px' }}>Posisi Jalur</th>
-                  <th style={{ width: '22%', minWidth: '160px' }}>Greenhouse</th>
+                  <th style={{ width: '22%', minWidth: '160px' }}>Kebun</th>
                   <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Kondisi Daun</th>
                   <th style={{ width: '16%', minWidth: '130px' }}>Diagnosis</th>
                   <th style={{ width: '10%', minWidth: '90px', textAlign: 'center' }}>Aksi</th>
@@ -753,7 +757,7 @@ export default function Penyakit({
                         {/* Greenhouse */}
                         <td>
                           <div style={{ fontSize: '12px', color: 'var(--text-main, #0F172A)' }}>
-                            <span style={{ fontWeight: 600 }}>{t.greenhouse_name || 'Greenhouse Sakura'}</span>
+                            <span style={{ fontWeight: 600 }}>{t.greenhouse_name || 'Kebun Sakura'}</span>
                             <div style={{ fontSize: '10.5px', color: 'var(--primary, #166534)', fontWeight: 600, marginTop: '2px' }}>
                               Melon Hidroponik
                             </div>

@@ -25,7 +25,7 @@ export default function Sidebar({
   const handlePositionsClick = () => {
     if (onOpenPositionsModal) {
       onOpenPositionsModal({
-        title: 'Peta Sebaran Posisi Pohon & Buah (Seluruh Greenhouse)',
+        title: 'Peta Sebaran Posisi Pohon & Buah (Seluruh Kebun)',
         color: 'green',
         count: stats?.total_fruits || 96,
         type: 'all'
@@ -81,7 +81,7 @@ export default function Sidebar({
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <img
                 src="/logo.png"
-                alt="Logo Tanigo"
+                alt="Logo TaniGo"
                 style={{
                   width: '36px',
                   height: '36px',
@@ -103,7 +103,7 @@ export default function Sidebar({
                   fontFamily: 'var(--font-heading)',
                   letterSpacing: '-0.02em'
                 }}>
-                  Tanigo
+                  TaniGo
                 </strong>
                 <span style={{ fontSize: '0.68rem', color: 'var(--primary, #166534)', fontWeight: 700, letterSpacing: '0.02em' }}>
                   Smart Agro Platform
@@ -293,21 +293,21 @@ export default function Sidebar({
               marginBottom: '0.5rem',
               paddingLeft: '0.5rem'
             }}>
-              GREENHOUSE AKTIF
+              KEBUN AKTIF
             </span>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.45rem 0.65rem', fontSize: '0.78rem', color: 'var(--text-main, #0F172A)', borderRadius: '8px' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
-                <span>Greenhouse Sakura (Ciwidey)</span>
+                <span>Kebun Sakura (Ciwidey)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.45rem 0.65rem', fontSize: '0.78rem', color: 'var(--text-main, #0F172A)', borderRadius: '8px' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
-                <span>Greenhouse Maribaya (Lembang)</span>
+                <span>Kebun Maribaya (Lembang)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.45rem 0.65rem', fontSize: '0.78rem', color: 'var(--text-main, #0F172A)', borderRadius: '8px' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
-                <span>Greenhouse Cisondari (Pasirjambu)</span>
+                <span>Kebun Cisondari (Pasirjambu)</span>
               </div>
             </div>
           </div>
@@ -323,7 +323,7 @@ export default function Sidebar({
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <span>Tanigo Agro v1.0</span>
+          <span>TaniGo Agro v1.0</span>
           <span style={{ color: 'var(--primary, #166534)', fontWeight: 600 }}>Sistem Aktif</span>
         </div>
       </aside>

@@ -12,7 +12,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("Tanigo UI Error Caught:", error, errorInfo);
+    console.error("TaniGo UI Error Caught:", error, errorInfo);
     this.setState({ errorInfo });
   }
 

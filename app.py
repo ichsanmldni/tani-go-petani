@@ -7,6 +7,8 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from services.farm_service import FarmService
 from services.rokae_service import RokaeRobotService
+from services.ai_analytics_service import ai_analytics_service
+from services import analytics_service
 from models.melon_predictor import MelonRipenessPredictor
 from models.disease_predictor import PlantDiseasePredictor
 
@@ -70,6 +72,26 @@ def api_stats():
     return jsonify({
         'success': True,
         'data': stats
+    })
+
+@app.route('/api/analytics/ripeness')
+def api_analytics_ripeness():
+    force_refresh = request.args.get('refresh', 'false').lower() == 'true'
+    stats = farm_service.get_global_stats()
+    result = ai_analytics_service.get_ripeness_analytics(stats, force_refresh=force_refresh)
+    return jsonify({
+        'success': True,
+        'data': result
+    })
+
+@app.route('/api/analytics/disease')
+def api_analytics_disease():
+    force_refresh = request.args.get('refresh', 'false').lower() == 'true'
+    stats = farm_service.get_global_stats()
+    result = ai_analytics_service.get_disease_analytics(stats, force_refresh=force_refresh)
+    return jsonify({
+        'success': True,
+        'data': result
     })
 
 @app.route('/api/fruits')
@@ -152,9 +174,9 @@ def api_predict_melon():
     data = request.form if request.form else (request.get_json() or {})
     fruit_id = data.get('fruit_id', '').strip()
     try:
-        age_days = int(data.get('age_days', 96) or 96)
+        age_days = int(data.get('age_days', 90) or 90)
     except (ValueError, TypeError):
-        age_days = 96
+        age_days = 90
     force_stage = data.get('force_stage', None)
 
     images = []

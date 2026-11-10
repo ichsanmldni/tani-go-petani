@@ -5,9 +5,9 @@ def generate_initial_farm_data():
     greenhouses = [
         {
             "id": "GH-1",
-            "name": "Greenhouse Sakura (Ciwidey)",
-            "nama_kebun": "Kebun Agro Melon Ciwidey",
-            "nama_gh": "Greenhouse Sakura (Ciwidey)",
+            "name": "Kebun Sakura (Ciwidey)",
+            "nama_kebun": "Kebun Sakura (Ciwidey)",
+            "nama_gh": "Kebun Sakura (Ciwidey)",
             "variety": "",
             "rows": 4,
             "trees_per_row": 8,
@@ -17,16 +17,16 @@ def generate_initial_farm_data():
             "gmaps_link": "https://maps.google.com/?q=-7.135248,107.411623",
             "latitude": -7.135248,
             "longitude": 107.411623,
-            "kontak_kebun": "Kang Asep Supriatna (Kepala Kebun Ciwidey)",
+            "kontak_kebun": "Kang Asep Supriatna",
             "no_hp": "0812-2345-6781",
             "estimasi_berat_buah_kg": 1.9,
             "estimasi_brix": "14.5 - 16.0 °Bx"
         },
         {
             "id": "GH-2",
-            "name": "Greenhouse Maribaya (Lembang)",
-            "nama_kebun": "Kebun Lembang Highland",
-            "nama_gh": "Greenhouse Maribaya (Lembang)",
+            "name": "Kebun Maribaya (Lembang)",
+            "nama_kebun": "Kebun Maribaya (Lembang)",
+            "nama_gh": "Kebun Maribaya (Lembang)",
             "variety": "",
             "rows": 4,
             "trees_per_row": 8,
@@ -36,16 +36,16 @@ def generate_initial_farm_data():
             "gmaps_link": "https://maps.google.com/?q=-6.816432,107.625121",
             "latitude": -6.816432,
             "longitude": 107.625121,
-            "kontak_kebun": "Pak Budi Hartono (Agronomis Lembang)",
+            "kontak_kebun": "Pak Budi Hartono",
             "no_hp": "0813-8765-4321",
             "estimasi_berat_buah_kg": 1.8,
             "estimasi_brix": "13.8 - 15.2 °Bx"
         },
         {
             "id": "GH-3",
-            "name": "Greenhouse Cisondari (Pasirjambu)",
-            "nama_kebun": "Kebun Pasirjambu Eco",
-            "nama_gh": "Greenhouse Cisondari (Pasirjambu)",
+            "name": "Kebun Cisondari (Pasirjambu)",
+            "nama_kebun": "Kebun Cisondari (Pasirjambu)",
+            "nama_gh": "Kebun Cisondari (Pasirjambu)",
             "variety": "",
             "rows": 4,
             "trees_per_row": 8,
@@ -55,7 +55,7 @@ def generate_initial_farm_data():
             "gmaps_link": "https://maps.google.com/?q=-7.098712,107.476534",
             "latitude": -7.098712,
             "longitude": 107.476534,
-            "kontak_kebun": "Ibu Rina Marlina (Manajer Kebun Pasirjambu)",
+            "kontak_kebun": "Ibu Rina Marlina",
             "no_hp": "0821-9876-1234",
             "estimasi_berat_buah_kg": 2.1,
             "estimasi_brix": "15.0 - 16.8 °Bx"
@@ -126,14 +126,14 @@ def generate_initial_farm_data():
     for gh in greenhouses:
         gh_id = gh["id"]
         if gh_id == "GH-3":
-            ripeness_weights = [0.15, 0.25, 0.60]  # mentah, mengkal, matang
-            base_age = 98
+            ripeness_weights = [0.15, 0.25, 0.60]  # dominan matang
+            base_age = 90
         elif gh_id == "GH-1":
-            ripeness_weights = [0.20, 0.40, 0.40]
-            base_age = 96
+            ripeness_weights = [0.20, 0.40, 0.40]  # seimbang mengkal & matang
+            base_age = 88
         else:
-            ripeness_weights = [0.45, 0.35, 0.20]
-            base_age = 92
+            ripeness_weights = [0.45, 0.35, 0.20]  # dominan mentah
+            base_age = 84
 
         for row_idx in range(1, gh["rows"] + 1):
             row_str = f"Jalur {row_idx}"
@@ -190,30 +190,38 @@ def generate_initial_farm_data():
                 }
                 trees.append(tree_entry)
 
-                # 2. Kematangan Buah Melon (Scanning Hari 90-100 saat menggantung di pohon)
-                # Output: mentah, mengkal, matang
+                # 2. Kematangan Buah Melon (Siklus 90 Hari Setelah Tanam / 90 HST)
+                # Output: mentah (82-85 hari, sisa 5-8 hari), mengkal (86-88 hari, sisa 2-4 hari), matang (90+ hari, sisa 0 hari)
                 ripeness_choice = random.choices(["matang", "mengkal", "mentah"], weights=ripeness_weights)[0]
-                fruit_age = base_age + random.choice([-1, 0, 1])
 
                 if ripeness_choice == "matang":
+                    fruit_age = random.choice([90, 91])
+                    sisa_min, sisa_max = (0, 0)
+                    sisa_hari_str = "0 hari (Siap Panen)"
                     rek = "Jaring melon rapat dan merata, retakan cincin absisi tangkai merekah penuh."
                     market_status = "Layak Jual ke Marketplace"
                     market_badge = "success"
-                    action_advice = "Buah sudah matang dan layak jual ke marketplace."
+                    action_advice = "Buah sudah matang sempurna (siklus 90 HST tercapai) dan layak jual ke marketplace."
                     conf_rip = round(random.uniform(89.0, 97.8), 1)
                     dataset_fruit_cls = "fully_ripe"
                 elif ripeness_choice == "mengkal":
+                    fruit_age = random.choice([86, 87, 88])
+                    sisa_min, sisa_max = (2, 4)
+                    sisa_hari_str = f"{sisa_min}-{sisa_max} hari"
                     rek = "Jaring gabus mulai terhubung rapat, proses pematangan sedang berlangsung."
                     market_status = "Belum Layak Jual ke Marketplace"
                     market_badge = "warning"
-                    action_advice = "Belum matang penuh, tunggu estimasi 2-4 hari lagi."
+                    action_advice = f"Belum matang penuh, tunggu estimasi {sisa_hari_str} (menuju siklus 90 HST)."
                     conf_rip = round(random.uniform(87.0, 95.5), 1)
                     dataset_fruit_cls = "half_ripe"
                 else:  # mentah
+                    fruit_age = random.choice([82, 83, 84, 85])
+                    sisa_min, sisa_max = (5, 8)
+                    sisa_hari_str = f"{sisa_min}-{sisa_max} hari"
                     rek = "Jaring gabus masih tipis renggang dan warna dasar kehijauan."
                     market_status = "Belum Layak Jual ke Marketplace"
                     market_badge = "secondary"
-                    action_advice = "Buah masih mentah, tunggu estimasi 5-8 hari lagi."
+                    action_advice = f"Buah masih mentah, tunggu estimasi {sisa_hari_str} (menuju siklus 90 HST)."
                     conf_rip = round(random.uniform(90.0, 98.2), 1)
                     dataset_fruit_cls = "unripe"
 
@@ -223,9 +231,6 @@ def generate_initial_farm_data():
                 fruit_angle2 = f"/static/img/real_samples/fruits/{dataset_fruit_cls}_{(fruit_img_num % 6) + 1}.jpg"
                 fruit_angle3 = f"/static/img/real_samples/fruits/{dataset_fruit_cls}_{((fruit_img_num + 1) % 6) + 1}.jpg"
 
-                STAGE_DAYS_MAP = {"matang": (0, 0), "mengkal": (2, 4), "mentah": (5, 8)}
-                sisa_min, sisa_max = STAGE_DAYS_MAP[ripeness_choice]
-                sisa_hari_str = "0 hari (Siap Panen)" if sisa_max == 0 else f"{sisa_min}-{sisa_max} hari"
                 modbus_val = 2 if ripeness_choice == "matang" else (1 if ripeness_choice == "mengkal" else 0)
 
                 fruit_entry = {

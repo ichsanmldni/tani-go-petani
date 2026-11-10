@@ -156,7 +156,7 @@ export default function FruitModal({ fruit, onClose }) {
             </div>
 
             <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F6F8F4', borderRadius: '0.5rem', border: '1px solid #DDE5DC' }}>
-              <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block' }}>Lokasi Greenhouse</span>
+              <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block' }}>Lokasi Kebun</span>
               <strong style={{ fontSize: '0.82rem', color: '#1B2A22' }}>{fruit.greenhouse_name}</strong>
             </div>
 

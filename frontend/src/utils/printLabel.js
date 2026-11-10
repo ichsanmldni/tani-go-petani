@@ -183,7 +183,7 @@ export function printFruitLabel(fruit) {
 
   <div class="sticker">
     <div class="header">
-      <div class="brand-title">TANIGO</div>
+      <div class="brand-title">TaniGo</div>
       <div class="brand-subtitle">Pantau kebun, panen tepat waktu.</div>
     </div>
 
@@ -202,7 +202,7 @@ export function printFruitLabel(fruit) {
         <span class="val">${fruit.tree_id || '-'}</span>
       </div>
       <div class="row">
-        <span class="label">Lokasi Greenhouse:</span>
+        <span class="label">Lokasi Kebun:</span>
         <span class="val">${fruit.greenhouse_name || fruit.greenhouse_id}</span>
       </div>
       <div class="row">

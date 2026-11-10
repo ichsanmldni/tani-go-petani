@@ -15,7 +15,7 @@ export default function Simulator() {
 
   // Form State - Melon
   const [melonFruitId, setMelonFruitId] = useState('MLN-GH-1-R01-P01-F1');
-  const [melonAge, setMelonAge] = useState(96);
+  const [melonAge, setMelonAge] = useState(90);
   const [melonStage, setMelonStage] = useState('matang');
   const [melonSampleIndex, setMelonSampleIndex] = useState(1);
   const [melonLoading, setMelonLoading] = useState(false);
@@ -1407,7 +1407,7 @@ export default function Simulator() {
                 onClick={() => setPreviewImageModal({
                   src: `/static/img/real_samples/fruits/${fruitImgKey}_${melonSampleIndex}.jpg`,
                   title: 'Pangkal tangkai',
-                  description: 'Tampak pangkal dan mahkota tangkai buah melon pada pohon di greenhouse.',
+                  description: 'Tampak pangkal dan mahkota tangkai buah melon pada pohon di kebun.',
                   badge: `Kondisi: ${melonStage.charAt(0).toUpperCase() + melonStage.slice(1)}`
                 })}
                 style={{
@@ -1527,12 +1527,12 @@ export default function Simulator() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.75rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#1B2A22', marginBottom: '0.25rem' }}>
-                    Umur tanaman (hari ke-90 sampai 100):
+                    Umur tanaman (siklus panen 90 HST):
                   </label>
                   <input
                     type="number"
-                    min="85"
-                    max="105"
+                    min="75"
+                    max="95"
                     value={melonAge}
                     onChange={e => setMelonAge(e.target.value)}
                     style={{
@@ -1659,7 +1659,7 @@ export default function Simulator() {
                 onClick={() => setPreviewImageModal({
                   src: `/static/img/real_samples/leaves/${leafImgKey}_${diseaseSampleIndex}.jpg`,
                   title: 'Permukaan atas daun',
-                  description: 'Tampak permukaan atas helai daun melon pada pohon di greenhouse.',
+                  description: 'Tampak permukaan atas helai daun melon pada pohon di kebun.',
                   badge: `Kondisi: ${diseasePreset === 'normal' ? 'Sehat' : 'Sakit'}`
                 })}
                 style={{

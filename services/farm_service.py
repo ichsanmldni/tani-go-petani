@@ -363,7 +363,7 @@ class FarmService:
                     "status_badge": "success",
                     "harga_per_kg": 38000,
                     "minimal_order_kg": 50,
-                    "kontak_kebun": gh.get("kontak_kebun", "Pengelola Greenhouse"),
+                    "kontak_kebun": gh.get("kontak_kebun", "Pengelola Kebun"),
                     "no_hp": gh.get("no_hp", "0812-0000-0000"),
                     "grade": "Grade A Super (Jaring Rapat Merata)",
                     "sample_fruits": [
@@ -403,7 +403,7 @@ class FarmService:
                     "status_badge": "warning",
                     "harga_per_kg": 35000,
                     "minimal_order_kg": 50,
-                    "kontak_kebun": gh.get("kontak_kebun", "Pengelola Greenhouse"),
+                    "kontak_kebun": gh.get("kontak_kebun", "Pengelola Kebun"),
                     "no_hp": gh.get("no_hp", "0812-0000-0000"),
                     "grade": "Grade A Pre-Order (Pematangan Optimal)",
                     "sample_fruits": [

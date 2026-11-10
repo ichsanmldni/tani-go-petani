@@ -268,10 +268,10 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
                 cursor: 'pointer'
               }}
             >
-              <option value="all">Semua Greenhouse</option>
-              <option value="GH-1">Greenhouse Sakura (Ciwidey)</option>
-              <option value="GH-2">Greenhouse Maribaya (Lembang)</option>
-              <option value="GH-3">Greenhouse Cisondari (Pasirjambu)</option>
+              <option value="all">Semua Kebun</option>
+              <option value="GH-1">Kebun Sakura (Ciwidey)</option>
+              <option value="GH-2">Kebun Maribaya (Lembang)</option>
+              <option value="GH-3">Kebun Cisondari (Pasirjambu)</option>
             </select>
           </div>
         </div>
@@ -298,7 +298,7 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
               <thead>
                 <tr style={{ backgroundColor: '#F6F8F4', borderBottom: '1px solid #DDE5DC', color: '#1B2A22', textAlign: 'left' }}>
                   <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700, width: '45px' }}>No</th>
-                  <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Greenhouse</th>
+                  <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Kebun</th>
                   <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Jalur & Nomor</th>
                   <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>ID Pohon & Buah</th>
                   <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Status</th>

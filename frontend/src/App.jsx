@@ -23,9 +23,9 @@ const DEFAULT_STATS = {
   ripeness: { matang: 28, mengkal: 36, mentah: 32 },
   disease: { sehat: 74, sakit: 22 },
   gh_distribution: {
-    'GH-1': { name: 'Greenhouse Sakura (Ciwidey)', matang: 11, mengkal: 13, mentah: 8, sehat: 27, sakit: 5, total_fruits: 32 },
-    'GH-2': { name: 'Greenhouse Maribaya (Lembang)', matang: 10, mengkal: 14, mentah: 8, sehat: 25, sakit: 7, total_fruits: 32 },
-    'GH-3': { name: 'Greenhouse Cisondari (Pasirjambu)', matang: 7, mengkal: 9, mentah: 16, sehat: 22, sakit: 10, total_fruits: 32 }
+    'GH-1': { name: 'Kebun Sakura (Ciwidey)', matang: 11, mengkal: 13, mentah: 8, sehat: 27, sakit: 5, total_fruits: 32 },
+    'GH-2': { name: 'Kebun Maribaya (Lembang)', matang: 10, mengkal: 14, mentah: 8, sehat: 25, sakit: 7, total_fruits: 32 },
+    'GH-3': { name: 'Kebun Cisondari (Pasirjambu)', matang: 7, mengkal: 9, mentah: 16, sehat: 22, sakit: 10, total_fruits: 32 }
   },
   rokae_robot: {
     model: 'ROKAE XMS5-R800-W4G3B4C',
@@ -38,9 +38,9 @@ const DEFAULT_STATS = {
 };
 
 const DEFAULT_GREENHOUSES = [
-  { id: 'GH-1', name: 'Greenhouse Sakura (Ciwidey)', total_trees: 32, total_fruits: 32, rows: 4, plants_per_row: 8 },
-  { id: 'GH-2', name: 'Greenhouse Maribaya (Lembang)', total_trees: 32, total_fruits: 32, rows: 4, plants_per_row: 8 },
-  { id: 'GH-3', name: 'Greenhouse Cisondari (Pasirjambu)', total_trees: 32, total_fruits: 32, rows: 4, plants_per_row: 8 }
+  { id: 'GH-1', name: 'Kebun Sakura (Ciwidey)', total_trees: 32, total_fruits: 32, rows: 4, plants_per_row: 8 },
+  { id: 'GH-2', name: 'Kebun Maribaya (Lembang)', total_trees: 32, total_fruits: 32, rows: 4, plants_per_row: 8 },
+  { id: 'GH-3', name: 'Kebun Cisondari (Pasirjambu)', total_trees: 32, total_fruits: 32, rows: 4, plants_per_row: 8 }
 ];
 
 export default function App() {

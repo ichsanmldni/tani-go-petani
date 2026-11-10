@@ -155,20 +155,20 @@ class MelonRipenessPredictor:
                 else:
                     raise ValueError("No YOLO box detected")
             except Exception:
-                if age_days >= 96:
+                if age_days >= 90:
                     label = 'matang'
                     confidence = round(float(np.random.uniform(92.0, 97.0)), 1)
-                elif age_days >= 92:
+                elif age_days >= 86:
                     label = 'mengkal'
                     confidence = round(float(np.random.uniform(88.0, 93.0)), 1)
                 else:
                     label = 'mentah'
                     confidence = round(float(np.random.uniform(89.0, 94.0)), 1)
         else:
-            if age_days >= 96:
+            if age_days >= 90:
                 label = 'matang'
                 confidence = round(float(np.random.uniform(92.0, 97.0)), 1)
-            elif age_days >= 92:
+            elif age_days >= 86:
                 label = 'mengkal'
                 confidence = round(float(np.random.uniform(88.0, 93.0)), 1)
             else:

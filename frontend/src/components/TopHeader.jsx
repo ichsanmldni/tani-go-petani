@@ -69,7 +69,7 @@ export default function TopHeader({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
-            placeholder="Cari ID buah, pohon, atau greenhouse..."
+            placeholder="Cari ID buah, pohon, atau kebun..."
             style={{
               width: '100%',
               padding: '0.55rem 3rem 0.55rem 2.4rem',

@@ -21,6 +21,7 @@ import {
   Legend
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import RipenessAnalyticsCard from '../components/RipenessAnalyticsCard';
 
 ChartJS.register(
   CategoryScale,
@@ -122,23 +123,23 @@ export default function Kematangan({
     return result;
   }, [fruits, searchQuery]);
 
-  // Sebaran tingkat kematangan per greenhouse
+  // Sebaran tingkat kematangan per kebun
   const ghDist = stats?.gh_distribution || {
-    'GH-1': { name: 'Greenhouse Sakura (Ciwidey)', matang: 11, mengkal: 14, mentah: 7, total_fruits: 32 },
-    'GH-2': { name: 'Greenhouse Maribaya (Lembang)', matang: 10, mengkal: 12, mentah: 10, total_fruits: 32 },
-    'GH-3': { name: 'Greenhouse Cisondari (Pasirjambu)', matang: 7, mengkal: 10, mentah: 15, total_fruits: 32 }
+    'GH-1': { name: 'Kebun Sakura (Ciwidey)', matang: 11, mengkal: 14, mentah: 7, total_fruits: 32 },
+    'GH-2': { name: 'Kebun Maribaya (Lembang)', matang: 10, mengkal: 12, mentah: 10, total_fruits: 32 },
+    'GH-3': { name: 'Kebun Cisondari (Pasirjambu)', matang: 7, mengkal: 10, mentah: 15, total_fruits: 32 }
   };
 
   const ghKeys = Object.keys(ghDist);
   const ghShortLabels = ghKeys.map(k => {
     const fullName = ghDist[k].name || k;
-    if (fullName.includes('Sakura')) return 'Greenhouse Sakura';
-    if (fullName.includes('Maribaya')) return 'Greenhouse Maribaya';
-    if (fullName.includes('Cisondari')) return 'Greenhouse Cisondari';
+    if (fullName.includes('Sakura')) return 'Kebun Sakura';
+    if (fullName.includes('Maribaya')) return 'Kebun Maribaya';
+    if (fullName.includes('Cisondari')) return 'Kebun Cisondari';
     return fullName;
   });
 
-  // Dynamic readiness metrics for Card B (Kesiapan Panen per Greenhouse)
+  // Dynamic readiness metrics for Card B (Kesiapan Panen per Kebun)
   const gaugeData = useMemo(() => {
     if (activeGhGauge !== 'all' && ghDist[activeGhGauge]) {
       const g = ghDist[activeGhGauge];
@@ -147,7 +148,7 @@ export default function Kematangan({
       const mengkal = g.mengkal || 0;
       const mentah = g.mentah || 0;
       const readyPct = total > 0 ? Math.round(((matang + mengkal) / total) * 100) : 0;
-      const friendlyName = g.name.includes('Sakura') ? 'Greenhouse Sakura' : g.name.includes('Maribaya') ? 'Greenhouse Maribaya' : 'Greenhouse Cisondari';
+      const friendlyName = g.name.includes('Sakura') ? 'Kebun Sakura' : g.name.includes('Maribaya') ? 'Kebun Maribaya' : 'Kebun Cisondari';
 
       return {
         pct: readyPct,
@@ -170,7 +171,7 @@ export default function Kematangan({
       mengkal: mengkalCount,
       mentah: mentahCount,
       total: totalFruits,
-      name: 'Semua Greenhouse',
+      name: 'Semua Kebun',
       isSpecific: false
     };
   }, [activeGhGauge, ghDist, harvestReadyPct, matangCount, mengkalCount, mentahCount, totalFruits]);
@@ -269,7 +270,7 @@ export default function Kematangan({
           margin: 0,
           lineHeight: 1.4
         }}>
-          Pantau kematangan buah melon di pohon pada seluruh greenhouse hidroponik.
+          Pantau kematangan buah melon di pohon pada seluruh kebun hidroponik.
         </p>
       </div>
 
@@ -457,6 +458,9 @@ export default function Kematangan({
         </div>
       </div>
 
+      {/* 2.5 Deskriptif Analitik AI Kematangan Buah (OpenAI GPT Nano) */}
+      <RipenessAnalyticsCard />
+
       {/* 3. Row 2: Balanced Analytics & Readiness Cards (Tanpa jadwal & robot teknis) */}
       <div style={{
         display: 'grid',
@@ -476,13 +480,13 @@ export default function Kematangan({
               </span>
             </div>
             <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1.25rem 0' }}>
-              Jumlah pemantauan kondisi buah per hari di seluruh greenhouse
+              Jumlah pemantauan kondisi buah per hari di seluruh kebun
             </p>
           </div>
 
           <CapsuleBarChart ghDistribution={stats?.gh_distribution} />
 
-          {/* Greenhouse Sub-badges: Proper 3-Column Micro-Grid */}
+          {/* Kebun Sub-badges: Proper 3-Column Micro-Grid */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
@@ -499,7 +503,7 @@ export default function Kematangan({
               textAlign: 'center'
             }}>
               <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                Greenhouse Sakura
+                Kebun Sakura
               </span>
               <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                 11 Matang
@@ -514,7 +518,7 @@ export default function Kematangan({
               textAlign: 'center'
             }}>
               <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                Greenhouse Maribaya
+                Kebun Maribaya
               </span>
               <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                 10 Matang
@@ -529,7 +533,7 @@ export default function Kematangan({
               textAlign: 'center'
             }}>
               <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                Greenhouse Cisondari
+                Kebun Cisondari
               </span>
               <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                 7 Matang
@@ -538,12 +542,12 @@ export default function Kematangan({
           </div>
         </div>
 
-        {/* Card B: Kesiapan Panen per Greenhouse (Interactive Semi-Circular Arc Gauge with Per-Greenhouse Cards) */}
+        {/* Card B: Kesiapan Panen per Kebun (Interactive Semi-Circular Arc Gauge with Per-Kebun Cards) */}
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
               <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
-                Kesiapan Panen per Greenhouse
+                Kesiapan Panen per Kebun
               </h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 {activeGhGauge !== 'all' && (
@@ -560,7 +564,7 @@ export default function Kematangan({
                       cursor: 'pointer',
                       fontWeight: 600
                     }}
-                    title="Tampilkan semua greenhouse"
+                    title="Tampilkan semua kebun"
                   >
                     Semua
                   </button>
@@ -600,7 +604,7 @@ export default function Kematangan({
             />
           </div>
 
-          {/* 3-Column Micro-Cards: Kesiapan Panen per Greenhouse */}
+          {/* 3-Column Micro-Cards: Kesiapan Panen per Kebun */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
@@ -608,7 +612,7 @@ export default function Kematangan({
             paddingTop: '0.75rem',
             borderTop: '1px solid var(--border-subtle, #E2E8F0)'
           }}>
-            {/* Greenhouse Sakura */}
+            {/* Kebun Sakura */}
             {(() => {
               const gh1 = ghDist['GH-1'] || {};
               const total1 = gh1.total_fruits || 32;
@@ -628,7 +632,7 @@ export default function Kematangan({
                     boxShadow: isActive ? '0 0 0 2px rgba(22, 101, 52, 0.15)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
-                  title="Klik untuk melihat kesiapan Greenhouse Sakura"
+                  title="Klik untuk melihat kesiapan Kebun Sakura"
                 >
                   <span style={{
                     fontSize: '10px',
@@ -639,7 +643,7 @@ export default function Kematangan({
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}>
-                    Greenhouse Sakura
+                    Kebun Sakura
                   </span>
                   <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                     {readyPct1}% Siap
@@ -648,7 +652,7 @@ export default function Kematangan({
               );
             })()}
 
-            {/* Greenhouse Maribaya */}
+            {/* Kebun Maribaya */}
             {(() => {
               const gh2 = ghDist['GH-2'] || {};
               const total2 = gh2.total_fruits || 32;
@@ -668,7 +672,7 @@ export default function Kematangan({
                     boxShadow: isActive ? '0 0 0 2px rgba(22, 101, 52, 0.15)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
-                  title="Klik untuk melihat kesiapan Greenhouse Maribaya"
+                  title="Klik untuk melihat kesiapan Kebun Maribaya"
                 >
                   <span style={{
                     fontSize: '10px',
@@ -679,7 +683,7 @@ export default function Kematangan({
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}>
-                    Greenhouse Maribaya
+                    Kebun Maribaya
                   </span>
                   <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                     {readyPct2}% Siap
@@ -688,7 +692,7 @@ export default function Kematangan({
               );
             })()}
 
-            {/* Greenhouse Cisondari */}
+            {/* Kebun Cisondari */}
             {(() => {
               const gh3 = ghDist['GH-3'] || {};
               const total3 = gh3.total_fruits || 32;
@@ -708,7 +712,7 @@ export default function Kematangan({
                     boxShadow: isActive ? '0 0 0 2px rgba(22, 101, 52, 0.15)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
-                  title="Klik untuk melihat kesiapan Greenhouse Cisondari"
+                  title="Klik untuk melihat kesiapan Kebun Cisondari"
                 >
                   <span style={{
                     fontSize: '10px',
@@ -719,7 +723,7 @@ export default function Kematangan({
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}>
-                    Greenhouse Cisondari
+                    Kebun Cisondari
                   </span>
                   <strong style={{ fontSize: '12px', color: '#B45309', fontWeight: 800 }}>
                     {readyPct3}% Siap
@@ -745,7 +749,7 @@ export default function Kematangan({
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <ChartBar size={18} weight="bold" style={{ color: 'var(--primary, #166534)' }} />
               <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0, letterSpacing: '-0.015em' }}>
-                Sebaran Kematangan Tiap Greenhouse
+                Sebaran Kematangan Tiap Kebun
               </h2>
             </div>
             <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: 'var(--text-dim, #64748B)' }}>
@@ -761,7 +765,7 @@ export default function Kematangan({
             borderRadius: '999px',
             border: '1px solid #BBF7D0'
           }}>
-            3 Greenhouse Aktif
+            3 Kebun Aktif
           </span>
         </div>
 
@@ -908,7 +912,7 @@ export default function Kematangan({
                 cursor: 'pointer'
               }}
             >
-              <option value="all">Semua Greenhouse</option>
+              <option value="all">Semua Kebun</option>
               {greenhouses.map(g => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
@@ -1007,7 +1011,7 @@ export default function Kematangan({
                 <tr>
                   <th style={{ width: '22%', minWidth: '150px' }}>ID Buah & QR</th>
                   <th style={{ width: '20%', minWidth: '140px' }}>Pohon & Posisi</th>
-                  <th style={{ width: '24%', minWidth: '170px' }}>Greenhouse</th>
+                  <th style={{ width: '24%', minWidth: '170px' }}>Kebun</th>
                   <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Kematangan</th>
                   <th style={{ width: '10%', minWidth: '90px', textAlign: 'center' }}>Umur</th>
                   <th style={{ width: '10%', minWidth: '90px', textAlign: 'center' }}>Aksi</th>
@@ -1071,7 +1075,7 @@ export default function Kematangan({
                         {/* Greenhouse */}
                         <td>
                           <div style={{ fontSize: '12px', color: 'var(--text-main, #0F172A)' }}>
-                            <span style={{ fontWeight: 600 }}>{f.greenhouse_name || 'Greenhouse Sakura'}</span>
+                            <span style={{ fontWeight: 600 }}>{f.greenhouse_name || 'Kebun Sakura'}</span>
                             <div style={{ fontSize: '10.5px', color: 'var(--primary, #166534)', fontWeight: 600, marginTop: '2px' }}>
                               Melon Hidroponik
                             </div>
@@ -1185,7 +1189,7 @@ export default function Kematangan({
                     borderTop: '1px solid var(--border-subtle, #E2E8F0)',
                     fontSize: '11px'
                   }}>
-                    <span style={{ color: 'var(--text-dim, #64748B)' }}>Umur: <strong>{f.age_days || 96} hari</strong></span>
+                    <span style={{ color: 'var(--text-dim, #64748B)' }}>Umur: <strong>{f.age_days || 90} hari</strong></span>
                     <span style={{ color: 'var(--primary, #166534)', fontWeight: 700 }}>Detail ↗</span>
                   </div>
                 </div>

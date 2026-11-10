@@ -29,7 +29,7 @@ Sistem dirancang untuk pemindaian non-destruktif secara **in-situ** di dalam gre
   * `0 = Normal (Sehat)`
   * `1 = Aphid (Kutu Daun)`
   * `2 = Fungus (Jamur Daun)`
-  * `3 = Leaf Miner (Peng<!--  -->orok Daun)`
+  * `3 = Leaf Miner (Pengorok Daun)`
   * `4 = Unknown (Gejala Lainnya / Atipikal)`
 
 ---

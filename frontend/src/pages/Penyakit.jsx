@@ -165,10 +165,12 @@ export default function Penyakit({
         <div
           onClick={() => {
             if (onOpenPositionsModal) {
+              const sehatTrees = trees.filter(t => t.is_sehat !== false && (!t.kondisi || t.kondisi.toLowerCase() === 'sehat'));
               onOpenPositionsModal({
                 title: 'Daftar Pohon Sehat Bebas Hama',
                 color: 'green',
                 count: sehatCount,
+                items: sehatTrees,
                 type: 'disease'
               });
             }
@@ -217,10 +219,12 @@ export default function Penyakit({
         <div
           onClick={() => {
             if (onOpenPositionsModal) {
+              const sakitTrees = trees.filter(t => t.is_sehat === false || (t.kondisi && t.kondisi.toLowerCase() === 'sakit'));
               onOpenPositionsModal({
                 title: 'Daftar Titik Pohon Sakit',
                 color: 'red',
                 count: sakitCount,
+                items: sakitTrees,
                 type: 'disease'
               });
             }
@@ -275,6 +279,7 @@ export default function Penyakit({
                 title: 'Sebaran Seluruh Titik Pohon Melon',
                 color: 'green',
                 count: totalTrees,
+                items: trees,
                 type: 'all'
               });
             }
@@ -487,10 +492,12 @@ export default function Penyakit({
           <button
             onClick={() => {
               if (onOpenPositionsModal) {
+                const sakitTrees = trees.filter(t => t.is_sehat === false || (t.kondisi && t.kondisi.toLowerCase() === 'sakit'));
                 onOpenPositionsModal({
                   title: 'Daftar Titik Pohon Sakit (Seluruh Greenhouse)',
                   color: 'red',
                   count: sakitCount,
+                  items: sakitTrees,
                   type: 'disease'
                 });
               }

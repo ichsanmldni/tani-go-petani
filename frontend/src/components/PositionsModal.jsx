@@ -11,7 +11,9 @@ import QrThumbnail from './QrThumbnail.jsx';
 export default function PositionsModal({ data, onClose, onSelectFruit, onSelectTree }) {
   if (!data) return null;
 
-  const { title, count, items = [], type = 'ripeness' } = data;
+  const { title = 'Peta Sebaran Posisi Pohon & Buah', count, type = 'all' } = data;
+  const [items, setItems] = useState(Array.isArray(data.items) && data.items.length > 0 ? data.items : []);
+  const [loading, setLoading] = useState(!Array.isArray(data.items) || data.items.length === 0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGh, setSelectedGh] = useState('all');
 
@@ -24,14 +26,103 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const filteredItems = items.filter(it => {
-    const matchesSearch = !searchTerm.trim() ||
-      (it.fruit_id && it.fruit_id.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (it.tree_id && it.tree_id.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (it.row && it.row.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (it.greenhouse_name && it.greenhouse_name.toLowerCase().includes(searchTerm.toLowerCase()));
+  // Fetch / combine items if not passed or empty
+  useEffect(() => {
+    if (Array.isArray(data.items) && data.items.length > 0) {
+      setItems(data.items);
+      setLoading(false);
+      return;
+    }
 
-    const matchesGh = selectedGh === 'all' || it.greenhouse_id === selectedGh;
+    setLoading(true);
+    Promise.all([
+      fetch('/api/fruits').then(r => r.json()).catch(() => ({ success: false })),
+      fetch('/api/trees').then(r => r.json()).catch(() => ({ success: false }))
+    ]).then(([fruitsRes, treesRes]) => {
+      const fruitsList = (fruitsRes && fruitsRes.success && Array.isArray(fruitsRes.data)) ? fruitsRes.data : [];
+      const treesList = (treesRes && treesRes.success && Array.isArray(treesRes.data)) ? treesRes.data : [];
+
+      const treeMap = new Map();
+      treesList.forEach(t => {
+        if (t.tree_id) treeMap.set(t.tree_id, t);
+      });
+
+      let combined = [];
+
+      if (fruitsList.length > 0) {
+        combined = fruitsList.map(f => {
+          const t = treeMap.get(f.tree_id) || {};
+          return {
+            ...f,
+            tree_id: f.tree_id || t.tree_id,
+            tree_qr: t.qr_code || f.qr_tree || `QR-TREE-${f.tree_id}`,
+            fruit_id: f.fruit_id || t.fruit_id,
+            qr_code: f.qr_code || `QR-FRUIT-${f.fruit_id}`,
+            greenhouse_id: f.greenhouse_id || t.greenhouse_id,
+            greenhouse_name: f.greenhouse_name || t.greenhouse_name,
+            row: f.row || t.row,
+            row_index: f.row_index || t.row_index,
+            tree_index: f.tree_index || t.tree_index,
+            tingkat_kematangan: f.tingkat_kematangan,
+            kondisi: t.kondisi || 'Sehat',
+            nama_penyakit: t.nama_penyakit || (t.kondisi === 'Sakit' ? 'Gejala Infeksi' : 'Normal (Tanaman Sehat)')
+          };
+        });
+      } else if (treesList.length > 0) {
+        combined = treesList.map(t => ({
+          ...t,
+          tree_qr: t.qr_code || `QR-TREE-${t.tree_id}`,
+          tingkat_kematangan: 'matang'
+        }));
+      }
+
+      // Filter based on data request
+      if (data.filter === 'sakit' || (data.type === 'disease' && data.color === 'red')) {
+        combined = combined.filter(it => it.kondisi === 'Sakit' || it.kondisi === 'sakit');
+      } else if (data.filter === 'sehat' || (data.type === 'disease' && data.color === 'green')) {
+        combined = combined.filter(it => it.kondisi === 'Sehat' || it.kondisi === 'sehat');
+      } else if (data.filter === 'matang') {
+        combined = combined.filter(it => it.tingkat_kematangan === 'matang');
+      } else if (data.filter === 'mengkal') {
+        combined = combined.filter(it => it.tingkat_kematangan === 'mengkal');
+      } else if (data.filter === 'mentah') {
+        combined = combined.filter(it => it.tingkat_kematangan === 'mentah');
+      }
+
+      setItems(combined);
+      setLoading(false);
+    }).catch(err => {
+      console.error('Error fetching positions in PositionsModal:', err);
+      setLoading(false);
+    });
+  }, [data]);
+
+  const filteredItems = items.filter(it => {
+    const q = searchTerm.toLowerCase().trim();
+    const matchesSearch = !q ||
+      (it.fruit_id && it.fruit_id.toLowerCase().includes(q)) ||
+      (it.tree_id && it.tree_id.toLowerCase().includes(q)) ||
+      (it.qr_code && it.qr_code.toLowerCase().includes(q)) ||
+      (it.tree_qr && it.tree_qr.toLowerCase().includes(q)) ||
+      (it.row && it.row.toLowerCase().includes(q)) ||
+      (it.nama_penyakit && it.nama_penyakit.toLowerCase().includes(q)) ||
+      (it.kondisi && it.kondisi.toLowerCase().includes(q)) ||
+      (it.tingkat_kematangan && it.tingkat_kematangan.toLowerCase().includes(q)) ||
+      (it.greenhouse_name && it.greenhouse_name.toLowerCase().includes(q));
+
+    let matchesGh = selectedGh === 'all';
+    if (!matchesGh) {
+      if (it.greenhouse_id === selectedGh) {
+        matchesGh = true;
+      } else if (selectedGh === 'GH-1' && it.greenhouse_name?.toLowerCase().includes('sakura')) {
+        matchesGh = true;
+      } else if (selectedGh === 'GH-2' && it.greenhouse_name?.toLowerCase().includes('maribaya')) {
+        matchesGh = true;
+      } else if (selectedGh === 'GH-3' && it.greenhouse_name?.toLowerCase().includes('cisondari')) {
+        matchesGh = true;
+      }
+    }
+
     return matchesSearch && matchesGh;
   });
 
@@ -59,7 +150,7 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
         style={{
           backgroundColor: '#ffffff',
           borderRadius: '1rem',
-          maxWidth: '860px',
+          maxWidth: '920px',
           width: '100%',
           maxHeight: '92vh',
           overflowY: 'auto',
@@ -89,7 +180,8 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: '1px solid #bbf7d0'
+              border: '1px solid #bbf7d0',
+              flexShrink: 0
             }}>
               <MapPin size={22} weight="bold" />
             </div>
@@ -98,7 +190,10 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
                 {title}
               </h3>
               <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748B' }}>
-                Lokasi pohon di kebun ({filteredItems.length} dari {count || items.length} pohon)
+                {loading
+                  ? 'Sedang memuat data sebaran...'
+                  : `Lokasi pohon di kebun (${filteredItems.length} dari ${items.length || count || 0} pohon terdaftar)`
+                }
               </p>
             </div>
           </div>
@@ -137,11 +232,11 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <div style={{ position: 'relative', width: '240px' }}>
+          <div style={{ position: 'relative', width: '250px' }}>
             <MagnifyingGlass size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
             <input
               type="text"
-              placeholder="Cari ID atau jalur..."
+              placeholder="Cari ID pohon, buah, QR, jalur..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               style={{
@@ -168,10 +263,12 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
                 borderRadius: '0.4rem',
                 border: '1px solid #DDE5DC',
                 backgroundColor: '#ffffff',
-                color: '#1B2A22'
+                color: '#1B2A22',
+                fontWeight: 600,
+                cursor: 'pointer'
               }}
             >
-              <option value="all">Semua greenhouse</option>
+              <option value="all">Semua Greenhouse</option>
               <option value="GH-1">Greenhouse Sakura (Ciwidey)</option>
               <option value="GH-2">Greenhouse Maribaya (Lembang)</option>
               <option value="GH-3">Greenhouse Cisondari (Pasirjambu)</option>
@@ -179,140 +276,217 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
           </div>
         </div>
 
-        {/* Tabel Posisi Pohon */}
-        <div style={{ padding: '1.25rem 1.5rem', overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#F6F8F4', borderBottom: '1px solid #DDE5DC', color: '#1B2A22', textAlign: 'left' }}>
-                <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>No</th>
-                <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Greenhouse</th>
-                <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Jalur & Nomor</th>
-                <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>ID Pohon & Buah</th>
-                <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Status</th>
-                <th style={{ padding: '0.65rem 0.85rem', textAlign: 'center', fontWeight: 700 }}>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredItems.map((item, idx) => {
-                const isMatang = item.tingkat_kematangan === 'matang';
-                const isMengkal = item.tingkat_kematangan === 'mengkal';
-                const labelKematangan = isMatang ? 'Matang' : isMengkal ? 'Mengkal' : 'Mentah';
-                const isSick = item.kondisi === 'Sakit' || item.kondisi === 'sakit';
-                const labelKondisi = isSick ? (item.nama_penyakit ? `Sakit · ${item.nama_penyakit}` : 'Sakit') : 'Sehat';
+        {/* Content Body */}
+        {loading ? (
+          <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', color: '#64748B' }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              border: '3px solid #DDE5DC',
+              borderTopColor: '#166534',
+              borderRadius: '50%',
+              margin: '0 auto 1rem',
+              animation: 'spin 0.8s linear infinite'
+            }} />
+            <p style={{ margin: 0, fontSize: '0.84rem', fontWeight: 600, color: '#1B2A22' }}>
+              Memuat data sebaran titik pohon & buah kebun...
+            </p>
+          </div>
+        ) : (
+          <div style={{ padding: '1.25rem 1.5rem', overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#F6F8F4', borderBottom: '1px solid #DDE5DC', color: '#1B2A22', textAlign: 'left' }}>
+                  <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700, width: '45px' }}>No</th>
+                  <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Greenhouse</th>
+                  <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Jalur & Nomor</th>
+                  <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>ID Pohon & Buah</th>
+                  <th style={{ padding: '0.65rem 0.85rem', fontWeight: 700 }}>Status</th>
+                  <th style={{ padding: '0.65rem 0.85rem', textAlign: 'center', fontWeight: 700 }}>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredItems.map((item, idx) => {
+                  const isMatang = item.tingkat_kematangan === 'matang';
+                  const isMengkal = item.tingkat_kematangan === 'mengkal';
+                  const labelKematangan = isMatang ? 'Matang' : isMengkal ? 'Mengkal' : 'Mentah';
+                  const isSick = item.kondisi === 'Sakit' || item.kondisi === 'sakit';
+                  const labelKondisi = isSick ? (item.nama_penyakit ? `Sakit · ${item.nama_penyakit}` : 'Sakit') : 'Sehat';
 
-                return (
-                  <tr
-                    key={idx}
-                    style={{
-                      borderBottom: '1px solid #DDE5DC',
-                      backgroundColor: idx % 2 === 0 ? '#ffffff' : '#F6F8F4'
-                    }}
-                  >
-                    <td style={{ padding: '0.65rem 0.85rem', color: '#64748B' }}>
-                      {idx + 1}
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem', color: '#1B2A22' }}>
-                      {item.greenhouse_name || item.greenhouse_id}
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem' }}>
-                      <span className="badge badge-info" style={{ fontSize: '0.68rem', marginRight: '4px' }}>
-                        {item.row || `Jalur ${item.row_index}`}
-                      </span>
-                      <strong style={{ color: '#1B2A22' }}>#{item.tree_index}</strong>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <QrThumbnail text={item.tree_qr || item.qr_code || item.tree_id} size={32} />
-                        <div>
-                          <div className="font-mono" style={{ fontSize: '0.76rem', color: '#1B2A22', fontWeight: 700 }}>
-                            {item.tree_id}
+                  return (
+                    <tr
+                      key={item.tree_id ? `${item.tree_id}-${idx}` : idx}
+                      style={{
+                        borderBottom: '1px solid #DDE5DC',
+                        backgroundColor: idx % 2 === 0 ? '#ffffff' : '#F6F8F4'
+                      }}
+                    >
+                      <td style={{ padding: '0.65rem 0.85rem', color: '#64748B' }}>
+                        {idx + 1}
+                      </td>
+                      <td style={{ padding: '0.65rem 0.85rem', color: '#1B2A22' }}>
+                        <span style={{ fontWeight: 600 }}>{item.greenhouse_name || item.greenhouse_id}</span>
+                      </td>
+                      <td style={{ padding: '0.65rem 0.85rem' }}>
+                        <span className="badge badge-info" style={{ fontSize: '0.68rem', marginRight: '4px' }}>
+                          {item.row || `Jalur ${item.row_index || 1}`}
+                        </span>
+                        <strong style={{ color: '#1B2A22' }}>#{item.tree_index || 1}</strong>
+                      </td>
+                      <td style={{ padding: '0.65rem 0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                          <QrThumbnail text={item.tree_qr || item.qr_code || item.tree_id} size={32} />
+                          <div>
+                            <div className="font-mono" style={{ fontSize: '0.76rem', color: '#1B2A22', fontWeight: 700 }}>
+                              {item.tree_id}
+                            </div>
+                            <div className="font-mono" style={{ fontSize: '0.7rem', color: isSick ? '#B91C1C' : '#166534', fontWeight: 600 }}>
+                              {item.tree_qr || item.qr_code || item.tree_id}
+                            </div>
+                            {item.fruit_id && (
+                              <small className="font-mono" style={{ fontSize: '0.68rem', color: '#64748B', display: 'block' }}>
+                                Buah: {item.fruit_id}
+                              </small>
+                            )}
                           </div>
-                          <div className="font-mono" style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600 }}>
-                            {item.tree_qr || item.qr_code || item.tree_id}
-                          </div>
-                          {item.fruit_id && (
-                            <small className="font-mono" style={{ fontSize: '0.68rem', color: '#64748B', display: 'block' }}>
-                              Buah: {item.fruit_id}
-                            </small>
-                          )}
                         </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem' }}>
-                      {type === 'ripeness' ? (
-                        <span className={`badge ${isMatang ? 'badge-success' : isMengkal ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.7rem' }}>
-                          {labelKematangan}
-                        </span>
-                      ) : (
-                        <span className={`badge ${isSick ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.7rem' }}>
-                          {labelKondisi}
-                        </span>
-                      )}
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
-                      {type === 'disease' ? (
-                        <button
-                          onClick={() => {
-                            onClose();
-                            if (onSelectTree && item.tree_id) {
-                              onSelectTree(item.tree_id);
-                            }
-                          }}
-                          style={{
-                            padding: '0.35rem 0.75rem',
-                            backgroundColor: isSick ? '#B91C1C' : '#047857',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '0.35rem',
-                            fontSize: '0.73rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.3rem'
-                          }}
-                        >
-                          <Eye size={13} weight="bold" /> Lihat penyakit
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            onClose();
-                            if (onSelectFruit && item.fruit_id) {
-                              onSelectFruit(item.fruit_id);
-                            }
-                          }}
-                          style={{
-                            padding: '0.35rem 0.75rem',
-                            backgroundColor: '#166534',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '0.35rem',
-                            fontSize: '0.73rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.3rem'
-                          }}
-                        >
-                          <Eye size={13} weight="bold" /> Lihat buah
-                        </button>
-                      )}
+                      </td>
+                      <td style={{ padding: '0.65rem 0.85rem' }}>
+                        {type === 'ripeness' ? (
+                          <span className={`badge ${isMatang ? 'badge-success' : isMengkal ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.7rem' }}>
+                            {labelKematangan}
+                          </span>
+                        ) : type === 'disease' ? (
+                          <span className={`badge ${isSick ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.7rem' }}>
+                            {labelKondisi}
+                          </span>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-start' }}>
+                            <span className={`badge ${isMatang ? 'badge-success' : isMengkal ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.68rem', padding: '2px 7px' }}>
+                              Buah: {labelKematangan}
+                            </span>
+                            <span className={`badge ${isSick ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.68rem', padding: '2px 7px' }}>
+                              Daun: {labelKondisi}
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
+                        {type === 'disease' ? (
+                          <button
+                            onClick={() => {
+                              onClose();
+                              if (onSelectTree && item.tree_id) {
+                                onSelectTree(item.tree_id);
+                              }
+                            }}
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              backgroundColor: isSick ? '#B91C1C' : '#047857',
+                              color: '#ffffff',
+                              border: 'none',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.73rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.3rem'
+                            }}
+                          >
+                            <Eye size={13} weight="bold" /> Lihat detail
+                          </button>
+                        ) : type === 'ripeness' ? (
+                          <button
+                            onClick={() => {
+                              onClose();
+                              if (onSelectFruit && item.fruit_id) {
+                                onSelectFruit(item.fruit_id);
+                              }
+                            }}
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              backgroundColor: '#166534',
+                              color: '#ffffff',
+                              border: 'none',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.73rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.3rem'
+                            }}
+                          >
+                            <Eye size={13} weight="bold" /> Lihat buah
+                          </button>
+                        ) : (
+                          <div style={{ display: 'inline-flex', gap: '4px', justifyContent: 'center' }}>
+                            {item.fruit_id && (
+                              <button
+                                onClick={() => {
+                                  onClose();
+                                  if (onSelectFruit) onSelectFruit(item.fruit_id);
+                                }}
+                                style={{
+                                  padding: '0.3rem 0.55rem',
+                                  backgroundColor: '#166534',
+                                  color: '#ffffff',
+                                  border: 'none',
+                                  borderRadius: '0.35rem',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem'
+                                }}
+                                title="Lihat rincian kematangan buah"
+                              >
+                                <Eye size={12} weight="bold" /> Buah
+                              </button>
+                            )}
+                            {item.tree_id && (
+                              <button
+                                onClick={() => {
+                                  onClose();
+                                  if (onSelectTree) onSelectTree(item.tree_id);
+                                }}
+                                style={{
+                                  padding: '0.3rem 0.55rem',
+                                  backgroundColor: isSick ? '#B91C1C' : '#047857',
+                                  color: '#ffffff',
+                                  border: 'none',
+                                  borderRadius: '0.35rem',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem'
+                                }}
+                                title="Lihat rincian kesehatan daun pohon"
+                              >
+                                <Eye size={12} weight="bold" /> Daun
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filteredItems.length === 0 && (
+                  <tr>
+                    <td colSpan="6" style={{ padding: '2.5rem', textAlign: 'center', color: '#64748B' }}>
+                      Tidak ada pohon yang cocok dengan filter pencarian.
                     </td>
                   </tr>
-                );
-              })}
-              {filteredItems.length === 0 && (
-                <tr>
-                  <td colSpan="6" style={{ padding: '2.5rem', textAlign: 'center', color: '#64748B' }}>
-                    Tidak ada pohon yang cocok.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

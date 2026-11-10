@@ -83,21 +83,19 @@ export default function Kematangan({
   }, [ghFilter, ripenessFilter]);
 
   const handleOpenPositions = (catKey) => {
-    if (!summaryReport || !summaryReport[catKey]) {
-      onOpenPositionsModal({
-        title: `Posisi Pohon: Buah ${catKey === 'matang' ? 'Matang' : catKey === 'mengkal' ? 'Mengkal' : 'Mentah'}`,
-        color: catKey === 'matang' ? 'green' : catKey === 'mengkal' ? 'yellow' : 'gray',
-        count: stats?.ripeness?.[catKey] || 0,
-        type: 'ripeness'
-      });
-      return;
+    let matchedFruits = [];
+    if (summaryReport && summaryReport[catKey] && Array.isArray(summaryReport[catKey].positions)) {
+      matchedFruits = summaryReport[catKey].positions;
+    } else if (fruits && fruits.length > 0) {
+      matchedFruits = fruits.filter(f => f.tingkat_kematangan === catKey);
     }
-    const catData = summaryReport[catKey];
+    const label = catKey === 'matang' ? 'Matang' : catKey === 'mengkal' ? 'Mengkal' : 'Mentah';
     onOpenPositionsModal({
-      title: `Posisi Pohon: Buah ${catKey === 'matang' ? 'Matang' : catKey === 'mengkal' ? 'Mengkal' : 'Mentah'} (${catData.total} Pohon)`,
+      title: `Posisi Pohon: Buah ${label} (${matchedFruits.length || stats?.ripeness?.[catKey] || 0} Pohon)`,
       color: catKey === 'matang' ? 'green' : catKey === 'mengkal' ? 'yellow' : 'gray',
-      count: catData.total,
-      items: catData.positions,
+      count: matchedFruits.length || stats?.ripeness?.[catKey] || 0,
+      items: matchedFruits,
+      filter: catKey,
       type: 'ripeness'
     });
   };

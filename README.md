@@ -114,26 +114,43 @@ kematangan-dan-penyakit/
 
 ---
 
-## Cara Menjalankan
+## Panduan Instalasi & Menjalankan
 
-### Menjalankan Server Produksi (Flask + React Build)
-```powershell
-.\run.bat
-# atau
-& "C:\Users\Acer\AppData\Local\Python\pythoncore-3.14-64\python.exe" run.py
+> 📘 **Panduan Lengkap Step-by-Step**: Lihat dokumen **[PANDUAN_MENJALANKAN.md](PANDUAN_MENJALANKAN.md)** untuk petunjuk instalasi detail di Windows, Linux, dan macOS, pengujian sistem, serta pemecahan masalah.
+
+### Langkah Cepat (Siap Pakai):
+1. **Clone repositori**:
+   ```bash
+   git clone <URL_REPOSITORY>
+   cd kematangan-dan-penyakit
+   ```
+2. **Setup Virtual Environment & Install Dependensi**:
+   ```bash
+   python -m venv venv
+   # Windows (PowerShell):
+   .\venv\Scripts\Activate.ps1
+   # Linux/macOS:
+   source venv/bin/activate
+
+   pip install -r requirements.txt
+   ```
+3. **Jalankan Aplikasi**:
+   * Windows: Dobel klik `run.bat` atau ketik `python run.py`
+   * Linux / macOS: `python3 run.py`
+4. **Buka Browser**:
+   Kunjungi [http://localhost:5000](http://localhost:5000)
+
+### Menjalankan Uji Otomatis (API Testing):
+```bash
+python test_api.py
 ```
-Buka browser di:
-`http://localhost:5000`
 
-### Menjalankan Uji Otomatis
-```powershell
-& "C:\Users\Acer\AppData\Local\Python\pythoncore-3.14-64\python.exe" test_api.py
-```
-
-### Mengembangkan Frontend (Vite Dev Server)
-```powershell
+### Mengembangkan Frontend (Mode Dev Vite - Opsional):
+Jika ingin memodifikasi tampilan antarmuka React:
+```bash
 cd frontend
 npm install
 npm run dev
+# Buka di: http://localhost:5173
+# Untuk build ulang ke Flask: npm run build
 ```
-Buka di: `http://localhost:5173`

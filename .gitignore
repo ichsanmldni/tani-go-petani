@@ -1,0 +1,101 @@
+# ==========================================
+# Codingtani Git Ignore
+# Sistem Monitoring Kematangan & Penyakit Daun Melon
+# ==========================================
+
+# ----------------- Python / Flask -----------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+!static/dist/
+!static/dist/**
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+
+# ----------------- Node.js / Vite Frontend -----------------
+node_modules/
+*/node_modules/
+frontend/node_modules/
+frontend/.vite/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.npm/
+
+# ----------------- Machine Learning, Dataset & Samples -----------------
+.ipynb_checkpoints/
+runs/
+wandb/
+*.pt.tmp
+
+# Dataset & Sampel Foto (dikecualikan dari Git agar repo ringan)
+Dataset/
+static/img/real_samples/
+static/dist/static/
+*real_samples*
+real_samples/
+
+# ----------------- IDE & Editor -----------------
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+*.sublime-workspace
+*.sublime-project
+
+# ----------------- OS & System Files -----------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# ----------------- Logs & Temporary -----------------
+*.log
+logs/
+tmp/
+temp/

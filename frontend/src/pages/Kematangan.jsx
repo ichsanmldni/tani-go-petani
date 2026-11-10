@@ -365,22 +365,59 @@ export default function Kematangan({
 
           <CapsuleBarChart ghDistribution={stats?.gh_distribution} />
 
-          {/* Greenhouse Sub-badges */}
+          {/* Greenhouse Sub-badges: Proper 3-Column Micro-Grid */}
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '0.45rem',
             paddingTop: '0.85rem',
             marginTop: '0.85rem',
-            borderTop: '1px solid var(--border-subtle, #E2E8F0)',
-            fontSize: '0.74rem',
-            color: 'var(--text-muted, #475569)',
-            flexWrap: 'wrap',
-            gap: '0.5rem'
+            borderTop: '1px solid var(--border-subtle, #E2E8F0)'
           }}>
-            <span>Sakura: <strong style={{ color: 'var(--text-main, #0F172A)' }}>11 Matang</strong></span>
-            <span>Maribaya: <strong style={{ color: 'var(--text-main, #0F172A)' }}>10 Matang</strong></span>
-            <span>Cisondari: <strong style={{ color: 'var(--text-main, #0F172A)' }}>7 Matang</strong></span>
+            <div style={{
+              padding: '0.45rem 0.5rem',
+              backgroundColor: '#F8FAFC',
+              borderRadius: '8px',
+              border: '1px solid var(--border-subtle, #E2E8F0)',
+              textAlign: 'center'
+            }}>
+              <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                GH-1 Sakura
+              </span>
+              <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
+                11 Matang
+              </strong>
+            </div>
+
+            <div style={{
+              padding: '0.45rem 0.5rem',
+              backgroundColor: '#F8FAFC',
+              borderRadius: '8px',
+              border: '1px solid var(--border-subtle, #E2E8F0)',
+              textAlign: 'center'
+            }}>
+              <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                GH-2 Maribaya
+              </span>
+              <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
+                10 Matang
+              </strong>
+            </div>
+
+            <div style={{
+              padding: '0.45rem 0.5rem',
+              backgroundColor: '#F8FAFC',
+              borderRadius: '8px',
+              border: '1px solid var(--border-subtle, #E2E8F0)',
+              textAlign: 'center'
+            }}>
+              <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                GH-3 Cisondari
+              </span>
+              <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
+                7 Matang
+              </strong>
+            </div>
           </div>
         </div>
 

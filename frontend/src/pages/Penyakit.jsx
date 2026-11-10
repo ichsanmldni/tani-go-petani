@@ -425,50 +425,65 @@ export default function Penyakit({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
               {/* GH-1 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
-                <div>
-                  <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                    GH-1 Sakura (Ciwidey)
-                  </strong>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
-                    Total 32 Pohon
-                  </span>
+              <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
+                      GH-1 Sakura (Ciwidey)
+                    </strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
+                      Total 32 Pohon
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className="badge badge-success" style={{ fontSize: '11px' }}>27 Sehat</span>
+                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>5 Perlu Cek</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span className="badge badge-success" style={{ fontSize: '11px' }}>27 Sehat</span>
-                  <span className="badge badge-danger" style={{ fontSize: '11px' }}>5 Perlu Cek</span>
+                <div style={{ height: '5px', backgroundColor: '#FEE2E2', borderRadius: '999px', overflow: 'hidden', display: 'flex', marginTop: '0.45rem' }}>
+                  <div style={{ width: `${(27 / 32) * 100}%`, backgroundColor: '#16A34A' }} />
                 </div>
               </div>
 
               {/* GH-2 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
-                <div>
-                  <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                    GH-2 Maribaya (Lembang)
-                  </strong>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
-                    Total 32 Pohon
-                  </span>
+              <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
+                      GH-2 Maribaya (Lembang)
+                    </strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
+                      Total 32 Pohon
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className="badge badge-success" style={{ fontSize: '11px' }}>25 Sehat</span>
+                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>7 Perlu Cek</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span className="badge badge-success" style={{ fontSize: '11px' }}>25 Sehat</span>
-                  <span className="badge badge-danger" style={{ fontSize: '11px' }}>7 Perlu Cek</span>
+                <div style={{ height: '5px', backgroundColor: '#FEE2E2', borderRadius: '999px', overflow: 'hidden', display: 'flex', marginTop: '0.45rem' }}>
+                  <div style={{ width: `${(25 / 32) * 100}%`, backgroundColor: '#16A34A' }} />
                 </div>
               </div>
 
               {/* GH-3 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
-                <div>
-                  <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                    GH-3 Cisondari (Pasirjambu)
-                  </strong>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
-                    Total 32 Pohon
-                  </span>
+              <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
+                      GH-3 Cisondari (Pasirjambu)
+                    </strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
+                      Total 32 Pohon
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className="badge badge-success" style={{ fontSize: '11px' }}>22 Sehat</span>
+                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>10 Perlu Cek</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span className="badge badge-success" style={{ fontSize: '11px' }}>22 Sehat</span>
-                  <span className="badge badge-danger" style={{ fontSize: '11px' }}>10 Perlu Cek</span>
+                <div style={{ height: '5px', backgroundColor: '#FEE2E2', borderRadius: '999px', overflow: 'hidden', display: 'flex', marginTop: '0.45rem' }}>
+                  <div style={{ width: `${(22 / 32) * 100}%`, backgroundColor: '#16A34A' }} />
                 </div>
               </div>
             </div>

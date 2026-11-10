@@ -10,8 +10,28 @@ import {
   VideoCamera,
   QrCode,
   Table as TableIcon,
-  SquaresFour
+  SquaresFour,
+  ChartBar
 } from '@phosphor-icons/react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 import QrThumbnail from '../components/QrThumbnail.jsx';
 import GaugeArc from '../components/GaugeArc.jsx';
@@ -104,6 +124,95 @@ export default function Kematangan({
     }
     return result;
   }, [fruits, searchQuery]);
+
+  // Sebaran tingkat kematangan per greenhouse
+  const ghDist = stats?.gh_distribution || {
+    'GH-1': { name: 'Greenhouse Sakura (Ciwidey)', matang: 11, mengkal: 14, mentah: 7, total_fruits: 32 },
+    'GH-2': { name: 'Greenhouse Maribaya (Lembang)', matang: 10, mengkal: 12, mentah: 10, total_fruits: 32 },
+    'GH-3': { name: 'Greenhouse Cisondari (Pasirjambu)', matang: 7, mengkal: 10, mentah: 15, total_fruits: 32 }
+  };
+
+  const ghKeys = Object.keys(ghDist);
+  const ghShortLabels = ghKeys.map(k => {
+    const fullName = ghDist[k].name || k;
+    if (fullName.includes('Sakura')) return 'GH-1 Sakura';
+    if (fullName.includes('Maribaya')) return 'GH-2 Maribaya';
+    if (fullName.includes('Cisondari')) return 'GH-3 Cisondari';
+    return fullName;
+  });
+
+  const sebaranChartData = useMemo(() => ({
+    labels: ghShortLabels,
+    datasets: [
+      {
+        label: 'Matang (Siap Petik)',
+        data: ghKeys.map(k => ghDist[k].matang || 0),
+        backgroundColor: '#166534',
+        borderRadius: 6,
+        barPercentage: 0.65,
+        categoryPercentage: 0.7
+      },
+      {
+        label: 'Mengkal (Booking)',
+        data: ghKeys.map(k => ghDist[k].mengkal || 0),
+        backgroundColor: '#F59E0B',
+        borderRadius: 6,
+        barPercentage: 0.65,
+        categoryPercentage: 0.7
+      },
+      {
+        label: 'Mentah (Pertumbuhan)',
+        data: ghKeys.map(k => ghDist[k].mentah || 0),
+        backgroundColor: '#94A3B8',
+        borderRadius: 6,
+        barPercentage: 0.65,
+        categoryPercentage: 0.7
+      }
+    ]
+  }), [ghDist]);
+
+  const sebaranChartOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        align: 'end',
+        labels: {
+          boxWidth: 8,
+          boxHeight: 8,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: { size: 11, family: 'Inter, sans-serif', weight: 600 },
+          color: '#475569',
+          padding: 14
+        }
+      },
+      tooltip: {
+        backgroundColor: '#0F172A',
+        titleFont: { size: 12, family: 'Plus Jakarta Sans', weight: 'bold' },
+        bodyFont: { size: 11, family: 'Inter' },
+        padding: 10,
+        cornerRadius: 8,
+        callbacks: {
+          label: (ctx) => ` ${ctx.dataset.label.split(' ')[0]}: ${ctx.raw} Buah`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 11, family: 'Inter', weight: 600 }, color: '#475569' }
+      },
+      y: {
+        beginAtZero: true,
+        max: 18,
+        grid: { color: '#F1F5F9' },
+        ticks: { stepSize: 5, font: { size: 10.5, family: 'Inter' }, color: '#94A3B8' },
+        border: { dash: [4, 4] }
+      }
+    }
+  }), []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -535,6 +644,104 @@ export default function Kematangan({
               </strong>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* 3. Row Sebaran Kematangan Tiap Greenhouse (Chart per Kebun / GH) */}
+      <div className="panel" style={{ padding: '1.25rem 1.5rem' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          marginBottom: '1.15rem'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ChartBar size={18} weight="bold" style={{ color: 'var(--primary, #166534)' }} />
+              <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0, letterSpacing: '-0.015em' }}>
+                Sebaran Kematangan Tiap Greenhouse
+              </h2>
+            </div>
+            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: 'var(--text-dim, #64748B)' }}>
+              Perbandingan jumlah buah matang, mengkal, dan mentah di setiap kebun hidroponik.
+            </p>
+          </div>
+          <span style={{
+            fontSize: '0.72rem',
+            color: 'var(--primary, #166534)',
+            fontWeight: 700,
+            backgroundColor: '#F0FDF4',
+            padding: '3px 10px',
+            borderRadius: '999px',
+            border: '1px solid #BBF7D0'
+          }}>
+            3 Greenhouse Aktif
+          </span>
+        </div>
+
+        {/* 3 Greenhouse Multi-Phase Progress Cards */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '0.85rem',
+          marginBottom: '1.25rem'
+        }}>
+          {ghKeys.map(gid => {
+            const gh = ghDist[gid] || {};
+            const total = gh.total_fruits || 32;
+            const matang = gh.matang || 0;
+            const mengkal = gh.mengkal || 0;
+            const mentah = gh.mentah || 0;
+            const matangPct = Math.round((matang / (total || 1)) * 100);
+
+            return (
+              <div
+                key={gid}
+                style={{
+                  padding: '0.85rem 1rem',
+                  backgroundColor: '#F8FAFC',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-subtle, #E2E8F0)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                  <strong style={{ fontSize: '0.86rem', color: 'var(--text-main, #0F172A)', fontWeight: 700 }}>
+                    {gh.name || gid}
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--primary, #166534)' }}>
+                    {matang} Matang ({matangPct}%)
+                  </span>
+                </div>
+
+                {/* Multi-phase Stacked Progress Bar */}
+                <div style={{
+                  height: '7px',
+                  backgroundColor: '#E2E8F0',
+                  borderRadius: '999px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  margin: '0.5rem 0'
+                }}>
+                  <div style={{ width: `${(matang / total) * 100}%`, backgroundColor: 'var(--primary, #166534)' }} title={`Matang: ${matang}`} />
+                  <div style={{ width: `${(mengkal / total) * 100}%`, backgroundColor: 'var(--accent-melon, #F59E0B)' }} title={`Mengkal: ${mengkal}`} />
+                  <div style={{ width: `${(mentah / total) * 100}%`, backgroundColor: '#94A3B8' }} title={`Mentah: ${mentah}`} />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-dim, #64748B)', marginTop: '0.35rem' }}>
+                  <span>● Mengkal: <strong style={{ color: '#B45309' }}>{mengkal}</strong></span>
+                  <span>● Mentah: <strong style={{ color: '#475569' }}>{mentah}</strong></span>
+                  <span>Total: <strong>{total} buah</strong></span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Grouped Bar Chart */}
+        <div style={{ height: '210px', width: '100%', position: 'relative' }}>
+          <Bar data={sebaranChartData} options={sebaranChartOptions} />
         </div>
       </div>
 

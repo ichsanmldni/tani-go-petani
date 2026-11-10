@@ -160,10 +160,10 @@ export default function Penyakit({
         </div>
       </div>
 
-      {/* 2. Top Row: 4 Bento Stat Cards */}
+      {/* 2. Top Row: 3 Bento Stat Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
         gap: '1.25rem'
       }}>
         {/* Card 1: HERO HIGHLIGHT CARD (Deep Green #14532D) */}
@@ -272,25 +272,25 @@ export default function Penyakit({
           </div>
         </div>
 
-        {/* Card 3: Kutu Daun (Aphids) */}
+        {/* Card 3: Total Populasi Pohon Dipantau */}
         <div
           onClick={() => {
             if (onOpenPositionsModal) {
               onOpenPositionsModal({
-                title: 'Daftar Titik Pohon Terindikasi Kutu Daun (Aphids)',
-                color: 'red',
-                count: 12,
-                type: 'disease'
+                title: 'Sebaran Seluruh Titik Pohon Melon',
+                color: 'green',
+                count: totalTrees,
+                type: 'all'
               });
             }
           }}
           className="bento-card bento-card-interactive"
-          title="Klik untuk melihat titik pohon terkena kutu daun"
+          title="Klik untuk melihat seluruh sebaran pohon"
           style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
             <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
-              Kutu Daun (Aphids)
+              Total Pohon Dipantau
             </span>
             <div className="bento-circle-arrow">
               <ArrowUpRight size={15} weight="bold" />
@@ -306,76 +306,23 @@ export default function Penyakit({
             fontFamily: 'var(--font-heading)',
             letterSpacing: '-0.03em'
           }}>
-            12
+            {totalTrees}
           </div>
 
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '5px',
-            backgroundColor: 'var(--amber-subtle, #FFFBEB)',
-            border: '1px solid var(--amber-border, #FDE68A)',
+            backgroundColor: '#F8FAFC',
+            border: '1px solid var(--border-subtle, #E2E8F0)',
             borderRadius: '999px',
             padding: '3px 9px',
             fontSize: '0.7rem',
             fontWeight: 700,
-            color: 'var(--amber-text, #B45309)'
+            color: 'var(--text-dim, #64748B)'
           }}>
-            <Bug size={12} weight="bold" />
-            <span>Indikasi Bercak Kuning</span>
-          </div>
-        </div>
-
-        {/* Card 4: Embun Tepung (Powdery Mildew) */}
-        <div
-          onClick={() => {
-            if (onOpenPositionsModal) {
-              onOpenPositionsModal({
-                title: 'Daftar Titik Pohon Terindikasi Embun Tepung',
-                color: 'red',
-                count: 10,
-                type: 'disease'
-              });
-            }
-          }}
-          className="bento-card bento-card-interactive"
-          title="Klik untuk melihat titik pohon terkena embun tepung"
-          style={{ overflow: 'hidden' }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
-              Embun Tepung
-            </span>
-            <div className="bento-circle-arrow">
-              <ArrowUpRight size={15} weight="bold" />
-            </div>
-          </div>
-
-          <div style={{
-            fontSize: '2.5rem',
-            fontWeight: 800,
-            color: 'var(--text-main, #0F172A)',
-            lineHeight: 1,
-            marginBottom: '0.75rem',
-            fontFamily: 'var(--font-heading)',
-            letterSpacing: '-0.03em'
-          }}>
-            10
-          </div>
-
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '5px',
-            backgroundColor: '#FFF1F2',
-            border: '1px solid #FECDD3',
-            borderRadius: '999px',
-            padding: '3px 9px',
-            fontSize: '0.7rem',
-            fontWeight: 700,
-            color: '#BE123C'
-          }}>
-            <span>Lapisan Putih Permukaan</span>
+            <Plant size={12} weight="bold" />
+            <span>3 Greenhouse Hidroponik</span>
           </div>
         </div>
       </div>

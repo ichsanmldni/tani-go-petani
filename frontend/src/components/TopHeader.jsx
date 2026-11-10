@@ -26,8 +26,8 @@ export default function TopHeader({
         boxSizing: 'border-box'
       }}
     >
-      {/* Left: Mobile Toggle & Search Pill Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '520px', minWidth: 0 }}>
+      {/* Search Pill Bar & Mobile Toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '560px', minWidth: 0 }}>
         {/* Mobile Hamburger Button */}
         <button
           onClick={() => setSidebarOpen && setSidebarOpen(!sidebarOpen)}
@@ -109,25 +109,6 @@ export default function TopHeader({
           }}>
             <span>/</span>
           </div>
-        </div>
-      </div>
-
-      {/* Right: Clean Greenhouse Live Indicator (Tanpa akun, refresh, atau notifikasi) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '4px 10px',
-          borderRadius: '9999px',
-          backgroundColor: '#F0FDF4',
-          border: '1px solid #BBF7D0',
-          fontSize: '0.74rem',
-          fontWeight: 700,
-          color: '#166534'
-        }}>
-          <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A' }} />
-          <span>3 Greenhouse Terhubung</span>
         </div>
       </div>
     </header>

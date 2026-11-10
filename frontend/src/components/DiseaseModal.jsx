@@ -102,7 +102,7 @@ export default function DiseaseModal({ tree, onClose, onViewFruit, onOpenFruit }
                   Detail Pemeriksaan Daun
                 </h3>
                 <span className={`badge ${isSick ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.72rem' }}>
-                  {isSick ? 'Perlu dicek' : 'Sehat'}
+                  {isSick ? 'Sakit' : 'Sehat'}
                 </span>
               </div>
               <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748B' }}>
@@ -210,7 +210,7 @@ export default function DiseaseModal({ tree, onClose, onViewFruit, onOpenFruit }
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div style={{ fontWeight: 800, color: isSick ? '#B91C1C' : '#047857', fontSize: '0.9rem' }}>
-                Kondisi: {tree.nama_penyakit || (isSick ? 'Perlu dicek' : 'Sehat')}
+                Kondisi: {isSick ? 'Sakit' : 'Sehat'} · {tree.nama_penyakit || (isSick ? 'Gejala Infeksi' : 'Normal')}
               </div>
               <span className="font-mono" style={{ fontSize: '0.74rem', color: '#64748B' }}>
                 Akurasi deteksi: {confidenceVal}%

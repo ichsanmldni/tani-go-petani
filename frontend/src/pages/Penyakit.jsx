@@ -67,7 +67,7 @@ export default function Penyakit({
   const handleOpenRowPositions = (ghName, rowName, items = [], type) => {
     const safeItems = Array.isArray(items) ? items : [];
     onOpenPositionsModal({
-      title: `Posisi Pohon ${type === 'sakit' ? 'Perlu Dicek' : 'Sehat'}: ${ghName} — ${rowName}`,
+      title: `Posisi Pohon ${type === 'sakit' ? 'Sakit' : 'Sehat'}: ${ghName} — ${rowName}`,
       color: type === 'sakit' ? 'red' : 'green',
       count: safeItems.length,
       items: safeItems.map(it => ({
@@ -77,6 +77,36 @@ export default function Penyakit({
       })),
       type: 'disease'
     });
+  };
+
+  const getDiagnosisTitle = (t, isSehat) => {
+    if (isSehat) {
+      return t.nama_penyakit || 'Normal (Tanaman Sehat)';
+    }
+    if (t.nama_penyakit && t.nama_penyakit !== 'Perlu Diperiksa' && t.nama_penyakit !== 'Perlu Dicek') {
+      return t.nama_penyakit;
+    }
+    if (t.disease_name) return t.disease_name;
+    if (t.diagnosis && t.diagnosis !== 'Perlu Diperiksa' && t.diagnosis !== 'Gejala Sakit') {
+      return t.diagnosis;
+    }
+    if (t.raw_class) {
+      const rawMap = {
+        aphid: 'Aphid (Kutu Daun)',
+        fungus: 'Fungus (Jamur Daun)',
+        'leaf miner': 'Leaf Miner (Pengorok Daun)',
+        unknown: 'Lainnya (Unknown / Atipikal)',
+        normal: 'Normal (Tanaman Sehat)'
+      };
+      if (rawMap[t.raw_class]) return rawMap[t.raw_class];
+    }
+    if (t.gejala) {
+      const g = t.gejala.toLowerCase();
+      if (g.includes('kutu daun') || g.includes('aphid')) return 'Aphid (Kutu Daun)';
+      if (g.includes('jamur') || g.includes('fungus')) return 'Fungus (Jamur Daun)';
+      if (g.includes('pengorok') || g.includes('leaf miner')) return 'Leaf Miner (Pengorok Daun)';
+    }
+    return 'Sakit (Terindikasi Hama)';
   };
 
   const sehatCount = stats?.disease?.sehat || 74;
@@ -93,7 +123,10 @@ export default function Penyakit({
       result = result.filter(t =>
         t.tree_id?.toLowerCase().includes(q) ||
         t.greenhouse_name?.toLowerCase().includes(q) ||
-        t.diagnosis?.toLowerCase().includes(q)
+        t.nama_penyakit?.toLowerCase().includes(q) ||
+        t.diagnosis?.toLowerCase().includes(q) ||
+        t.gejala?.toLowerCase().includes(q) ||
+        t.kondisi?.toLowerCase().includes(q)
       );
     }
     return result;
@@ -219,12 +252,12 @@ export default function Penyakit({
           </div>
         </div>
 
-        {/* Card 2: Pohon Perlu Dicek / Sakit */}
+        {/* Card 2: Pohon Sakit */}
         <div
           onClick={() => {
             if (onOpenPositionsModal) {
               onOpenPositionsModal({
-                title: 'Daftar Titik Pohon Perlu Dicek',
+                title: 'Daftar Titik Pohon Sakit',
                 color: 'red',
                 count: sakitCount,
                 type: 'disease'
@@ -232,12 +265,12 @@ export default function Penyakit({
             }
           }}
           className="bento-card bento-card-interactive"
-          title="Klik untuk melihat posisi pohon yang perlu dicek"
+          title="Klik untuk melihat posisi pohon yang sakit"
           style={{ overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
             <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-dim, #64748B)' }}>
-              Perlu Dicek
+              Pohon Sakit
             </span>
             <div className="bento-circle-arrow">
               <ArrowUpRight size={15} weight="bold" />
@@ -269,7 +302,7 @@ export default function Penyakit({
             color: '#B91C1C'
           }}>
             <ShieldWarning size={12} weight="bold" />
-            <span>Perlu Perawatan Daun</span>
+            <span>Terindikasi Penyakit</span>
           </div>
         </div>
 
@@ -399,7 +432,7 @@ export default function Penyakit({
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#B91C1C' }} />
                 <span style={{ fontSize: '10px', color: '#B91C1C', fontWeight: 700 }}>
-                  Perlu Dicek ({sickPct}%)
+                  Sakit ({sickPct}%)
                 </span>
               </div>
               <strong style={{ fontSize: '12px', color: '#B91C1C', fontWeight: 800 }}>
@@ -421,7 +454,7 @@ export default function Penyakit({
               </span>
             </div>
             <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1.1rem 0' }}>
-              Distribusi pohon sehat dan titik yang perlu dicek pada setiap lokasi
+              Distribusi pohon sehat dan sakit pada setiap lokasi
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -438,7 +471,7 @@ export default function Penyakit({
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className="badge badge-success" style={{ fontSize: '11px' }}>27 Sehat</span>
-                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>5 Perlu Cek</span>
+                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>5 Sakit</span>
                   </div>
                 </div>
                 <div style={{ height: '5px', backgroundColor: '#FEE2E2', borderRadius: '999px', overflow: 'hidden', display: 'flex', marginTop: '0.45rem' }}>
@@ -459,7 +492,7 @@ export default function Penyakit({
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className="badge badge-success" style={{ fontSize: '11px' }}>25 Sehat</span>
-                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>7 Perlu Cek</span>
+                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>7 Sakit</span>
                   </div>
                 </div>
                 <div style={{ height: '5px', backgroundColor: '#FEE2E2', borderRadius: '999px', overflow: 'hidden', display: 'flex', marginTop: '0.45rem' }}>
@@ -480,7 +513,7 @@ export default function Penyakit({
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className="badge badge-success" style={{ fontSize: '11px' }}>22 Sehat</span>
-                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>10 Perlu Cek</span>
+                    <span className="badge badge-danger" style={{ fontSize: '11px' }}>10 Sakit</span>
                   </div>
                 </div>
                 <div style={{ height: '5px', backgroundColor: '#FEE2E2', borderRadius: '999px', overflow: 'hidden', display: 'flex', marginTop: '0.45rem' }}>
@@ -494,7 +527,7 @@ export default function Penyakit({
             onClick={() => {
               if (onOpenPositionsModal) {
                 onOpenPositionsModal({
-                  title: 'Daftar Titik Pohon Perlu Dicek (Seluruh Greenhouse)',
+                  title: 'Daftar Titik Pohon Sakit (Seluruh Greenhouse)',
                   color: 'red',
                   count: sakitCount,
                   type: 'disease'
@@ -505,7 +538,7 @@ export default function Penyakit({
             style={{ width: '100%', justifyContent: 'center', padding: '0.7rem', backgroundColor: '#B91C1C', marginTop: '1rem' }}
           >
             <ShieldWarning size={15} weight="bold" />
-            <span>Lihat Posisi Pohon Perlu Dicek ({sakitCount})</span>
+            <span>Lihat Posisi Pohon Sakit ({sakitCount})</span>
           </button>
         </div>
       </div>
@@ -705,7 +738,8 @@ export default function Penyakit({
                   displayedTrees.map((t) => {
                     const isSehat = t.is_sehat !== false && (!t.kondisi || t.kondisi.toLowerCase() === 'sehat');
                     const badgeClass = isSehat ? 'badge-success' : 'badge-danger';
-                    const badgeLabel = isSehat ? 'Sehat' : 'Perlu Dicek';
+                    const badgeLabel = isSehat ? 'Sehat' : 'Sakit';
+                    const diagnosisTitle = getDiagnosisTitle(t, isSehat);
 
                     return (
                       <tr key={t.tree_id}>
@@ -767,11 +801,11 @@ export default function Penyakit({
 
                         {/* Diagnosis */}
                         <td>
-                          <div style={{ fontSize: '12px', color: isSehat ? '#166534' : '#B91C1C', fontWeight: 600 }}>
-                            {t.diagnosis || (isSehat ? 'Normal (Bebas Hama)' : 'Perlu Diperiksa')}
+                          <div style={{ fontSize: '12px', color: isSehat ? '#166534' : '#B91C1C', fontWeight: 700 }}>
+                            {diagnosisTitle}
                           </div>
                           {t.gejala && (
-                            <div style={{ fontSize: '11px', color: 'var(--text-dim, #64748B)', marginTop: '2px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-dim, #64748B)', marginTop: '2px', lineHeight: 1.35 }}>
                               {t.gejala}
                             </div>
                           )}
@@ -821,7 +855,8 @@ export default function Penyakit({
             {displayedTrees.map((t) => {
               const isSehat = t.is_sehat !== false && (!t.kondisi || t.kondisi.toLowerCase() === 'sehat');
               const badgeClass = isSehat ? 'badge-success' : 'badge-danger';
-              const badgeLabel = isSehat ? 'Sehat' : 'Perlu Dicek';
+              const badgeLabel = isSehat ? 'Sehat' : 'Sakit';
+              const diagnosisTitle = getDiagnosisTitle(t, isSehat);
 
               return (
                 <div
@@ -869,8 +904,8 @@ export default function Penyakit({
                     borderTop: '1px solid var(--border-subtle, #E2E8F0)',
                     fontSize: '11px'
                   }}>
-                    <span style={{ color: isSehat ? '#166534' : '#B91C1C', fontWeight: 600 }}>
-                      {t.diagnosis || (isSehat ? 'Normal' : 'Gejala Sakit')}
+                    <span style={{ color: isSehat ? '#166534' : '#B91C1C', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '170px' }} title={diagnosisTitle}>
+                      {diagnosisTitle}
                     </span>
                     <span style={{ color: 'var(--primary, #166534)', fontWeight: 700 }}>Detail ↗</span>
                   </div>

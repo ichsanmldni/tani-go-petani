@@ -750,7 +750,7 @@ export default function Simulator() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
               <span className={`badge ${diseaseResult.is_sakit ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.82rem', padding: '4px 10px', borderRadius: '999px' }}>
-                {diseaseResult.is_sakit ? 'Perlu dicek' : 'Sehat'}
+                {diseaseResult.is_sakit ? 'Sakit' : 'Sehat'}
               </span>
               <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
                 Akurasi deteksi: <strong style={{ color: '#0F172A' }}>{diseaseResult.confidence}%</strong>
@@ -775,7 +775,7 @@ export default function Simulator() {
           <div style={{ padding: '0.75rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '0.76rem' }}>
             <span style={{ color: '#64748B', display: 'block', fontSize: '0.7rem' }}>Kondisi Tanaman:</span>
             <strong style={{ color: diseaseResult.is_sakit ? '#B91C1C' : '#166534', fontSize: '0.82rem' }}>
-              {diseaseResult.is_sakit ? 'Perlu dicek dan dirawat segera' : 'Sehat dan bertumbuh optimal'}
+              {diseaseResult.is_sakit ? 'Terindikasi sakit, perlu penanganan segera' : 'Sehat dan bertumbuh optimal'}
             </strong>
           </div>
         </div>
@@ -1587,7 +1587,7 @@ export default function Simulator() {
                   src: `/static/img/real_samples/leaves/${leafImgKey}_${diseaseSampleIndex}.jpg`,
                   title: 'Permukaan atas daun',
                   description: 'Tampak permukaan atas helai daun melon pada pohon di greenhouse.',
-                  badge: `Kondisi: ${diseasePreset === 'normal' ? 'Sehat' : 'Perlu dicek'}`
+                  badge: `Kondisi: ${diseasePreset === 'normal' ? 'Sehat' : 'Sakit'}`
                 })}
                 style={{
                   border: '1px solid #DDE5DC',
@@ -1620,7 +1620,7 @@ export default function Simulator() {
                   src: `/static/img/real_samples/leaves/${leafImgKey}_${(diseaseSampleIndex % 6) + 1}.jpg`,
                   title: 'Permukaan bawah daun',
                   description: 'Tampak permukaan bawah helai daun melon.',
-                  badge: `Kondisi: ${diseasePreset === 'normal' ? 'Sehat' : 'Perlu dicek'}`
+                  badge: `Kondisi: ${diseasePreset === 'normal' ? 'Sehat' : 'Sakit'}`
                 })}
                 style={{
                   border: '1px solid #DDE5DC',
@@ -1653,7 +1653,7 @@ export default function Simulator() {
                   src: `/static/img/real_samples/leaves/${leafImgKey}_${((diseaseSampleIndex + 1) % 6) + 1}.jpg`,
                   title: 'Tajuk pohon',
                   description: 'Tampak persebaran daun pada tajuk pohon.',
-                  badge: `Kondisi: ${diseasePreset === 'normal' ? 'Sehat' : 'Perlu dicek'}`
+                  badge: `Kondisi: ${diseasePreset === 'normal' ? 'Sehat' : 'Sakit'}`
                 })}
                 style={{
                   border: '1px solid #DDE5DC',

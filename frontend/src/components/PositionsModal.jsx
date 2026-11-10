@@ -198,7 +198,7 @@ export default function PositionsModal({ data, onClose, onSelectFruit, onSelectT
                 const isMengkal = item.tingkat_kematangan === 'mengkal';
                 const labelKematangan = isMatang ? 'Matang' : isMengkal ? 'Mengkal' : 'Mentah';
                 const isSick = item.kondisi === 'Sakit' || item.kondisi === 'sakit';
-                const labelKondisi = isSick ? 'Perlu dicek' : 'Sehat';
+                const labelKondisi = isSick ? (item.nama_penyakit ? `Sakit · ${item.nama_penyakit}` : 'Sakit') : 'Sehat';
 
                 return (
                   <tr

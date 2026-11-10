@@ -88,6 +88,8 @@ export default function Kematangan({
   const mentahCount = stats?.ripeness?.mentah || 32;
   const totalFruits = stats?.total_fruits || 96;
   const healthyPct = stats?.disease?.sehat_pct || 77;
+  const harvestReadyCount = matangCount + mengkalCount;
+  const harvestReadyPct = totalFruits > 0 ? Math.round((harvestReadyCount / totalFruits) * 100) : 0;
 
   // Filtered fruits for display
   const displayedFruits = useMemo(() => {
@@ -421,52 +423,116 @@ export default function Kematangan({
           </div>
         </div>
 
-        {/* Card B: Kesiapan Panen Kebun (Semi-Circular Arc Gauge) */}
+        {/* Card B: Kesiapan Panen Kebun (Semi-Circular Arc Gauge with Micro-Legend) */}
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
               <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
                 Kesiapan Panen Kebun
               </h3>
-              <span style={{ fontSize: '0.7rem', color: 'var(--primary, #166534)', fontWeight: 700 }}>
+              <span style={{
+                fontSize: '0.7rem',
+                color: 'var(--primary, #166534)',
+                fontWeight: 700,
+                backgroundColor: '#F0FDF4',
+                padding: '2px 8px',
+                borderRadius: '999px',
+                border: '1px solid #BBF7D0'
+              }}>
                 Rasio Panen
               </span>
             </div>
-            <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 1rem 0' }}>
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 0.75rem 0' }}>
               Perbandingan buah matang dan mengkal terhadap kapasitas panen saat ini
             </p>
           </div>
 
-          <GaugeArc
-            percentage={86}
-            label="Kesiapan Panen"
-            sublabel="Panen mingguan berjalan optimal"
-            color="var(--primary, #166534)"
-            trackColor="#E2E8F0"
-          />
+          <div style={{ margin: '0.25rem 0 0.5rem 0' }}>
+            <GaugeArc
+              percentage={harvestReadyPct}
+              label="Kesiapan Panen"
+              sublabel={`${matangCount} Matang Siap Petik · ${mengkalCount} Menuju Matang`}
+              color="var(--primary, #166534)"
+              trackColor="#E2E8F0"
+              size={210}
+              strokeWidth={17}
+              segments={[
+                { value: matangCount, color: '#166534', label: 'Matang' },
+                { value: mengkalCount, color: '#22C55E', label: 'Mengkal' }
+              ]}
+              total={totalFruits}
+            />
+          </div>
 
-          {/* Dots Legend */}
+          {/* 3-Column Micro-Cards Legend (Synchronized with CapsuleBarChart Micro-Grid) */}
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '1.25rem',
-            paddingTop: '0.85rem',
-            borderTop: '1px solid var(--border-subtle, #E2E8F0)',
-            fontSize: '0.75rem',
-            flexWrap: 'wrap'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '0.5rem',
+            paddingTop: '0.75rem',
+            borderTop: '1px solid var(--border-subtle, #E2E8F0)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary, #166534)' }} />
-              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Matang ({matangCount})</span>
+            {/* Matang */}
+            <div
+              style={{
+                padding: '0.45rem 0.5rem',
+                backgroundColor: '#F0FDF4',
+                borderRadius: '8px',
+                border: '1px solid #BBF7D0',
+                textAlign: 'center'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#166534' }} />
+                <span style={{ fontSize: '10px', color: '#166534', fontWeight: 700 }}>
+                  Matang ({Math.round((matangCount / (totalFruits || 1)) * 100)}%)
+                </span>
+              </div>
+              <strong style={{ fontSize: '12px', color: '#166534', fontWeight: 800 }}>
+                {matangCount} Buah
+              </strong>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-melon, #F59E0B)' }} />
-              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Mengkal ({mengkalCount})</span>
+
+            {/* Mengkal */}
+            <div
+              style={{
+                padding: '0.45rem 0.5rem',
+                backgroundColor: '#FFFBEB',
+                borderRadius: '8px',
+                border: '1px solid #FDE68A',
+                textAlign: 'center'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#D97706' }} />
+                <span style={{ fontSize: '10px', color: '#92400E', fontWeight: 700 }}>
+                  Mengkal ({Math.round((mengkalCount / (totalFruits || 1)) * 100)}%)
+                </span>
+              </div>
+              <strong style={{ fontSize: '12px', color: '#B45309', fontWeight: 800 }}>
+                {mengkalCount} Buah
+              </strong>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--text-dim, #64748B)' }} />
-              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Mentah ({mentahCount})</span>
+
+            {/* Mentah */}
+            <div
+              style={{
+                padding: '0.45rem 0.5rem',
+                backgroundColor: '#F8FAFC',
+                borderRadius: '8px',
+                border: '1px solid var(--border-subtle, #E2E8F0)',
+                textAlign: 'center'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#64748B' }} />
+                <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>
+                  Mentah ({Math.round((mentahCount / (totalFruits || 1)) * 100)}%)
+                </span>
+              </div>
+              <strong style={{ fontSize: '12px', color: '#334155', fontWeight: 800 }}>
+                {mentahCount} Buah
+              </strong>
             </div>
           </div>
         </div>

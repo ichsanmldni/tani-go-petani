@@ -350,32 +350,60 @@ export default function Penyakit({
             </p>
           </div>
 
-          <GaugeArc
-            percentage={healthyPct}
-            label="Pohon Sehat"
-            sublabel={`${sehatCount} dari total ${totalTrees} pohon`}
-            color="#047857"
-            trackColor="#FEE2E2"
-          />
+          <div style={{ margin: '0.25rem 0 0.5rem 0' }}>
+            <GaugeArc
+              percentage={healthyPct}
+              label="Pohon Sehat"
+              sublabel={`${sehatCount} dari total ${totalTrees} pohon`}
+              color="#047857"
+              trackColor="#FEE2E2"
+              size={210}
+              strokeWidth={17}
+            />
+          </div>
 
-          {/* Dots Legend */}
+          {/* 2-Column Micro-Cards Legend */}
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '1.25rem',
-            paddingTop: '0.85rem',
-            borderTop: '1px solid var(--border-subtle, #E2E8F0)',
-            fontSize: '0.75rem',
-            flexWrap: 'wrap'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '0.5rem',
+            paddingTop: '0.75rem',
+            borderTop: '1px solid var(--border-subtle, #E2E8F0)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#047857' }} />
-              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Sehat Normal ({sehatCount})</span>
+            <div style={{
+              padding: '0.45rem 0.5rem',
+              backgroundColor: '#F0FDF4',
+              borderRadius: '8px',
+              border: '1px solid #BBF7D0',
+              textAlign: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#047857' }} />
+                <span style={{ fontSize: '10px', color: '#047857', fontWeight: 700 }}>
+                  Sehat Normal ({healthyPct}%)
+                </span>
+              </div>
+              <strong style={{ fontSize: '12px', color: '#047857', fontWeight: 800 }}>
+                {sehatCount} Pohon
+              </strong>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#B91C1C' }} />
-              <span style={{ color: 'var(--text-main, #0F172A)', fontWeight: 600 }}>Perlu Dicek ({sakitCount})</span>
+
+            <div style={{
+              padding: '0.45rem 0.5rem',
+              backgroundColor: '#FEF2F2',
+              borderRadius: '8px',
+              border: '1px solid #FECACA',
+              textAlign: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#B91C1C' }} />
+                <span style={{ fontSize: '10px', color: '#B91C1C', fontWeight: 700 }}>
+                  Perlu Dicek ({Math.max(0, 100 - healthyPct)}%)
+                </span>
+              </div>
+              <strong style={{ fontSize: '12px', color: '#B91C1C', fontWeight: 800 }}>
+                {sakitCount} Pohon
+              </strong>
             </div>
           </div>
         </div>

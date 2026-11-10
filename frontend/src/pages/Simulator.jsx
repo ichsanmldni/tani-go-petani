@@ -670,58 +670,57 @@ export default function Simulator() {
   const leafImgKey = diseasePreset.replace(' ', '_');
 
   const renderMelonResultCard = () => (
-    <div style={{
-      backgroundColor: '#ffffff',
-      borderRadius: '0.75rem',
-      border: '1px solid #DDE5DC',
-      padding: '1.25rem',
-      boxSizing: 'border-box'
-    }}>
-      <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
-        Hasil Pemeriksaan Buah
-      </h3>
+    <div className="bento-card" style={{ padding: '1.5rem', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', fontFamily: 'var(--font-heading)' }}>
+          Hasil Pemeriksaan Buah
+        </h3>
+        <span style={{ fontSize: '0.7rem', fontWeight: 700, backgroundColor: '#DCFCE7', color: '#166534', padding: '3px 8px', borderRadius: '999px' }}>
+          Vision AI Active
+        </span>
+      </div>
 
       {melonResult ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           <div style={{
-            padding: '0.85rem',
-            borderRadius: '0.5rem',
-            backgroundColor: melonResult.tingkat_kematangan === 'matang' ? '#ecfdf5' : melonResult.tingkat_kematangan === 'mengkal' ? '#fffbeb' : '#F6F8F4',
-            border: `1px solid ${melonResult.tingkat_kematangan === 'matang' ? '#a7f3d0' : melonResult.tingkat_kematangan === 'mengkal' ? '#fde68a' : '#DDE5DC'}`
+            padding: '1rem',
+            borderRadius: '14px',
+            backgroundColor: melonResult.tingkat_kematangan === 'matang' ? '#F0FDF4' : melonResult.tingkat_kematangan === 'mengkal' ? '#FFFBEB' : '#F8FAFC',
+            border: `1px solid ${melonResult.tingkat_kematangan === 'matang' ? '#BBF7D0' : melonResult.tingkat_kematangan === 'mengkal' ? '#FDE68A' : '#E2E8F0'}`
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <span className={`badge ${melonResult.tingkat_kematangan === 'matang' ? 'badge-success' : melonResult.tingkat_kematangan === 'mengkal' ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.82rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <span className={`badge ${melonResult.tingkat_kematangan === 'matang' ? 'badge-success' : melonResult.tingkat_kematangan === 'mengkal' ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.82rem', padding: '4px 10px', borderRadius: '999px' }}>
                 {melonResult.tingkat_kematangan === 'matang' ? 'Matang' : melonResult.tingkat_kematangan === 'mengkal' ? 'Mengkal' : 'Mentah'}
               </span>
               <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                Akurasi deteksi: <strong>{melonResult.confidence}%</strong>
+                Akurasi deteksi: <strong style={{ color: '#0F172A' }}>{melonResult.confidence}%</strong>
               </span>
             </div>
 
-            <div style={{ fontSize: '0.78rem', color: '#1B2A22', margin: '0.4rem 0' }}>
+            <div style={{ fontSize: '0.8rem', color: '#0F172A', margin: '0.4rem 0' }}>
               <strong>Kesiapan jual: </strong> {melonResult.tingkat_kematangan === 'matang' ? 'Siap dijual' : 'Belum siap dijual'}
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
+            <div style={{ fontSize: '0.76rem', color: '#475569', lineHeight: 1.45 }}>
               {melonResult.action_advice}
             </div>
           </div>
 
           {/* Sisa Hari Panen & Status Rekomendasi */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.75rem' }}>
-            <div style={{ padding: '0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC' }}>
-              <span style={{ color: '#64748B', display: 'block' }}>Estimasi panen:</span>
-              <strong style={{ color: '#1B2A22' }}>{melonResult.sisa_hari || '0 hari'}</strong>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem', fontSize: '0.76rem' }}>
+            <div style={{ padding: '0.75rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+              <span style={{ color: '#64748B', display: 'block', fontSize: '0.7rem' }}>Estimasi panen:</span>
+              <strong style={{ color: '#0F172A', fontSize: '0.85rem' }}>{melonResult.sisa_hari || '0 hari'}</strong>
             </div>
-            <div style={{ padding: '0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC' }}>
-              <span style={{ color: '#64748B', display: 'block' }}>Saran tindakan:</span>
-              <strong style={{ color: melonResult.tingkat_kematangan === 'matang' ? '#047857' : '#B45309' }}>
+            <div style={{ padding: '0.75rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+              <span style={{ color: '#64748B', display: 'block', fontSize: '0.7rem' }}>Saran tindakan:</span>
+              <strong style={{ color: melonResult.tingkat_kematangan === 'matang' ? '#166534' : '#B45309', fontSize: '0.82rem' }}>
                 {melonResult.tingkat_kematangan === 'matang' ? 'Siap panen dan kirim' : melonResult.tingkat_kematangan === 'mengkal' ? 'Pantau 2–3 hari lagi' : 'Biarkan di pohon'}
               </strong>
             </div>
           </div>
         </div>
       ) : (
-        <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.8rem' }}>
+        <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.82rem', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px dashed #CBD5E1' }}>
           {inputMode === 'camera'
             ? 'Arahkan kamera ke buah melon, atau pilih Contoh Foto Kebun untuk melihat hasil analisis otomatis.'
             : 'Pilih sampel buah di samping, lalu tekan "Cek Kematangan".'}
@@ -731,31 +730,30 @@ export default function Simulator() {
   );
 
   const renderDiseaseResultCard = () => (
-    <div style={{
-      backgroundColor: '#ffffff',
-      borderRadius: '0.75rem',
-      border: '1px solid #DDE5DC',
-      padding: '1.25rem',
-      boxSizing: 'border-box'
-    }}>
-      <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
-        Hasil Pemeriksaan Daun
-      </h3>
+    <div className="bento-card" style={{ padding: '1.5rem', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', fontFamily: 'var(--font-heading)' }}>
+          Hasil Pemeriksaan Daun
+        </h3>
+        <span style={{ fontSize: '0.7rem', fontWeight: 700, backgroundColor: '#FEE2E2', color: '#B91C1C', padding: '3px 8px', borderRadius: '999px' }}>
+          Pathology AI
+        </span>
+      </div>
 
       {diseaseResult ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           <div style={{
-            padding: '0.85rem',
-            borderRadius: '0.5rem',
+            padding: '1rem',
+            borderRadius: '14px',
             backgroundColor: diseaseResult.is_sakit ? '#fef2f2' : '#ecfdf5',
             border: `1px solid ${diseaseResult.is_sakit ? '#fca5a5' : '#a7f3d0'}`
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <span className={`badge ${diseaseResult.is_sakit ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.82rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <span className={`badge ${diseaseResult.is_sakit ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.82rem', padding: '4px 10px', borderRadius: '999px' }}>
                 {diseaseResult.is_sakit ? 'Perlu dicek' : 'Sehat'}
               </span>
               <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                Akurasi deteksi: <strong>{diseaseResult.confidence}%</strong>
+                Akurasi deteksi: <strong style={{ color: '#0F172A' }}>{diseaseResult.confidence}%</strong>
               </span>
             </div>
 
@@ -765,24 +763,24 @@ export default function Simulator() {
               </div>
             )}
 
-            <div style={{ fontSize: '0.74rem', color: '#1B2A22', margin: '0.3rem 0' }}>
+            <div style={{ fontSize: '0.76rem', color: '#0F172A', margin: '0.3rem 0' }}>
               <strong>Gejala: </strong> {diseaseResult.gejala}
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
+            <div style={{ fontSize: '0.76rem', color: '#475569', lineHeight: 1.45 }}>
               <strong>Saran tindakan: </strong> {diseaseResult.penanganan}
             </div>
           </div>
 
           {/* Status Tanaman Operasional */}
-          <div style={{ padding: '0.6rem 0.85rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC', fontSize: '0.75rem' }}>
-            <span style={{ color: '#64748B' }}>Kondisi: </span>
-            <strong style={{ color: diseaseResult.is_sakit ? '#B91C1C' : '#047857' }}>
-              {diseaseResult.is_sakit ? 'Perlu dicek dan dirawat' : 'Sehat dan normal'}
+          <div style={{ padding: '0.75rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '0.76rem' }}>
+            <span style={{ color: '#64748B', display: 'block', fontSize: '0.7rem' }}>Kondisi Tanaman:</span>
+            <strong style={{ color: diseaseResult.is_sakit ? '#B91C1C' : '#166534', fontSize: '0.82rem' }}>
+              {diseaseResult.is_sakit ? 'Perlu dicek dan dirawat segera' : 'Sehat dan bertumbuh optimal'}
             </strong>
           </div>
         </div>
       ) : (
-        <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.8rem' }}>
+        <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.82rem', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px dashed #CBD5E1' }}>
           {inputMode === 'camera'
             ? 'Arahkan kamera ke daun melon, atau pilih Contoh Foto Kebun untuk melihat hasil analisis otomatis.'
             : 'Pilih sampel daun di samping, lalu tekan "Cek Kesehatan Daun".'}
@@ -792,120 +790,142 @@ export default function Simulator() {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Header Bersih & Profesional */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header Bar Modern (Donezo Style) */}
       <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '0.75rem',
-        border: '1px solid #DDE5DC',
-        padding: '1.25rem',
         display: 'flex',
-        flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
+        flexWrap: 'wrap',
         gap: '1rem'
       }}>
         <div>
-          <h2 style={{ margin: '0 0 0.2rem 0', fontSize: '1.05rem', fontWeight: 700, color: '#1B2A22' }}>
-            Uji Kamera
-          </h2>
-          <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B' }}>
-            Cek kondisi buah atau daun lewat kamera langsung atau foto sampel.
+          <h1 style={{
+            fontSize: '1.55rem',
+            fontWeight: 800,
+            color: '#0F172A',
+            margin: '0 0 0.25rem 0',
+            letterSpacing: '-0.025em',
+            fontFamily: 'var(--font-heading)'
+          }}>
+            Uji Kamera AI Vision
+          </h1>
+          <p style={{
+            fontSize: '0.82rem',
+            color: '#64748B',
+            margin: 0,
+            lineHeight: 1.4
+          }}>
+            Cek kondisi kematangan buah melon dan kesehatan daun lewat kamera live atau foto sampel kebun.
           </p>
         </div>
 
         {/* Tab Pilihan Pengujian */}
-        <div style={{ display: 'flex', backgroundColor: '#F6F8F4', padding: '0.25rem', borderRadius: '0.5rem', gap: '0.25rem', border: '1px solid #DDE5DC' }}>
+        <div style={{
+          display: 'flex',
+          backgroundColor: '#FFFFFF',
+          padding: '4px',
+          borderRadius: '9999px',
+          gap: '4px',
+          border: '1px solid #EAEFEA',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+        }}>
           <button
             onClick={() => setActiveTab('melon')}
             style={{
-              padding: '0.45rem 0.85rem',
-              borderRadius: '0.4rem',
+              padding: '0.5rem 1.1rem',
+              borderRadius: '9999px',
               border: 'none',
-              backgroundColor: activeTab === 'melon' ? '#166534' : 'transparent',
+              backgroundColor: activeTab === 'melon' ? '#14532D' : 'transparent',
               color: activeTab === 'melon' ? '#ffffff' : '#64748B',
-              fontWeight: 600,
-              fontSize: '0.78rem',
+              fontWeight: 700,
+              fontSize: '0.8rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem'
+              gap: '0.4rem',
+              transition: 'all 0.15s ease'
             }}
           >
-            <Plant size={15} weight="bold" /> Kematangan Buah
+            <Plant size={16} weight="bold" /> Kematangan Buah
           </button>
           <button
             onClick={() => setActiveTab('disease')}
             style={{
-              padding: '0.45rem 0.85rem',
-              borderRadius: '0.4rem',
+              padding: '0.5rem 1.1rem',
+              borderRadius: '9999px',
               border: 'none',
               backgroundColor: activeTab === 'disease' ? '#B91C1C' : 'transparent',
               color: activeTab === 'disease' ? '#ffffff' : '#64748B',
-              fontWeight: 600,
-              fontSize: '0.78rem',
+              fontWeight: 700,
+              fontSize: '0.8rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem'
+              gap: '0.4rem',
+              transition: 'all 0.15s ease'
             }}
           >
-            <Bug size={15} weight="bold" /> Kesehatan Daun
+            <Bug size={16} weight="bold" /> Kesehatan Daun
           </button>
         </div>
       </div>
 
       {/* Pilihan Sumber Citra */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '0.75rem',
-        border: '1px solid #DDE5DC',
-        padding: '0.75rem 1rem',
+      <div className="bento-card" style={{
+        padding: '0.85rem 1.25rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '0.5rem'
+        gap: '0.75rem'
       }}>
-        <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#1B2A22' }}>
-          Pilih sumber gambar:
-        </span>
-        <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <button
-            onClick={() => { setInputMode('preset'); if (isCameraActive) stopCamera(); }}
-            style={{
-              padding: '0.35rem 0.75rem',
-              borderRadius: '0.4rem',
-              border: 'none',
-              backgroundColor: inputMode === 'preset' ? '#166534' : '#F6F8F4',
-              color: inputMode === 'preset' ? '#ffffff' : '#64748B',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            <Camera size={15} weight="bold" /> Foto Sampel
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}>
+            Sumber Citra:
+          </span>
+          <span style={{ fontSize: '0.74rem', color: '#64748B' }}>
+            {inputMode === 'camera' ? 'Deteksi otomatis kamera real-time' : 'Pengujian preset citra kebun terarsip'}
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => { setInputMode('camera'); if (!isCameraActive) startCamera(); }}
             style={{
-              padding: '0.35rem 0.75rem',
-              borderRadius: '0.4rem',
+              padding: '0.45rem 1rem',
+              borderRadius: '9999px',
               border: 'none',
-              backgroundColor: inputMode === 'camera' ? '#166534' : '#F6F8F4',
-              color: inputMode === 'camera' ? '#ffffff' : '#64748B',
-              fontSize: '0.75rem',
-              fontWeight: 600,
+              backgroundColor: inputMode === 'camera' ? '#14532D' : '#F1F5F9',
+              color: inputMode === 'camera' ? '#ffffff' : '#475569',
+              fontSize: '0.78rem',
+              fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.3rem'
+              gap: '0.4rem',
+              transition: 'all 0.15s ease'
             }}
           >
-            <VideoCamera size={15} weight="bold" /> Kamera Langsung
+            <VideoCamera size={16} weight="bold" /> Kamera Langsung
+          </button>
+          <button
+            onClick={() => { setInputMode('preset'); if (isCameraActive) stopCamera(); }}
+            style={{
+              padding: '0.45rem 1rem',
+              borderRadius: '9999px',
+              border: 'none',
+              backgroundColor: inputMode === 'preset' ? '#14532D' : '#F1F5F9',
+              color: inputMode === 'preset' ? '#ffffff' : '#475569',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <Camera size={16} weight="bold" /> Foto Sampel Kebun
           </button>
         </div>
       </div>
@@ -914,14 +934,11 @@ export default function Simulator() {
       {inputMode === 'camera' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem', alignItems: 'start' }}>
           {/* Kolom Kiri: Kamera Viewport */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '0.75rem',
-            border: '1px solid #DDE5DC',
-            padding: '1.25rem',
+          <div className="bento-card" style={{
+            padding: '1.5rem',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.85rem'
+            gap: '1rem'
           }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -1298,18 +1315,15 @@ export default function Simulator() {
         {activeTab === 'melon' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', alignItems: 'start' }}>
           {/* Kolom Kiri: Input & Citra */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '0.75rem',
-            border: '1px solid #DDE5DC',
-            padding: '1.25rem'
+          <div className="bento-card" style={{
+            padding: '1.5rem'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+              <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', fontFamily: 'var(--font-heading)' }}>
                 Foto Sampel Buah (3 Sudut)
               </h3>
-              <span style={{ fontSize: '0.68rem', color: '#166534', fontWeight: 600 }}>
-                Klik foto untuk memperbesar
+              <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700, backgroundColor: '#DCFCE7', padding: '2px 8px', borderRadius: '999px' }}>
+                Klik foto perbesar
               </span>
             </div>
 
@@ -1553,18 +1567,15 @@ export default function Simulator() {
       {activeTab === 'disease' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
           {/* Kolom Kiri: Input & Citra Daun */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '0.75rem',
-            border: '1px solid #DDE5DC',
-            padding: '1.25rem'
+          <div className="bento-card" style={{
+            padding: '1.5rem'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+              <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', fontFamily: 'var(--font-heading)' }}>
                 Foto Sampel Daun (3 Sudut)
               </h3>
-              <span style={{ fontSize: '0.68rem', color: '#B91C1C', fontWeight: 600 }}>
-                Klik foto untuk memperbesar
+              <span style={{ fontSize: '0.7rem', color: '#B91C1C', fontWeight: 700, backgroundColor: '#FEE2E2', padding: '2px 8px', borderRadius: '999px' }}>
+                Klik foto perbesar
               </span>
             </div>
 

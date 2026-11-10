@@ -6,6 +6,9 @@ import {
   Robot
 } from '@phosphor-icons/react';
 
+import Sidebar from './components/Sidebar.jsx';
+import TopHeader from './components/TopHeader.jsx';
+
 import Kematangan from './pages/Kematangan.jsx';
 import Penyakit from './pages/Penyakit.jsx';
 import Simulator from './pages/Simulator.jsx';
@@ -47,8 +50,10 @@ export default function App() {
   const [selectedFruit, setSelectedFruit] = useState(null);
   const [selectedTree, setSelectedTree] = useState(null);
   const [positionsModalData, setPositionsModalData] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
+  const refreshData = () => {
     fetch('/api/stats')
       .then(res => res.json())
       .then(d => { if (d.success) setStats(d.data); })
@@ -58,6 +63,10 @@ export default function App() {
       .then(res => res.json())
       .then(d => { if (d.success) setGreenhouses(d.data); })
       .catch(err => console.log('Greenhouses note:', err));
+  };
+
+  useEffect(() => {
+    refreshData();
   }, []);
 
   const handleOpenFruit = (fruitId) => {
@@ -75,162 +84,65 @@ export default function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', color: '#1e293b', fontFamily: 'inherit' }}>
-      {/* Top Header & Simple Nav */}
-      <header style={{
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-      }}>
-        <div style={{
-          maxWidth: '1200px',
+    <div className="dashboard-layout">
+      {/* 1. Left Sidebar (Donezo Modern Style) */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        stats={stats}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        onOpenPositionsModal={setPositionsModalData}
+      />
+
+      {/* 2. Main Area (Top Header + Bento Content) */}
+      <div className="dashboard-main-area">
+        <TopHeader
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onRefresh={refreshData}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          activeTab={activeTab}
+        />
+
+        {/* Content Container */}
+        <main style={{
+          width: '100%',
+          maxWidth: '1280px',
           margin: '0 auto',
-          padding: '0.75rem 1rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '0.75rem'
+          padding: '1.5rem 1.25rem 4.5rem 1.25rem',
+          boxSizing: 'border-box'
         }}>
-          {/* Logo / Brand */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <img
-              src="/logo.png"
-              alt="Logo Tanigo"
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                objectFit: 'contain',
-                display: 'block'
-              }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/static/img/logo.png';
-              }}
+          {activeTab === 'kematangan' && (
+            <Kematangan
+              greenhouses={greenhouses}
+              stats={stats}
+              onSelectFruit={handleOpenFruit}
+              onOpenPositionsModal={setPositionsModalData}
+              onNavigateTab={setActiveTab}
+              globalSearchQuery={searchQuery}
             />
-            <div>
-              <strong style={{ fontSize: '1.05rem', color: '#1B2A22', display: 'block', lineHeight: 1.2, fontFamily: 'var(--font-heading)' }}>
-                Tanigo
-              </strong>
-              <small style={{ fontSize: '0.74rem', color: '#52665A' }}>
-                Pantau kebun, panen tepat waktu.
-              </small>
-            </div>
-          </div>
+          )}
 
-          {/* Mobile Status Indicator */}
-          <div className="mobile-only" style={{ display: 'none', alignItems: 'center', gap: '0.4rem', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.25rem 0.65rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 700, color: '#047857' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#047857', display: 'inline-block' }} />
-            <span>3 Greenhouse</span>
-          </div>
+          {activeTab === 'penyakit' && (
+            <Penyakit
+              greenhouses={greenhouses}
+              stats={stats}
+              onSelectTree={handleOpenTree}
+              onOpenPositionsModal={setPositionsModalData}
+              onNavigateTab={setActiveTab}
+              globalSearchQuery={searchQuery}
+            />
+          )}
 
-          {/* Desktop Tab Navigation */}
-          <nav className="desktop-nav" style={{
-            alignItems: 'center',
-            backgroundColor: '#EDF2EC',
-            padding: '0.25rem',
-            borderRadius: '0.6rem',
-            gap: '0.25rem'
-          }}>
-            <button
-              onClick={() => setActiveTab('kematangan')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.45rem 0.9rem',
-                fontSize: '0.8rem',
-                fontWeight: activeTab === 'kematangan' ? 700 : 500,
-                color: activeTab === 'kematangan' ? '#166534' : '#52665A',
-                backgroundColor: activeTab === 'kematangan' ? '#ffffff' : 'transparent',
-                border: 'none',
-                borderRadius: '0.45rem',
-                cursor: 'pointer',
-                boxShadow: activeTab === 'kematangan' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <CircleDashed size={16} weight={activeTab === 'kematangan' ? 'bold' : 'regular'} />
-              <span>Tingkat Kematangan</span>
-            </button>
+          {activeTab === 'simulator' && (
+            <Simulator />
+          )}
+        </main>
+      </div>
 
-            <button
-              onClick={() => setActiveTab('penyakit')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.45rem 0.9rem',
-                fontSize: '0.8rem',
-                fontWeight: activeTab === 'penyakit' ? 700 : 500,
-                color: activeTab === 'penyakit' ? '#B91C1C' : '#52665A',
-                backgroundColor: activeTab === 'penyakit' ? '#ffffff' : 'transparent',
-                border: 'none',
-                borderRadius: '0.45rem',
-                cursor: 'pointer',
-                boxShadow: activeTab === 'penyakit' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Plant size={16} weight={activeTab === 'penyakit' ? 'bold' : 'regular'} />
-              <span>Kesehatan Daun</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('simulator')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.45rem 0.9rem',
-                fontSize: '0.8rem',
-                fontWeight: activeTab === 'simulator' ? 700 : 500,
-                color: activeTab === 'simulator' ? '#166534' : '#52665A',
-                backgroundColor: activeTab === 'simulator' ? '#ffffff' : 'transparent',
-                border: 'none',
-                borderRadius: '0.45rem',
-                cursor: 'pointer',
-                boxShadow: activeTab === 'simulator' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Flask size={16} weight={activeTab === 'simulator' ? 'bold' : 'regular'} />
-              <span>Uji Kamera</span>
-            </button>
-          </nav>
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="main-content-area" style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.25rem 1rem 3rem 1rem' }}>
-        {activeTab === 'kematangan' && (
-          <Kematangan
-            greenhouses={greenhouses}
-            stats={stats}
-            onSelectFruit={handleOpenFruit}
-            onOpenPositionsModal={setPositionsModalData}
-          />
-        )}
-
-        {activeTab === 'penyakit' && (
-          <Penyakit
-            greenhouses={greenhouses}
-            stats={stats}
-            onSelectTree={handleOpenTree}
-            onOpenPositionsModal={setPositionsModalData}
-          />
-        )}
-
-        {activeTab === 'simulator' && (
-          <Simulator />
-        )}
-      </main>
-
-      {/* Mobile Bottom Navigation Bar (Fixed for PWA & Mobile Touch) */}
+      {/* 3. Mobile Bottom Navigation Bar (Preserved for Mobile Touch) */}
       <nav className="mobile-bottom-nav" aria-label="Navigasi Bawah Mobile">
         <button
           onClick={() => setActiveTab('kematangan')}
@@ -260,7 +172,7 @@ export default function App() {
         </button>
       </nav>
 
-      {/* Modals */}
+      {/* 4. Modals */}
       {selectedFruit && (
         <FruitModal
           fruit={selectedFruit}

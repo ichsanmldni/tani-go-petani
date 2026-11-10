@@ -431,3 +431,176 @@ button, input, select, a {
   }
 }
 
+/* =========================================================
+   DONEZO-STYLE MODERN AGRO DASHBOARD SYSTEM (2026)
+   ========================================================= */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F4F6F4;
+  color: #0F172A;
+  font-family: var(--font-sans);
+}
+
+.dashboard-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Bento Grid System */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.25rem;
+}
+
+.bento-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #EAEFEA;
+  padding: 1.35rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-card-interactive {
+  cursor: pointer;
+}
+
+.bento-card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.07);
+}
+
+/* Hero Highlight Card (Donezo Dark Forest Green) */
+.bento-hero-green {
+  background: linear-gradient(135deg, #14532D 0%, #166534 60%, #0F3D21 100%);
+  color: #FFFFFF !important;
+  border: none;
+  box-shadow: 0 10px 25px -4px rgba(22, 101, 52, 0.3);
+}
+
+.bento-hero-green:hover {
+  box-shadow: 0 14px 30px -4px rgba(22, 101, 52, 0.4);
+}
+
+.bento-hero-green * {
+  color: #FFFFFF;
+}
+
+/* Circle Arrow Pill (Top-Right of Stat Cards) */
+.bento-circle-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #E2E8F0;
+  background-color: #FFFFFF;
+  color: #0F172A;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.bento-hero-green .bento-circle-arrow {
+  background-color: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+.bento-card:hover .bento-circle-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Modern Pill Buttons */
+.bento-pill-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  background-color: #14532D;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(20, 83, 45, 0.25);
+  transition: all 0.18s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.bento-pill-primary:hover {
+  background-color: #166534;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(20, 83, 45, 0.35);
+}
+
+.bento-pill-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  background-color: #FFFFFF;
+  color: #1E293B;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.18s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.bento-pill-secondary:hover {
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
+  transform: translateY(-1px);
+}
+
+/* Responsive Sidebar & Header Behaviors */
+@media (max-width: 1023px) {
+  .dashboard-sidebar {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100 !important;
+    transform: translateX(-100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .mobile-hamburger-btn {
+    display: inline-flex !important;
+  }
+
+  .mobile-close-btn {
+    display: block !important;
+  }
+
+  .user-profile-text {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar-backdrop-mobile {
+    display: none !important;
+  }
+}
+
+

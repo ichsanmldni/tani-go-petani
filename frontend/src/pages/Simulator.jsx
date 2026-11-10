@@ -11,7 +11,7 @@ import ImageDetailModal from '../components/ImageDetailModal.jsx';
 
 export default function Simulator() {
   const [activeTab, setActiveTab] = useState('melon'); // 'melon' or 'disease'
-  const [inputMode, setInputMode] = useState('preset'); // 'preset' or 'camera'
+  const [inputMode, setInputMode] = useState('camera'); // 'camera' or 'preset'
 
   // Form State - Melon
   const [melonFruitId, setMelonFruitId] = useState('MLN-GH-1-R01-P01-F1');
@@ -636,6 +636,128 @@ export default function Simulator() {
   const fruitImgKey = melonStage === 'matang' ? 'fully_ripe' : melonStage === 'mengkal' ? 'half_ripe' : 'unripe';
   const leafImgKey = diseasePreset.replace(' ', '_');
 
+  const renderMelonResultCard = () => (
+    <div style={{
+      backgroundColor: '#ffffff',
+      borderRadius: '0.75rem',
+      border: '1px solid #DDE5DC',
+      padding: '1.25rem',
+      boxSizing: 'border-box'
+    }}>
+      <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
+        Hasil Pemeriksaan Buah
+      </h3>
+
+      {melonResult ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{
+            padding: '0.85rem',
+            borderRadius: '0.5rem',
+            backgroundColor: melonResult.tingkat_kematangan === 'matang' ? '#ecfdf5' : melonResult.tingkat_kematangan === 'mengkal' ? '#fffbeb' : '#F6F8F4',
+            border: `1px solid ${melonResult.tingkat_kematangan === 'matang' ? '#a7f3d0' : melonResult.tingkat_kematangan === 'mengkal' ? '#fde68a' : '#DDE5DC'}`
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+              <span className={`badge ${melonResult.tingkat_kematangan === 'matang' ? 'badge-success' : melonResult.tingkat_kematangan === 'mengkal' ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.82rem' }}>
+                {melonResult.tingkat_kematangan === 'matang' ? 'Matang' : melonResult.tingkat_kematangan === 'mengkal' ? 'Mengkal' : 'Mentah'}
+              </span>
+              <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                Akurasi deteksi: <strong>{melonResult.confidence}%</strong>
+              </span>
+            </div>
+
+            <div style={{ fontSize: '0.78rem', color: '#1B2A22', margin: '0.4rem 0' }}>
+              <strong>Kesiapan jual: </strong> {melonResult.tingkat_kematangan === 'matang' ? 'Siap dijual' : 'Belum siap dijual'}
+            </div>
+            <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
+              {melonResult.action_advice}
+            </div>
+          </div>
+
+          {/* Sisa Hari Panen & Status Rekomendasi */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.75rem' }}>
+            <div style={{ padding: '0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC' }}>
+              <span style={{ color: '#64748B', display: 'block' }}>Estimasi panen:</span>
+              <strong style={{ color: '#1B2A22' }}>{melonResult.sisa_hari || '0 hari'}</strong>
+            </div>
+            <div style={{ padding: '0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC' }}>
+              <span style={{ color: '#64748B', display: 'block' }}>Saran tindakan:</span>
+              <strong style={{ color: melonResult.tingkat_kematangan === 'matang' ? '#047857' : '#B45309' }}>
+                {melonResult.tingkat_kematangan === 'matang' ? 'Siap panen dan kirim' : melonResult.tingkat_kematangan === 'mengkal' ? 'Pantau 2–3 hari lagi' : 'Biarkan di pohon'}
+              </strong>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.8rem' }}>
+          {inputMode === 'camera'
+            ? 'Arahkan kamera ke buah melon, atau pilih Contoh Foto Kebun untuk melihat hasil analisis otomatis.'
+            : 'Pilih sampel buah di samping, lalu tekan "Cek Kematangan".'}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderDiseaseResultCard = () => (
+    <div style={{
+      backgroundColor: '#ffffff',
+      borderRadius: '0.75rem',
+      border: '1px solid #DDE5DC',
+      padding: '1.25rem',
+      boxSizing: 'border-box'
+    }}>
+      <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
+        Hasil Pemeriksaan Daun
+      </h3>
+
+      {diseaseResult ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{
+            padding: '0.85rem',
+            borderRadius: '0.5rem',
+            backgroundColor: diseaseResult.is_sakit ? '#fef2f2' : '#ecfdf5',
+            border: `1px solid ${diseaseResult.is_sakit ? '#fca5a5' : '#a7f3d0'}`
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+              <span className={`badge ${diseaseResult.is_sakit ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.82rem' }}>
+                {diseaseResult.is_sakit ? 'Perlu dicek' : 'Sehat'}
+              </span>
+              <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                Akurasi deteksi: <strong>{diseaseResult.confidence}%</strong>
+              </span>
+            </div>
+
+            {diseaseResult.is_sakit && (
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#B91C1C', margin: '0.3rem 0' }}>
+                Penyakit: {diseaseResult.nama_penyakit}
+              </div>
+            )}
+
+            <div style={{ fontSize: '0.74rem', color: '#1B2A22', margin: '0.3rem 0' }}>
+              <strong>Gejala: </strong> {diseaseResult.gejala}
+            </div>
+            <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
+              <strong>Saran tindakan: </strong> {diseaseResult.penanganan}
+            </div>
+          </div>
+
+          {/* Status Tanaman Operasional */}
+          <div style={{ padding: '0.6rem 0.85rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC', fontSize: '0.75rem' }}>
+            <span style={{ color: '#64748B' }}>Kondisi: </span>
+            <strong style={{ color: diseaseResult.is_sakit ? '#B91C1C' : '#047857' }}>
+              {diseaseResult.is_sakit ? 'Perlu dicek dan dirawat' : 'Sehat dan normal'}
+            </strong>
+          </div>
+        </div>
+      ) : (
+        <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.8rem' }}>
+          {inputMode === 'camera'
+            ? 'Arahkan kamera ke daun melon, atau pilih Contoh Foto Kebun untuk melihat hasil analisis otomatis.'
+            : 'Pilih sampel daun di samping, lalu tekan "Cek Kesehatan Daun".'}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Bersih & Profesional */}
@@ -755,17 +877,19 @@ export default function Simulator() {
         </div>
       </div>
 
-      {/* Live Stream Kamera Jika Mode Kamera */}
+      {/* MODE 1: KAMERA LANGSUNG (Tanpa Form Foto Sampel Preset) */}
       {inputMode === 'camera' && (
-        <div style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '0.75rem',
-          border: '1px solid #DDE5DC',
-          padding: '1.25rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.85rem'
-        }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem', alignItems: 'start' }}>
+          {/* Kolom Kiri: Kamera Viewport */}
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '0.75rem',
+            border: '1px solid #DDE5DC',
+            padding: '1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.85rem'
+          }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#1B2A22' }}>
@@ -1069,11 +1193,20 @@ export default function Simulator() {
             </div>
           )}
         </div>
-      )}
 
-      {/* Konten Uji Kematangan Buah */}
-      {activeTab === 'melon' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+        {/* Kolom Kanan: Hasil Analisis Real-Time */}
+        <div>
+          {activeTab === 'melon' ? renderMelonResultCard() : renderDiseaseResultCard()}
+        </div>
+      </div>
+    )}
+
+    {/* MODE 2: FOTO SAMPEL PRESET (Kamera Disembunyikan) */}
+    {inputMode === 'preset' && (
+      <>
+        {/* Konten Uji Kematangan Buah */}
+        {activeTab === 'melon' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', alignItems: 'start' }}>
           {/* Kolom Kiri: Input & Citra */}
           <div style={{
             backgroundColor: '#ffffff',
@@ -1319,61 +1452,9 @@ export default function Simulator() {
             </form>
           </div>
 
-          {/* Kolom Kanan: Hasil Prediksi */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '0.75rem',
-            border: '1px solid #DDE5DC',
-            padding: '1.25rem'
-          }}>
-            <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
-              Hasil Pemeriksaan Buah
-            </h3>
-
-            {melonResult ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{
-                  padding: '0.85rem',
-                  borderRadius: '0.5rem',
-                  backgroundColor: melonResult.tingkat_kematangan === 'matang' ? '#ecfdf5' : melonResult.tingkat_kematangan === 'mengkal' ? '#fffbeb' : '#F6F8F4',
-                  border: `1px solid ${melonResult.tingkat_kematangan === 'matang' ? '#a7f3d0' : melonResult.tingkat_kematangan === 'mengkal' ? '#fde68a' : '#DDE5DC'}`
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <span className={`badge ${melonResult.tingkat_kematangan === 'matang' ? 'badge-success' : melonResult.tingkat_kematangan === 'mengkal' ? 'badge-warning' : 'badge-neutral'}`} style={{ fontSize: '0.82rem' }}>
-                      {melonResult.tingkat_kematangan === 'matang' ? 'Matang' : melonResult.tingkat_kematangan === 'mengkal' ? 'Mengkal' : 'Mentah'}
-                    </span>
-                    <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                      Akurasi deteksi: <strong>{melonResult.confidence}%</strong>
-                    </span>
-                  </div>
-
-                  <div style={{ fontSize: '0.78rem', color: '#1B2A22', margin: '0.4rem 0' }}>
-                    <strong>Kesiapan jual: </strong> {melonResult.tingkat_kematangan === 'matang' ? 'Siap dijual' : 'Belum siap dijual'}
-                  </div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
-                    {melonResult.action_advice}
-                  </div>
-                </div>
-
-                {/* Sisa Hari Panen & Status Rekomendasi */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.75rem' }}>
-                  <div style={{ padding: '0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC' }}>
-                    <span style={{ color: '#64748B', display: 'block' }}>Estimasi panen:</span>
-                    <strong style={{ color: '#1B2A22' }}>{melonResult.sisa_hari || '0 hari'}</strong>
-                  </div>
-                  <div style={{ padding: '0.6rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC' }}>
-                    <span style={{ color: '#64748B', display: 'block' }}>Saran tindakan:</span>
-                    <strong style={{ color: melonResult.tingkat_kematangan === 'matang' ? '#047857' : '#B45309' }}>
-                      {melonResult.tingkat_kematangan === 'matang' ? 'Siap panen dan kirim' : melonResult.tingkat_kematangan === 'mengkal' ? 'Pantau 2–3 hari lagi' : 'Biarkan di pohon'}
-                    </strong>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.8rem' }}>
-                Pilih sampel atau buka kamera, lalu tekan "Cek Kematangan".
-              </div>
-            )}
+          {/* Kolom Kanan: Hasil Prediksi Buah */}
+          <div>
+            {renderMelonResultCard()}
           </div>
         </div>
       )}
@@ -1605,64 +1686,14 @@ export default function Simulator() {
             </form>
           </div>
 
-          {/* Kolom Kanan: Hasil Diagnosis */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '0.75rem',
-            border: '1px solid #DDE5DC',
-            padding: '1.25rem'
-          }}>
-            <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', fontWeight: 700, color: '#1B2A22' }}>
-              Hasil Pemeriksaan Daun
-            </h3>
-
-            {diseaseResult ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{
-                  padding: '0.85rem',
-                  borderRadius: '0.5rem',
-                  backgroundColor: diseaseResult.is_sakit ? '#fef2f2' : '#ecfdf5',
-                  border: `1px solid ${diseaseResult.is_sakit ? '#fca5a5' : '#a7f3d0'}`
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <span className={`badge ${diseaseResult.is_sakit ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.82rem' }}>
-                      {diseaseResult.is_sakit ? 'Perlu dicek' : 'Sehat'}
-                    </span>
-                    <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                      Akurasi deteksi: <strong>{diseaseResult.confidence}%</strong>
-                    </span>
-                  </div>
-
-                  {diseaseResult.is_sakit && (
-                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#B91C1C', margin: '0.3rem 0' }}>
-                      Penyakit: {diseaseResult.nama_penyakit}
-                    </div>
-                  )}
-
-                  <div style={{ fontSize: '0.74rem', color: '#1B2A22', margin: '0.3rem 0' }}>
-                    <strong>Gejala: </strong> {diseaseResult.gejala}
-                  </div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
-                    <strong>Saran tindakan: </strong> {diseaseResult.penanganan}
-                  </div>
-                </div>
-
-                {/* Status Tanaman Operasional */}
-                <div style={{ padding: '0.6rem 0.85rem', backgroundColor: '#F6F8F4', borderRadius: '0.4rem', border: '1px solid #DDE5DC', fontSize: '0.75rem' }}>
-                  <span style={{ color: '#64748B' }}>Kondisi: </span>
-                  <strong style={{ color: diseaseResult.is_sakit ? '#B91C1C' : '#047857' }}>
-                    {diseaseResult.is_sakit ? 'Perlu dicek dan dirawat' : 'Sehat dan normal'}
-                  </strong>
-                </div>
-              </div>
-            ) : (
-              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748B', fontSize: '0.8rem' }}>
-                Pilih sampel atau buka kamera, lalu tekan "Cek Kesehatan Daun".
-              </div>
-            )}
+          {/* Kolom Kanan: Hasil Diagnosis Daun */}
+          <div>
+            {renderDiseaseResultCard()}
           </div>
         </div>
       )}
+    </>
+  )}
 
       {/* Modal Zoom Foto Sampel Resolusi Penuh */}
       {previewImageModal && (

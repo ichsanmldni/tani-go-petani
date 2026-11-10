@@ -1,6 +1,6 @@
 {
-  "name": "Codingtani — Pantau kebun, panen tepat waktu.",
-  "short_name": "Codingtani",
+  "name": "Tanigo — Pantau kebun, panen tepat waktu.",
+  "short_name": "Tanigo",
   "description": "Dashboard Monitoring Kematangan Melon & Penyakit Daun",
   "start_url": "/",
   "display": "standalone",

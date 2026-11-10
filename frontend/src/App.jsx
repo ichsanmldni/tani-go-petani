@@ -111,7 +111,7 @@ export default function App() {
             </div>
             <div>
               <strong style={{ fontSize: '1.05rem', color: '#1B2A22', display: 'block', lineHeight: 1.2, fontFamily: 'var(--font-heading)' }}>
-                Codingtani
+                Tanigo
               </strong>
               <small style={{ fontSize: '0.74rem', color: '#52665A' }}>
                 Pantau kebun, panen tepat waktu.

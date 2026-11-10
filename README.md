@@ -1,4 +1,4 @@
-# Codingtani — Smart Robotic Greenhouse Monitoring Dashboard
+# Tanigo — Smart Robotic Greenhouse Monitoring Dashboard
 
 Sistem analitik prediktif dan dashboard pemantauan cerdas perkebunan melon berbasis **React (Frontend)** dan **Python Flask + Scikit-Learn (Backend Machine Learning)** terintegrasi dengan manipulator robot industrial **ROKAE XMS5-R800-W4G3B4C**.
 

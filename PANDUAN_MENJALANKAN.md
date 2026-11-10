@@ -1,6 +1,6 @@
-# Panduan Instalasi & Menjalankan Codingtani
+# Panduan Instalasi & Menjalankan Tanigo
 
-Dokumen ini memandu langkah demi langkah bagi pengembang, agronom, atau penguji yang baru saja melakukan `git clone` atau `git pull` repositori **Codingtani** (Greenhouse Smart Vision & Ripeness Monitoring Dashboard).
+Dokumen ini memandu langkah demi langkah bagi pengembang, agronom, atau penguji yang baru saja melakukan `git clone` atau `git pull` repositori **Tanigo** (Greenhouse Smart Vision & Ripeness Monitoring Dashboard).
 
 ---
 
@@ -216,7 +216,7 @@ Setelah dashboard terbuka di `http://localhost:5000`:
 
 ## 7. Integrasi Lengan Robot ROKAE XMS5-R800 & Modbus
 
-Sistem Codingtani terintegrasi dengan manipulator robot industrial **ROKAE XMS5-R800-W4G3B4C** (6-Axis Collaborative Arm):
+Sistem Tanigo terintegrasi dengan manipulator robot industrial **ROKAE XMS5-R800-W4G3B4C** (6-Axis Collaborative Arm):
 
 * **Protokol**: Modbus TCP
 * **IP Default Controller**: `192.168.2.160` (Port `502`, Device ID `1`)
@@ -274,4 +274,4 @@ Sistem Codingtani terintegrasi dengan manipulator robot industrial **ROKAE XMS5-
 ---
 
 ### Bantuan & Kontribusi
-Jika menemui kendala atau ingin memperbarui model arsitektur CBAM, silakan buka *Issue* atau hubungi tim pengembang **Codingtani**.
+Jika menemui kendala atau ingin memperbarui model arsitektur CBAM, silakan buka *Issue* atau hubungi tim pengembang **Tanigo**.

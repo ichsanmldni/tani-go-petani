@@ -183,7 +183,7 @@ export function printFruitLabel(fruit) {
 
   <div class="sticker">
     <div class="header">
-      <div class="brand-title">CODINGTANI</div>
+      <div class="brand-title">TANIGO</div>
       <div class="brand-subtitle">Pantau kebun, panen tepat waktu.</div>
     </div>
 

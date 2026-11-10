@@ -670,7 +670,7 @@ export default function Penyakit({
             <table className="table-craft" style={{ width: '100%', minWidth: '760px' }}>
               <thead>
                 <tr>
-                  <th style={{ width: '20%', minWidth: '150px' }}>ID Pohon</th>
+                  <th style={{ width: '22%', minWidth: '155px' }}>ID Pohon & QR</th>
                   <th style={{ width: '18%', minWidth: '130px' }}>Posisi Jalur</th>
                   <th style={{ width: '22%', minWidth: '160px' }}>Greenhouse</th>
                   <th style={{ width: '14%', minWidth: '110px', textAlign: 'center' }}>Kondisi Daun</th>
@@ -693,28 +693,30 @@ export default function Penyakit({
 
                     return (
                       <tr key={t.tree_id}>
-                        {/* ID Pohon */}
+                        {/* ID Pohon & QR */}
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                            <div style={{
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '8px',
-                              backgroundColor: isSehat ? '#F0FDF4' : '#FEF2F2',
-                              border: `1px solid ${isSehat ? '#BBF7D0' : '#FECACA'}`,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0
-                            }}>
-                              <Plant size={18} style={{ color: isSehat ? '#166534' : '#B91C1C' }} />
+                            <div
+                              onClick={() => onSelectTree && onSelectTree(t.tree_id)}
+                              style={{
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                flexShrink: 0,
+                                borderRadius: '6px',
+                                transition: 'transform 0.15s ease'
+                              }}
+                              title={`Klik untuk rincian & info QR (${t.qr_code || `QR-TREE-${t.tree_id}`})`}
+                              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                            >
+                              <QrThumbnail text={t.qr_code || `QR-TREE-${t.tree_id}`} size={34} />
                             </div>
                             <div style={{ minWidth: 0, overflow: 'hidden' }}>
                               <strong className="font-mono" style={{ fontSize: '13px', color: 'var(--text-main, #0F172A)', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                 {t.tree_id}
                               </strong>
-                              <span style={{ fontSize: '10.5px', color: 'var(--text-dim, #64748B)' }}>
-                                Pohon Terdata
+                              <span className="font-mono" style={{ fontSize: '10px', color: isSehat ? 'var(--primary, #166534)' : '#B91C1C', fontWeight: 600, display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                {t.qr_code || `QR-TREE-${t.tree_id}`}
                               </span>
                             </div>
                           </div>
@@ -819,11 +821,19 @@ export default function Penyakit({
                     cursor: 'pointer'
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="font-mono" style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--text-main, #0F172A)' }}>
-                      {t.tree_id}
-                    </span>
-                    <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0 }}>
+                      <QrThumbnail text={t.qr_code || `QR-TREE-${t.tree_id}`} size={30} />
+                      <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                        <span className="font-mono" style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-main, #0F172A)', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                          {t.tree_id}
+                        </span>
+                        <span className="font-mono" style={{ fontSize: '9.5px', color: isSehat ? 'var(--primary, #166534)' : '#B91C1C', fontWeight: 600, display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                          {t.qr_code || `QR-TREE-${t.tree_id}`}
+                        </span>
+                      </div>
+                    </div>
+                    <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px', flexShrink: 0 }}>
                       {badgeLabel}
                     </span>
                   </div>

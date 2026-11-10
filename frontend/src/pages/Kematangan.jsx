@@ -738,28 +738,30 @@ export default function Kematangan({
 
                     return (
                       <tr key={f.fruit_id}>
-                        {/* ID Buah */}
+                        {/* ID Buah & QR */}
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                            <div style={{
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '8px',
-                              backgroundColor: '#F8FAFC',
-                              border: '1px solid var(--border-subtle, #E2E8F0)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0
-                            }}>
-                              <QrCode size={18} style={{ color: 'var(--primary, #166534)' }} />
+                            <div
+                              onClick={() => onSelectFruit && onSelectFruit(f.fruit_id)}
+                              style={{
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                flexShrink: 0,
+                                borderRadius: '6px',
+                                transition: 'transform 0.15s ease'
+                              }}
+                              title={`Klik untuk rincian & cetak label QR (${f.qr_code || `QR-FRUIT-${f.fruit_id}`})`}
+                              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                            >
+                              <QrThumbnail text={f.qr_code || `QR-FRUIT-${f.fruit_id}`} size={34} />
                             </div>
                             <div style={{ minWidth: 0, overflow: 'hidden' }}>
                               <strong className="font-mono" style={{ fontSize: '13px', color: 'var(--text-main, #0F172A)', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                 {f.fruit_id}
                               </strong>
-                              <span style={{ fontSize: '10.5px', color: 'var(--text-dim, #64748B)' }}>
-                                QR Aktif
+                              <span className="font-mono" style={{ fontSize: '10px', color: 'var(--primary, #166534)', fontWeight: 600, display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                {f.qr_code || `QR-FRUIT-${f.fruit_id}`}
                               </span>
                             </div>
                           </div>
@@ -860,11 +862,19 @@ export default function Kematangan({
                     cursor: 'pointer'
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="font-mono" style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--text-main, #0F172A)' }}>
-                      {f.fruit_id}
-                    </span>
-                    <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0 }}>
+                      <QrThumbnail text={f.qr_code || `QR-FRUIT-${f.fruit_id}`} size={30} />
+                      <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                        <span className="font-mono" style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-main, #0F172A)', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                          {f.fruit_id}
+                        </span>
+                        <span className="font-mono" style={{ fontSize: '9.5px', color: 'var(--primary, #166534)', fontWeight: 600, display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                          {f.qr_code || `QR-FRUIT-${f.fruit_id}`}
+                        </span>
+                      </div>
+                    </div>
+                    <span className={`badge ${badgeClass}`} style={{ fontSize: '10.5px', flexShrink: 0 }}>
                       {badgeLabel}
                     </span>
                   </div>

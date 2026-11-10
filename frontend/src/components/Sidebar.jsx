@@ -15,9 +15,6 @@ export default function Sidebar({
   setSidebarOpen,
   onOpenPositionsModal
 }) {
-  const sickCount = stats?.disease?.sakit || 22;
-  const readyCount = stats?.ripeness?.matang || 28;
-
   const handleNavClick = (tab) => {
     setActiveTab(tab);
     if (window.innerWidth < 1024 && setSidebarOpen) {
@@ -155,7 +152,7 @@ export default function Sidebar({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  gap: '0.65rem',
                   width: '100%',
                   padding: '0.65rem 0.85rem',
                   borderRadius: '12px',
@@ -169,22 +166,8 @@ export default function Sidebar({
                   position: 'relative'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <SquaresFour size={19} weight={activeTab === 'kematangan' ? 'fill' : 'regular'} style={{ color: activeTab === 'kematangan' ? 'var(--primary, #166534)' : 'var(--text-dim, #64748B)' }} />
-                  <span>Kematangan Buah</span>
-                </div>
-                {readyCount > 0 && (
-                  <span style={{
-                    fontSize: '0.68rem',
-                    fontWeight: 800,
-                    backgroundColor: activeTab === 'kematangan' ? 'var(--primary, #166534)' : '#E2E8F0',
-                    color: activeTab === 'kematangan' ? '#FFFFFF' : '#475569',
-                    padding: '2px 7px',
-                    borderRadius: '999px'
-                  }}>
-                    {readyCount}
-                  </span>
-                )}
+                <SquaresFour size={19} weight={activeTab === 'kematangan' ? 'fill' : 'regular'} style={{ color: activeTab === 'kematangan' ? 'var(--primary, #166534)' : 'var(--text-dim, #64748B)' }} />
+                <span>Kematangan Buah</span>
                 {activeTab === 'kematangan' && (
                   <div style={{
                     position: 'absolute',
@@ -205,7 +188,7 @@ export default function Sidebar({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  gap: '0.65rem',
                   width: '100%',
                   padding: '0.65rem 0.85rem',
                   borderRadius: '12px',
@@ -219,22 +202,8 @@ export default function Sidebar({
                   position: 'relative'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <Plant size={19} weight={activeTab === 'penyakit' ? 'fill' : 'regular'} style={{ color: activeTab === 'penyakit' ? '#B91C1C' : 'var(--text-dim, #64748B)' }} />
-                  <span>Kesehatan Daun</span>
-                </div>
-                {sickCount > 0 && (
-                  <span style={{
-                    fontSize: '0.68rem',
-                    fontWeight: 800,
-                    backgroundColor: activeTab === 'penyakit' ? '#B91C1C' : '#FEE2E2',
-                    color: activeTab === 'penyakit' ? '#FFFFFF' : '#B91C1C',
-                    padding: '2px 7px',
-                    borderRadius: '999px'
-                  }}>
-                    {sickCount} Sakit
-                  </span>
-                )}
+                <Plant size={19} weight={activeTab === 'penyakit' ? 'fill' : 'regular'} style={{ color: activeTab === 'penyakit' ? '#B91C1C' : 'var(--text-dim, #64748B)' }} />
+                <span>Kesehatan Daun</span>
                 {activeTab === 'penyakit' && (
                   <div style={{
                     position: 'absolute',

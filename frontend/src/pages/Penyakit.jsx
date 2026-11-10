@@ -424,12 +424,12 @@ export default function Penyakit({
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              {/* GH-1 */}
+              {/* Greenhouse Sakura */}
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                      GH-1 Sakura (Ciwidey)
+                      Greenhouse Sakura (Ciwidey)
                     </strong>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
                       Total 32 Pohon
@@ -445,12 +445,12 @@ export default function Penyakit({
                 </div>
               </div>
 
-              {/* GH-2 */}
+              {/* Greenhouse Maribaya */}
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                      GH-2 Maribaya (Lembang)
+                      Greenhouse Maribaya (Lembang)
                     </strong>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
                       Total 32 Pohon
@@ -466,12 +466,12 @@ export default function Penyakit({
                 </div>
               </div>
 
-              {/* GH-3 */}
+              {/* Greenhouse Cisondari */}
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-subtle, #E2E8F0)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <strong style={{ fontSize: '0.84rem', color: 'var(--text-main, #0F172A)', display: 'block' }}>
-                      GH-3 Cisondari (Pasirjambu)
+                      Greenhouse Cisondari (Pasirjambu)
                     </strong>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748B)' }}>
                       Total 32 Pohon

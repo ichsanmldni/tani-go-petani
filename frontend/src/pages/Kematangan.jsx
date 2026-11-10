@@ -52,6 +52,7 @@ export default function Kematangan({
   const [ripenessFilter, setRipenessFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState(globalSearchQuery || '');
   const [viewMode, setViewMode] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 768 ? 'grid' : 'table'));
+  const [activeGhGauge, setActiveGhGauge] = useState('all');
 
   useEffect(() => {
     if (globalSearchQuery) setSearchQuery(globalSearchQuery);
@@ -135,11 +136,48 @@ export default function Kematangan({
   const ghKeys = Object.keys(ghDist);
   const ghShortLabels = ghKeys.map(k => {
     const fullName = ghDist[k].name || k;
-    if (fullName.includes('Sakura')) return 'GH-1 Sakura';
-    if (fullName.includes('Maribaya')) return 'GH-2 Maribaya';
-    if (fullName.includes('Cisondari')) return 'GH-3 Cisondari';
+    if (fullName.includes('Sakura')) return 'Greenhouse Sakura';
+    if (fullName.includes('Maribaya')) return 'Greenhouse Maribaya';
+    if (fullName.includes('Cisondari')) return 'Greenhouse Cisondari';
     return fullName;
   });
+
+  // Dynamic readiness metrics for Card B (Kesiapan Panen per Greenhouse)
+  const gaugeData = useMemo(() => {
+    if (activeGhGauge !== 'all' && ghDist[activeGhGauge]) {
+      const g = ghDist[activeGhGauge];
+      const total = g.total_fruits || 32;
+      const matang = g.matang || 0;
+      const mengkal = g.mengkal || 0;
+      const mentah = g.mentah || 0;
+      const readyPct = total > 0 ? Math.round(((matang + mengkal) / total) * 100) : 0;
+      const friendlyName = g.name.includes('Sakura') ? 'Greenhouse Sakura' : g.name.includes('Maribaya') ? 'Greenhouse Maribaya' : 'Greenhouse Cisondari';
+
+      return {
+        pct: readyPct,
+        label: `Kesiapan ${friendlyName}`,
+        sublabel: `${matang} Matang · ${mengkal} Menuju Panen (${total} Buah)`,
+        matang,
+        mengkal,
+        mentah,
+        total,
+        name: friendlyName,
+        isSpecific: true
+      };
+    }
+
+    return {
+      pct: harvestReadyPct,
+      label: 'Kesiapan Seluruh Kebun',
+      sublabel: `${matangCount} Matang · ${mengkalCount} Menuju Panen (${totalFruits} Buah)`,
+      matang: matangCount,
+      mengkal: mengkalCount,
+      mentah: mentahCount,
+      total: totalFruits,
+      name: 'Semua Greenhouse',
+      isSpecific: false
+    };
+  }, [activeGhGauge, ghDist, harvestReadyPct, matangCount, mengkalCount, mentahCount, totalFruits]);
 
   const sebaranChartData = useMemo(() => ({
     labels: ghShortLabels,
@@ -493,7 +531,7 @@ export default function Kematangan({
               textAlign: 'center'
             }}>
               <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                GH-1 Sakura
+                Greenhouse Sakura
               </span>
               <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                 11 Matang
@@ -508,7 +546,7 @@ export default function Kematangan({
               textAlign: 'center'
             }}>
               <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                GH-2 Maribaya
+                Greenhouse Maribaya
               </span>
               <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                 10 Matang
@@ -523,7 +561,7 @@ export default function Kematangan({
               textAlign: 'center'
             }}>
               <span style={{ fontSize: '10px', color: 'var(--text-dim, #64748B)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                GH-3 Cisondari
+                Greenhouse Cisondari
               </span>
               <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
                 7 Matang
@@ -532,48 +570,69 @@ export default function Kematangan({
           </div>
         </div>
 
-        {/* Card B: Kesiapan Panen Kebun (Semi-Circular Arc Gauge with Micro-Legend) */}
+        {/* Card B: Kesiapan Panen per Greenhouse (Interactive Semi-Circular Arc Gauge with Per-Greenhouse Cards) */}
         <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
               <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main, #0F172A)', margin: 0 }}>
-                Kesiapan Panen Kebun
+                Kesiapan Panen per Greenhouse
               </h3>
-              <span style={{
-                fontSize: '0.7rem',
-                color: 'var(--primary, #166534)',
-                fontWeight: 700,
-                backgroundColor: '#F0FDF4',
-                padding: '2px 8px',
-                borderRadius: '999px',
-                border: '1px solid #BBF7D0'
-              }}>
-                Rasio Panen
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                {activeGhGauge !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveGhGauge('all')}
+                    style={{
+                      fontSize: '0.68rem',
+                      color: 'var(--text-dim, #64748B)',
+                      backgroundColor: '#F1F5F9',
+                      border: '1px solid var(--border-subtle, #E2E8F0)',
+                      padding: '2px 7px',
+                      borderRadius: '999px',
+                      cursor: 'pointer',
+                      fontWeight: 600
+                    }}
+                    title="Tampilkan semua greenhouse"
+                  >
+                    Semua
+                  </button>
+                )}
+                <span style={{
+                  fontSize: '0.7rem',
+                  color: 'var(--primary, #166534)',
+                  fontWeight: 700,
+                  backgroundColor: '#F0FDF4',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                  border: '1px solid #BBF7D0'
+                }}>
+                  {gaugeData.name} ({gaugeData.pct}%)
+                </span>
+              </div>
             </div>
             <p style={{ fontSize: '0.74rem', color: 'var(--text-dim, #64748B)', margin: '0 0 0.75rem 0' }}>
-              Perbandingan buah matang dan mengkal terhadap kapasitas panen saat ini
+              Rasio buah matang & booking terhadap kapasitas panen per kebun
             </p>
           </div>
 
           <div style={{ margin: '0.25rem 0 0.5rem 0' }}>
             <GaugeArc
-              percentage={harvestReadyPct}
-              label="Kesiapan Panen"
-              sublabel={`${matangCount} Matang Siap Petik · ${mengkalCount} Menuju Matang`}
+              percentage={gaugeData.pct}
+              label={gaugeData.label}
+              sublabel={gaugeData.sublabel}
               color="var(--primary, #166534)"
               trackColor="#E2E8F0"
               size={210}
               strokeWidth={17}
               segments={[
-                { value: matangCount, color: '#166534', label: 'Matang' },
-                { value: mengkalCount, color: '#22C55E', label: 'Mengkal' }
+                { value: gaugeData.matang, color: '#166534', label: 'Matang' },
+                { value: gaugeData.mengkal, color: '#22C55E', label: 'Mengkal' }
               ]}
-              total={totalFruits}
+              total={gaugeData.total}
             />
           </div>
 
-          {/* 3-Column Micro-Cards Legend (Synchronized with CapsuleBarChart Micro-Grid) */}
+          {/* 3-Column Micro-Cards: Kesiapan Panen per Greenhouse */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
@@ -581,68 +640,125 @@ export default function Kematangan({
             paddingTop: '0.75rem',
             borderTop: '1px solid var(--border-subtle, #E2E8F0)'
           }}>
-            {/* Matang */}
-            <div
-              style={{
-                padding: '0.45rem 0.5rem',
-                backgroundColor: '#F0FDF4',
-                borderRadius: '8px',
-                border: '1px solid #BBF7D0',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#166534' }} />
-                <span style={{ fontSize: '10px', color: '#166534', fontWeight: 700 }}>
-                  Matang ({Math.round((matangCount / (totalFruits || 1)) * 100)}%)
-                </span>
-              </div>
-              <strong style={{ fontSize: '12px', color: '#166534', fontWeight: 800 }}>
-                {matangCount} Buah
-              </strong>
-            </div>
+            {/* Greenhouse Sakura */}
+            {(() => {
+              const gh1 = ghDist['GH-1'] || {};
+              const total1 = gh1.total_fruits || 32;
+              const readyPct1 = Math.round((((gh1.matang || 0) + (gh1.mengkal || 0)) / (total1 || 1)) * 100);
+              const isActive = activeGhGauge === 'GH-1';
 
-            {/* Mengkal */}
-            <div
-              style={{
-                padding: '0.45rem 0.5rem',
-                backgroundColor: '#FFFBEB',
-                borderRadius: '8px',
-                border: '1px solid #FDE68A',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#D97706' }} />
-                <span style={{ fontSize: '10px', color: '#92400E', fontWeight: 700 }}>
-                  Mengkal ({Math.round((mengkalCount / (totalFruits || 1)) * 100)}%)
-                </span>
-              </div>
-              <strong style={{ fontSize: '12px', color: '#B45309', fontWeight: 800 }}>
-                {mengkalCount} Buah
-              </strong>
-            </div>
+              return (
+                <div
+                  onClick={() => setActiveGhGauge(isActive ? 'all' : 'GH-1')}
+                  style={{
+                    padding: '0.45rem 0.5rem',
+                    backgroundColor: isActive ? '#F0FDF4' : '#F8FAFC',
+                    borderRadius: '8px',
+                    border: `1px solid ${isActive ? 'var(--primary, #166534)' : 'var(--border-subtle, #E2E8F0)'}`,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    boxShadow: isActive ? '0 0 0 2px rgba(22, 101, 52, 0.15)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title="Klik untuk melihat kesiapan Greenhouse Sakura"
+                >
+                  <span style={{
+                    fontSize: '10px',
+                    color: isActive ? 'var(--primary, #166534)' : 'var(--text-dim, #64748B)',
+                    fontWeight: isActive ? 800 : 600,
+                    display: 'block',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    Greenhouse Sakura
+                  </span>
+                  <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
+                    {readyPct1}% Siap
+                  </strong>
+                </div>
+              );
+            })()}
 
-            {/* Mentah */}
-            <div
-              style={{
-                padding: '0.45rem 0.5rem',
-                backgroundColor: '#F8FAFC',
-                borderRadius: '8px',
-                border: '1px solid var(--border-subtle, #E2E8F0)',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '2px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#64748B' }} />
-                <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>
-                  Mentah ({Math.round((mentahCount / (totalFruits || 1)) * 100)}%)
-                </span>
-              </div>
-              <strong style={{ fontSize: '12px', color: '#334155', fontWeight: 800 }}>
-                {mentahCount} Buah
-              </strong>
-            </div>
+            {/* Greenhouse Maribaya */}
+            {(() => {
+              const gh2 = ghDist['GH-2'] || {};
+              const total2 = gh2.total_fruits || 32;
+              const readyPct2 = Math.round((((gh2.matang || 0) + (gh2.mengkal || 0)) / (total2 || 1)) * 100);
+              const isActive = activeGhGauge === 'GH-2';
+
+              return (
+                <div
+                  onClick={() => setActiveGhGauge(isActive ? 'all' : 'GH-2')}
+                  style={{
+                    padding: '0.45rem 0.5rem',
+                    backgroundColor: isActive ? '#F0FDF4' : '#F8FAFC',
+                    borderRadius: '8px',
+                    border: `1px solid ${isActive ? 'var(--primary, #166534)' : 'var(--border-subtle, #E2E8F0)'}`,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    boxShadow: isActive ? '0 0 0 2px rgba(22, 101, 52, 0.15)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title="Klik untuk melihat kesiapan Greenhouse Maribaya"
+                >
+                  <span style={{
+                    fontSize: '10px',
+                    color: isActive ? 'var(--primary, #166534)' : 'var(--text-dim, #64748B)',
+                    fontWeight: isActive ? 800 : 600,
+                    display: 'block',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    Greenhouse Maribaya
+                  </span>
+                  <strong style={{ fontSize: '12px', color: 'var(--primary, #166534)', fontWeight: 800 }}>
+                    {readyPct2}% Siap
+                  </strong>
+                </div>
+              );
+            })()}
+
+            {/* Greenhouse Cisondari */}
+            {(() => {
+              const gh3 = ghDist['GH-3'] || {};
+              const total3 = gh3.total_fruits || 32;
+              const readyPct3 = Math.round((((gh3.matang || 0) + (gh3.mengkal || 0)) / (total3 || 1)) * 100);
+              const isActive = activeGhGauge === 'GH-3';
+
+              return (
+                <div
+                  onClick={() => setActiveGhGauge(isActive ? 'all' : 'GH-3')}
+                  style={{
+                    padding: '0.45rem 0.5rem',
+                    backgroundColor: isActive ? '#F0FDF4' : '#F8FAFC',
+                    borderRadius: '8px',
+                    border: `1px solid ${isActive ? 'var(--primary, #166534)' : 'var(--border-subtle, #E2E8F0)'}`,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    boxShadow: isActive ? '0 0 0 2px rgba(22, 101, 52, 0.15)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title="Klik untuk melihat kesiapan Greenhouse Cisondari"
+                >
+                  <span style={{
+                    fontSize: '10px',
+                    color: isActive ? 'var(--primary, #166534)' : 'var(--text-dim, #64748B)',
+                    fontWeight: isActive ? 800 : 600,
+                    display: 'block',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    Greenhouse Cisondari
+                  </span>
+                  <strong style={{ fontSize: '12px', color: '#B45309', fontWeight: 800 }}>
+                    {readyPct3}% Siap
+                  </strong>
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>

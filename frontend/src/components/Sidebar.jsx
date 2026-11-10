@@ -299,15 +299,15 @@ export default function Sidebar({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.45rem 0.65rem', fontSize: '0.78rem', color: 'var(--text-main, #0F172A)', borderRadius: '8px' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
-                <span>GH-1 Sakura (Ciwidey)</span>
+                <span>Greenhouse Sakura (Ciwidey)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.45rem 0.65rem', fontSize: '0.78rem', color: 'var(--text-main, #0F172A)', borderRadius: '8px' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
-                <span>GH-2 Maribaya (Lembang)</span>
+                <span>Greenhouse Maribaya (Lembang)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.45rem 0.65rem', fontSize: '0.78rem', color: 'var(--text-main, #0F172A)', borderRadius: '8px' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
-                <span>GH-3 Cisondari (Pasirjambu)</span>
+                <span>Greenhouse Cisondari (Pasirjambu)</span>
               </div>
             </div>
           </div>

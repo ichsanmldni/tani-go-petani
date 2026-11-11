@@ -3,6 +3,10 @@ import time
 import threading
 import cv2
 import numpy as np
+from services.env_loader import load_local_env
+
+load_local_env()
+
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from services.farm_service import FarmService

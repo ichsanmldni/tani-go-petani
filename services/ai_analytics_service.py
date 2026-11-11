@@ -4,12 +4,9 @@ import json
 import requests
 from datetime import datetime
 from typing import Dict, Any
+from services.env_loader import load_local_env
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
+load_local_env()
 
 class AIAnalyticsService:
     """
@@ -24,15 +21,31 @@ class AIAnalyticsService:
     CACHE_TTL_SECONDS = 900  # 15 menit
 
     def __init__(self):
+        load_local_env()
         self.api_key = os.environ.get("OPENAI_API_KEY", "").strip()
-        self.model = os.environ.get("OPENAI_NANO_MODEL", self.DEFAULT_NANO_MODEL).strip()
+        self.model = os.environ.get("OPENAI_NANO_MODEL", self.DEFAULT_NANO_MODEL).strip() or self.DEFAULT_NANO_MODEL
         self._ripeness_cache = {"timestamp": 0, "data": None}
         self._disease_cache = {"timestamp": 0, "data": None}
 
+    def _resolve_api_key(self) -> str:
+        """Ambil API key dari memory/environment atau muat ulang dari .env bila kosong."""
+        key = (self.api_key or os.environ.get("OPENAI_API_KEY", "")).strip()
+        if not key or key == "your-openai-api-key-here":
+            load_local_env()
+            key = os.environ.get("OPENAI_API_KEY", "").strip()
+        if key == "your-openai-api-key-here":
+            key = ""
+        self.api_key = key
+        return key
+
     def _call_openai(self, system_prompt: str, user_prompt: str) -> str:
         """Kirim request ke OpenAI API dengan timeout dan fallback model."""
+        api_key = self._resolve_api_key()
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY belum diset di file .env atau environment variable.")
+
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
 
@@ -162,7 +175,8 @@ Kembalikan format JSON:
         except Exception as err:
             print(f"[AIAnalyticsService] Fallback heuristic for ripeness analytics: {err}")
             fallback = self._get_fallback_ripeness_analytics(stats)
-            self._ripeness_cache = {"timestamp": now, "data": fallback}
+            if self._resolve_api_key():
+                self._ripeness_cache = {"timestamp": now - (self.CACHE_TTL_SECONDS - 60), "data": fallback}
             return fallback
 
     def get_disease_analytics(self, stats: Dict[str, Any], force_refresh: bool = False) -> Dict[str, Any]:
@@ -265,7 +279,8 @@ Kembalikan format JSON:
         except Exception as err:
             print(f"[AIAnalyticsService] Fallback heuristic for disease analytics: {err}")
             fallback = self._get_fallback_disease_analytics(stats)
-            self._disease_cache = {"timestamp": now, "data": fallback}
+            if self._resolve_api_key():
+                self._disease_cache = {"timestamp": now - (self.CACHE_TTL_SECONDS - 60), "data": fallback}
             return fallback
 
     def _get_fallback_ripeness_analytics(self, stats: Dict[str, Any]) -> Dict[str, Any]:

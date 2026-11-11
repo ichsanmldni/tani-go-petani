@@ -3,15 +3,11 @@ import json
 import time
 import urllib.request
 import urllib.error
+from services.env_loader import load_local_env
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
+load_local_env()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-MODEL_NAME = "gpt-4o-mini"
+MODEL_NAME = os.getenv("OPENAI_NANO_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
 
 # In-memory cache agar hemat biaya & respon instan
 _cache = {
@@ -21,10 +17,16 @@ _cache = {
 CACHE_TTL = 300  # 5 menit
 
 def _call_openai(system_prompt, user_prompt):
+    load_local_env()
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not api_key or api_key == "your-openai-api-key-here":
+        print("[AnalyticsService] OPENAI_API_KEY belum dikonfigurasi di file .env.")
+        return None
+
     url = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {OPENAI_API_KEY}"
+        "Authorization": f"Bearer {api_key}"
     }
     payload = {
         "model": MODEL_NAME,

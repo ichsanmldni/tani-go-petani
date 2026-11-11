@@ -6,6 +6,9 @@ os.environ.setdefault('OPENBLAS_NUM_THREADS', '1')
 os.environ.setdefault('MKL_NUM_THREADS', '1')
 os.environ.setdefault('OMP_NUM_THREADS', '1')
 
+from services.env_loader import load_local_env
+load_local_env()
+
 # Script Runner untuk Smart Agro Melon AI System
 from app import app
 

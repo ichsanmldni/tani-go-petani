@@ -217,7 +217,7 @@ export default function Sidebar({
                 )}
               </button>
 
-              {/* 3. Uji Kamera (Bebas dari sebutan robot / AI berlebihan) */}
+              {/* 3. Akuisisi Citra (Bebas dari sebutan robot / AI berlebihan) */}
               <button
                 onClick={() => handleNavClick('simulator')}
                 className={`sidebar-nav-item ${activeTab === 'simulator' ? 'active' : ''}`}
@@ -240,7 +240,7 @@ export default function Sidebar({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                   <VideoCamera size={19} weight={activeTab === 'simulator' ? 'fill' : 'regular'} style={{ color: activeTab === 'simulator' ? 'var(--primary, #166534)' : 'var(--text-dim, #64748B)' }} />
-                  <span>Uji Kamera</span>
+                  <span>Akuisisi Citra</span>
                 </div>
                 {activeTab === 'simulator' && (
                   <div style={{

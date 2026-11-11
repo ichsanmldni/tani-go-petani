@@ -886,7 +886,7 @@ export default function Simulator() {
             letterSpacing: '-0.025em',
             fontFamily: 'var(--font-heading)'
           }}>
-            Uji Kamera
+            Akuisisi Citra
           </h1>
           <p style={{
             fontSize: '0.82rem',

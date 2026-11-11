@@ -167,7 +167,7 @@ export default function App() {
           className={`mobile-nav-item ${activeTab === 'simulator' ? 'active' : ''}`}
         >
           <Flask size={20} weight={activeTab === 'simulator' ? 'bold' : 'regular'} />
-          <span>Uji Kamera</span>
+          <span>Akuisisi Citra</span>
           <div className="nav-indicator" />
         </button>
       </nav>

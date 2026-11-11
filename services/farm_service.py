@@ -330,6 +330,7 @@ class FarmService:
 
         total_matang_all = 0
         total_mengkal_all = 0
+        total_mentah_all = 0
         total_kg_matang_all = 0.0
         total_kg_mengkal_all = 0.0
 
@@ -342,6 +343,16 @@ class FarmService:
             matang_fruits = [f for f in gh_fruits if f["tingkat_kematangan"] == "matang"]
             count_matang = len(matang_fruits)
             kg_matang = round(count_matang * unit_weight, 1)
+
+            # Mengkal
+            mengkal_fruits = [f for f in gh_fruits if f["tingkat_kematangan"] == "mengkal"]
+            count_mengkal = len(mengkal_fruits)
+            kg_mengkal = round(count_mengkal * unit_weight, 1)
+
+            # Mentah (Fase Pembesaran)
+            mentah_fruits = [f for f in gh_fruits if f["tingkat_kematangan"] == "mentah"]
+            count_mentah = len(mentah_fruits)
+            total_mentah_all += count_mentah
 
             if count_matang > 0:
                 total_matang_all += count_matang
@@ -356,6 +367,8 @@ class FarmService:
                     "latitude": gh.get("latitude"),
                     "longitude": gh.get("longitude"),
                     "jumlah_matang": count_matang,
+                    "jumlah_mengkal": count_mengkal,
+                    "jumlah_mentah": count_mentah,
                     "estimasi_kg": kg_matang,
                     "estimasi_brix": gh.get("estimasi_brix", "14.5 - 16.0 °Bx"),
                     "target_panen": gh.get("target_harvest", "Siap Panen"),
@@ -377,11 +390,6 @@ class FarmService:
                     ]
                 })
 
-            # Mengkal
-            mengkal_fruits = [f for f in gh_fruits if f["tingkat_kematangan"] == "mengkal"]
-            count_mengkal = len(mengkal_fruits)
-            kg_mengkal = round(count_mengkal * unit_weight, 1)
-
             if count_mengkal > 0:
                 total_mengkal_all += count_mengkal
                 total_kg_mengkal_all += kg_mengkal
@@ -394,7 +402,9 @@ class FarmService:
                     "link_gmaps": gh.get("gmaps_link", f"https://maps.google.com/?q={gh.get('latitude', 0)},{gh.get('longitude', 0)}"),
                     "latitude": gh.get("latitude"),
                     "longitude": gh.get("longitude"),
+                    "jumlah_matang": count_matang,
                     "jumlah_mengkal": count_mengkal,
+                    "jumlah_mentah": count_mentah,
                     "estimasi_kg": kg_mengkal,
                     "perkiraan_masa_panen": f"2 - 4 Hari Lagi ({gh.get('target_harvest', '')})",
                     "sisa_hari": "2 - 4 hari",
@@ -417,12 +427,15 @@ class FarmService:
                     ]
                 })
 
+        total_buah_termonitor = total_matang_all + total_mengkal_all + total_mentah_all
         return {
             "success": True,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "summary": {
                 "total_matang": total_matang_all,
                 "total_mengkal": total_mengkal_all,
+                "total_mentah": total_mentah_all,
+                "total_buah": total_buah_termonitor,
                 "total_kg_matang": round(total_kg_matang_all, 1),
                 "total_kg_mengkal": round(total_kg_mengkal_all, 1),
                 "total_kebun_aktif": len(self.greenhouses),
